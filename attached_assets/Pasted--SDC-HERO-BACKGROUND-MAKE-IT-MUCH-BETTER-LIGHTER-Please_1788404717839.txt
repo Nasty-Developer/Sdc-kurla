@@ -1,0 +1,103 @@
+## SDC HERO BACKGROUND: MAKE IT MUCH BETTER + LIGHTER
+
+Please improve the homepage hero background again.
+
+The current hero background has become **too dark**. I want it to be significantly **lighter, cleaner, brighter and more premium**.
+
+### DESIGN DIRECTION
+
+Keep the SDC blue identity, but move away from the dark/navy-heavy appearance.
+
+The hero should feel:
+
+**Bright + Clean + Premium + Calm + Fresh + Modern + Medical**
+
+Think of a high-end modern dental clinic, not a dark-tech website.
+
+### COLOR BALANCE
+
+Use:
+
+* Bright/soft blue
+* Light blue
+* White
+* Very subtle blue gradients
+* Soft blue-tinted surfaces
+
+Deep navy can still be used VERY selectively for contrast, but it should NOT dominate the hero background.
+
+The overall hero should feel visually light.
+
+### BACKGROUND
+
+Create a beautiful minimal background using subtle depth:
+
+* Soft blue-to-light-blue tonal transition
+* Very subtle abstract dental/medical-inspired shapes
+* Gentle light areas
+* Soft gradients
+* Clean negative space
+* Extremely subtle texture if useful
+
+The background should have enough visual interest to feel premium, but remain simple.
+
+### IMPORTANT
+
+A background image is NOT necessary.
+
+If there is no genuinely excellent dental image, keep the hero image-free and create a beautiful abstract blue background.
+
+Do NOT use a random stock image just to fill space.
+
+### AVOID
+
+Absolutely avoid:
+
+* Very dark backgrounds
+* Almost-black navy
+* Heavy dark gradients
+* Neon blue
+* Cyberpunk effects
+* Huge blobs
+* Excessive glassmorphism
+* Excessive particles
+* Busy patterns
+* Strong glowing effects
+* Distracting animated backgrounds
+
+### HERO READABILITY
+
+The text must remain extremely clear against the background:
+
+**Top Rated Dental Clinic in Mumbai**
+
+**Dr Somil Dental Clinic**
+**Your Perfect Smile Starts Here**
+
+The CTA buttons should have strong contrast and remain immediately visible.
+
+### SUBTLE ANIMATION
+
+Keep the background mostly static.
+
+If adding animation, use only extremely subtle movement such as:
+
+* Very slow gradient movement
+* Gentle light shift
+* Minimal floating shape movement
+
+Nothing distracting.
+
+### FINAL VISUAL TARGET
+
+The hero should feel like:
+
+**a bright, premium, modern dental clinic website with a sophisticated blue identity.**
+
+It should be visually impressive because of **color balance, spacing, typography, composition and subtle depth**, not because of heavy effects.
+
+Most importantly:
+
+**LIGHTER. CLEANER. BRIGHTER. LESS DARK. MORE PREMIUM.**
+
+Do not change the SDC information or appointment functionality. This update is specifically focused on making the hero background much more beautiful and visually balanced.

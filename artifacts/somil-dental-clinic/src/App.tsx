@@ -276,7 +276,7 @@ function Home() {
       <section className="section" id="about" aria-labelledby="about-heading">
         <Reveal className="container-sdc story-grid">
           <div className="story-image">
-            <img src="https://images.pexels.com/photos/3845734/pexels-photo-3845734.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Dental care professional consulting with a patient" />
+            <img src="/somil-doctor-portrait.jpg" alt="Dr. Somil V Gupta, lead dentist at Somil Dental Clinic" />
             <div className="image-tag"><strong>Care, without the rush.</strong><span>Every visit starts with a conversation.</span></div>
           </div>
           <div className="story-copy">
@@ -419,7 +419,7 @@ function Home() {
             <p>Meet the clinician behind Somil Dental Clinic and the patient-first approach that shapes every visit.</p>
           </div>
           <Reveal className="doctor-profile">
-            <div className="doctor-visual"><img src="https://images.pexels.com/photos/3845737/pexels-photo-3845737.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Dental care consultation in a bright treatment room" /><span className="doctor-visual-label">SDC / 01</span></div>
+            <div className="doctor-visual"><img src="/somil-doctor-portrait.jpg" alt="Dr. Somil V Gupta, lead dentist and endodontist" /><span className="doctor-visual-label">SDC / 01</span></div>
             <div className="doctor-copy">
               <div className="eyebrow">Lead Dentist / Endodontist</div>
               <h3>Dr. Somil V Gupta</h3>
