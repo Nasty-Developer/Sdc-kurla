@@ -1,6 +1,9 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
 import {
   ArrowRight,
   BadgeCheck,
@@ -26,10 +29,13 @@ import {
 } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import BookingPage from '@/pages/booking';
+<<<<<<< HEAD
 =======
 import { ArrowRight, BadgeCheck, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, HeartHandshake, MapPin, Menu, Phone, ShieldCheck, Smile, Sparkles, Star, Stethoscope, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 >>>>>>> origin/main
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
@@ -38,6 +44,9 @@ import { Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
 const queryClient = new QueryClient();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
 const clinicAddress = 'Chawl bazar ward, Jai Ambika nagar, near Rolex hotel, Halav Pool, Kunchi kurway, Mumbai, Maharashtra 400070';
 const clinicPhone = '+91 8591434914';
 const clinicEmail = 'somilg449@gmail.com';
@@ -68,6 +77,7 @@ const stats = [
   ['1000+', 'Treatments Done'],
   ['5+', 'Years Experience'],
   ['98%', 'Patient Satisfaction'],
+<<<<<<< HEAD
 =======
 const services = [
   { title: 'Preventive care', copy: 'Thoughtful checkups and cleanings that keep small concerns from becoming big ones.', icon: ShieldCheck },
@@ -83,6 +93,8 @@ const testimonials = [
   { quote: 'The team made my daughter feel completely at ease. She left asking when she could come back, which I never thought I would say about a dentist.', name: 'Anita M.', detail: 'Parent of a young patient' },
   { quote: 'I appreciated the honesty more than anything. The plan was clear, unhurried, and the result looks like me — just a little more confident.', name: 'Karan D.', detail: 'Cosmetic care patient' },
 >>>>>>> origin/main
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
 ];
 
 function Reveal({ children, className = '', delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
@@ -112,6 +124,9 @@ function Reveal({ children, className = '', delay = 0 }: { children: ReactNode; 
 function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [, setLocation] = useLocation();
   const testimonial = testimonials[testimonialIndex];
@@ -120,12 +135,15 @@ function Home() {
     setMenuOpen(false);
     setLocation(`/book?treatment=${encodeURIComponent(treatment)}`);
   };
+<<<<<<< HEAD
 =======
   const [appointmentOpen, setAppointmentOpen] = useState(false);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const testimonial = testimonials[testimonialIndex];
 
 >>>>>>> origin/main
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
   const goTo = (target: string) => {
     setMenuOpen(false);
     document.getElementById(target)?.scrollIntoView({ behavior: 'smooth' });
@@ -143,6 +161,9 @@ function Home() {
           </a>
           <nav className="desktop-nav" aria-label="Main navigation">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
             <a href="#top" data-testid="link-nav-home">Home</a>
             <a href="#about" data-testid="link-nav-about">About</a>
             <a href="#treatments" data-testid="link-nav-treatments">Treatments &amp; Pricing</a>
@@ -151,6 +172,7 @@ function Home() {
             <a href="#contact" data-testid="link-nav-contact">Contact</a>
           </nav>
           <button className="outline-top-button" onClick={() => openAppointment()} data-testid="button-header-appointment">Book Appointment <ArrowRight size={14} /></button>
+<<<<<<< HEAD
 =======
             <a href="#about" data-testid="link-nav-about">About us</a>
             <a href="#care" data-testid="link-nav-care">Our care</a>
@@ -159,12 +181,17 @@ function Home() {
           </nav>
           <button className="outline-top-button" onClick={() => setAppointmentOpen(true)} data-testid="button-header-appointment">Book a visit</button>
 >>>>>>> origin/main
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
           <button className="menu-button" onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-controls="mobile-navigation" aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} data-testid="button-mobile-menu">
             {menuOpen ? <X size={22} /> : <Menu size={23} />}
           </button>
           {menuOpen && (
             <nav className="mobile-nav" id="mobile-navigation" aria-label="Mobile navigation">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
               <a href="#top" onClick={() => goTo('top')} data-testid="link-mobile-home">Home</a>
               <a href="#about" onClick={() => goTo('about')} data-testid="link-mobile-about">About</a>
               <a href="#treatments" onClick={() => goTo('treatments')} data-testid="link-mobile-treatments">Treatments &amp; Pricing</a>
@@ -172,6 +199,7 @@ function Home() {
               <a href="#testimonials" onClick={() => goTo('testimonials')} data-testid="link-mobile-testimonials">Testimonials</a>
               <a href="#contact" onClick={() => goTo('contact')} data-testid="link-mobile-contact">Contact</a>
               <button onClick={() => openAppointment()} data-testid="button-mobile-appointment">Book Appointment <ArrowRight size={15} /></button>
+<<<<<<< HEAD
 =======
               <a href="#about" onClick={() => setMenuOpen(false)} data-testid="link-mobile-about">About us</a>
               <a href="#care" onClick={() => setMenuOpen(false)} data-testid="link-mobile-care">Our care</a>
@@ -179,6 +207,8 @@ function Home() {
               <a href="#contact" onClick={() => setMenuOpen(false)} data-testid="link-mobile-contact">Contact</a>
               <a href="#contact" onClick={() => { setMenuOpen(false); setAppointmentOpen(true); }} data-testid="link-mobile-appointment">Book a visit <ArrowRight size={15} /></a>
 >>>>>>> origin/main
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
             </nav>
           )}
         </div>
@@ -186,6 +216,9 @@ function Home() {
 
       <section className="hero" id="top" aria-labelledby="hero-title">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
         <div className="hero-orbit hero-orbit-one" aria-hidden="true" />
         <div className="hero-orbit hero-orbit-two" aria-hidden="true" />
         <div className="container-sdc hero-content">
@@ -206,6 +239,7 @@ function Home() {
           </div>
           <div className="hero-proof reveal reveal-delay" aria-label="Clinic statistics">
             {stats.slice(0, 3).map(([value, label]) => <div className="proof-item" key={label}><strong>{value}</strong><span>{label}</span></div>)}
+<<<<<<< HEAD
 =======
         <div className="container-sdc hero-content">
           <div className="reveal">
@@ -223,11 +257,16 @@ function Home() {
             <div className="proof-item"><strong>4.9 / 5</strong><span>patient rated</span></div>
             <div className="proof-item"><strong>1:1</strong><span>attention always</span></div>
 >>>>>>> origin/main
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
           </div>
         </div>
       </section>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
       <section className="stats-strip" aria-label="Clinic statistics">
         <div className="container-sdc stats-grid">
           {stats.map(([value, label], index) => <div className="stat-item" key={label} data-testid={`stat-clinic-${index}`}><strong>{value}</strong><span>{label}</span></div>)}
@@ -275,6 +314,7 @@ function Home() {
             <div><div className="eyebrow">Personalized care</div><h3>Need a Custom Treatment Plan?</h3><p>Every smile is unique. Book a basic consultation and our experts will provide a detailed diagnosis and custom pricing plan.</p></div>
             <button className="button-primary" onClick={() => openAppointment('General Consultation')} data-testid="button-general-consultation">Book General Consultation <ArrowRight size={15} /></button>
           </Reveal>
+<<<<<<< HEAD
 =======
        <section className="trust-strip" aria-label="Clinic assurances">
          <Reveal className="container-sdc trust-inner">
@@ -323,11 +363,16 @@ function Home() {
             ))}
            </Reveal>
 >>>>>>> origin/main
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
         </div>
       </section>
 
       <section className="section care-band" aria-labelledby="process-heading">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
         <Reveal className="container-sdc care-grid">
           <div>
             <div className="eyebrow">Your care, your pace</div>
@@ -342,6 +387,7 @@ function Home() {
             <div className="care-step"><span className="care-step-number">04</span><h3>Keep your smile healthy</h3><p>We’re here for your ongoing dental care.</p></div>
           </div>
         </Reveal>
+<<<<<<< HEAD
 =======
          <Reveal className="container-sdc care-grid">
           <div>
@@ -358,12 +404,17 @@ function Home() {
           </div>
          </Reveal>
 >>>>>>> origin/main
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
       </section>
 
       <section className="section" id="team" aria-labelledby="team-heading">
         <div className="container-sdc">
           <div className="section-head">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
             <div><div className="eyebrow">The team</div><h2 id="team-heading">Skill, patience,<br />and a lighter touch.</h2></div>
             <p>Meet the clinician behind Somil Dental Clinic and the patient-first approach that shapes every visit.</p>
           </div>
@@ -378,6 +429,7 @@ function Home() {
               <button className="button-ghost" onClick={() => openAppointment()} data-testid="button-doctor-appointment">Book with the clinic <ArrowRight size={15} /></button>
             </div>
           </Reveal>
+<<<<<<< HEAD
 =======
             <div><div className="eyebrow">The people behind the care</div><h2 id="team-heading">Warm people.<br />Exceptional dentistry.</h2></div>
             <p>Our small, dedicated team believes clinical excellence and kindness belong in the same room.</p>
@@ -386,11 +438,16 @@ function Home() {
              <article className="team-card team-card-featured" data-testid="card-team-somil"><img src="https://images.pexels.com/photos/3845737/pexels-photo-3845737.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Dr Somil V. Gupta treating a patient in the dental clinic" /><div className="team-meta"><strong>Dr Somil V. Gupta</strong><span>Lead dentist · BDS, MDS</span></div></article>
            </Reveal>
 >>>>>>> origin/main
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
         </div>
       </section>
 
       <section className="section section-tint" aria-labelledby="reasons-heading">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
         <Reveal className="container-sdc reasons-grid">
           <div className="reasons-image"><img src="https://images.pexels.com/photos/3845735/pexels-photo-3845735.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Dental instruments prepared for a patient appointment" /></div>
           <div>
@@ -429,6 +486,7 @@ function Home() {
             <div className="patient"><div className="patient-name"><strong>{testimonial.name}</strong><span>{testimonial.detail}</span></div><div className="testimonial-controls"><button className="circle-button" onClick={previousTestimonial} aria-label="Previous testimonial" data-testid="button-testimonial-previous"><ChevronLeft size={17} /></button><button className="circle-button" onClick={nextTestimonial} aria-label="Next testimonial" data-testid="button-testimonial-next"><ChevronRight size={17} /></button></div></div>
           </div>
         </Reveal>
+<<<<<<< HEAD
 =======
          <Reveal className="container-sdc reasons-grid">
            <div className="reasons-image"><img src="https://images.unsplash.com/photo-1606811971618-4486d14f3f99?auto=format&fit=crop&w=1200&q=85" alt="Close-up dental examination with a mirror and dental instrument" /></div>
@@ -465,11 +523,16 @@ function Home() {
           </div>
          </Reveal>
 >>>>>>> origin/main
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
       </section>
 
       <section className="section contact-section" id="contact" aria-labelledby="contact-heading">
         <div className="container-sdc">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
           <Reveal className="contact-card">
             <div className="contact-copy">
               <div className="eyebrow">Contact Somil Dental Clinic</div>
@@ -488,6 +551,7 @@ function Home() {
             </div>
           </Reveal>
         </div>
+<<<<<<< HEAD
 =======
            <Reveal className="contact-card">
             <div className="contact-copy">
@@ -507,12 +571,17 @@ function Home() {
            </Reveal>
           </div>
 >>>>>>> origin/main
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
       </section>
 
       <footer className="footer">
         <div className="container-sdc">
           <div className="footer-grid">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
             <div><a className="brand" href="#top" data-testid="link-footer-brand"><span className="brand-mark">SDC</span><span className="brand-copy"><strong>SOMIL</strong><span>Dental clinic</span></span></a><p className="footer-intro">Providing world-class dental care with a gentle touch. Your smile is our top priority.</p></div>
             <div><h3>Quick Links</h3><div className="footer-links"><a href="#top" data-testid="link-footer-home">Home</a><a href="#treatments" data-testid="link-footer-treatments">Treatments &amp; Pricing</a><button onClick={() => openAppointment()} data-testid="button-footer-appointment">Book Appointment</button><a href="#contact" data-testid="link-footer-contact">Contact Us</a><a href="#testimonials" data-testid="link-footer-feedback">Leave Feedback</a></div></div>
             <div><h3>Clinic Hours</h3><div className="footer-hours"><span>Monday - Saturday <b>6:30 PM - 10:00 PM</b></span><span>Sunday <b>Closed for Maintenance</b></span></div></div>
@@ -522,6 +591,7 @@ function Home() {
         </div>
       </footer>
 
+<<<<<<< HEAD
 =======
             <div><a className="brand" href="#top" data-testid="link-footer-brand"><span className="brand-mark">SDC</span><span className="brand-copy"><strong>SOMIL</strong><span>Dental clinic</span></span></a><p className="footer-intro">Modern dentistry with a more human touch. Proudly caring for the neighborhood since 2009.</p></div>
             <div><h3>Explore</h3><div className="footer-links"><a href="#about" data-testid="link-footer-about">About us</a><a href="#care" data-testid="link-footer-care">Our care</a><a href="#team" data-testid="link-footer-team">Our team</a><a href="#contact" data-testid="link-footer-contact">Contact</a></div></div>
@@ -545,26 +615,38 @@ function Home() {
         </div>
       )}
 >>>>>>> origin/main
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
     </main>
   );
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
 function ArrowUpRightIcon() {
   return <ArrowRight size={16} />;
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> origin/main
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
 function Router() {
   return (
     <RoutedErrorBoundary>
       <Switch>
         <Route path="/" component={Home} />
 <<<<<<< HEAD
+<<<<<<< HEAD
         <Route path="/book" component={BookingPage} />
 =======
 >>>>>>> origin/main
+=======
+        <Route path="/book" component={BookingPage} />
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
         <Route component={NotFound} />
       </Switch>
     </RoutedErrorBoundary>

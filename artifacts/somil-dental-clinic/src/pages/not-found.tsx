@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
 import { ArrowLeft, MapPin } from 'lucide-react';
 import { Link } from 'wouter';
 
@@ -16,6 +19,7 @@ export default function NotFound() {
       </div>
     </main>
   );
+<<<<<<< HEAD
 }
 =======
 import { Card, CardContent } from '@/components/ui/card';
@@ -42,3 +46,6 @@ export default function NotFound() {
   );
 }
 >>>>>>> origin/main
+=======
+}
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)

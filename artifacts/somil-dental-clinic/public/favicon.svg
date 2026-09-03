@@ -1,9 +1,15 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
 <<<<<<< HEAD
+<<<<<<< HEAD
 <rect width="180" height="180" rx="38" fill="#123A59"/>
 <path d="M40 53.5C40 46.0442 46.0442 40 53.5 40H126.5C133.956 40 140 46.0442 140 53.5V126.5C140 133.956 133.956 140 126.5 140H53.5C46.0442 140 40 133.956 40 126.5V53.5Z" stroke="#9DDEE9" stroke-width="4"/>
 <text x="90" y="104" text-anchor="middle" fill="#F2FBFC" font-family="Arial, sans-serif" font-size="38" font-weight="700" letter-spacing="-3">SDC</text>
 =======
 <rect width="180" height="180" rx="36" fill="#FF3C00"/>
 >>>>>>> origin/main
+=======
+<rect width="180" height="180" rx="38" fill="#123A59"/>
+<path d="M40 53.5C40 46.0442 46.0442 40 53.5 40H126.5C133.956 40 140 46.0442 140 53.5V126.5C140 133.956 133.956 140 126.5 140H53.5C46.0442 140 40 133.956 40 126.5V53.5Z" stroke="#9DDEE9" stroke-width="4"/>
+<text x="90" y="104" text-anchor="middle" fill="#F2FBFC" font-family="Arial, sans-serif" font-size="38" font-weight="700" letter-spacing="-3">SDC</text>
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
 </svg>
