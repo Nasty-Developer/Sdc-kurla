@@ -23,6 +23,7 @@ import {
   Stethoscope,
   X,
 } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import { ErrorBoundary } from '@/components/error-boundary';
 import BookingPage from '@/pages/booking';
 import { Toaster } from '@/components/ui/toaster';
@@ -35,6 +36,7 @@ const queryClient = new QueryClient();
 
 const clinicAddress = 'Chawl bazar ward, Jai Ambika nagar, near Rolex hotel, Halav Pool, Kunchi kurway, Mumbai, Maharashtra 400070';
 const clinicPhone = '+91 8591434914';
+const clinicWhatsApp = clinicPhone.replace(/\D/g, '');
 const clinicEmail = 'somilg449@gmail.com';
 const clinicHours = 'Monday - Saturday, 6:30 PM - 10:00 PM';
 
@@ -122,6 +124,10 @@ function Home() {
             <a href="#testimonials" data-testid="link-nav-testimonials">Testimonials</a>
             <a href="#contact" data-testid="link-nav-contact">Contact</a>
           </nav>
+          <a className="header-call-button" href={`tel:${clinicPhone.replace(/\s/g, '')}`} data-testid="link-header-call">
+            <Phone size={14} />
+            <span>Call</span>
+          </a>
           <button className="outline-top-button" onClick={() => openAppointment()} data-testid="button-header-appointment">Book Appointment <ArrowRight size={14} /></button>
           <button className="menu-button" onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-controls="mobile-navigation" aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} data-testid="button-mobile-menu">
             {menuOpen ? <X size={22} /> : <Menu size={23} />}
@@ -347,6 +353,17 @@ function Home() {
           <div className="footer-bottom"><span>© 2026 Somil Dental Clinic. All rights reserved.</span><span>SDC · Mumbai, Maharashtra</span></div>
         </div>
       </footer>
+      <a
+        className="whatsapp-float"
+        href={`https://wa.me/${clinicWhatsApp}`}
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Chat with Somil Dental Clinic on WhatsApp"
+        data-testid="link-floating-whatsapp"
+      >
+        <FaWhatsapp aria-hidden="true" />
+        <span>WhatsApp</span>
+      </a>
       <DentalAssistant onBookAppointment={() => openAppointment()} />
 
     </main>
