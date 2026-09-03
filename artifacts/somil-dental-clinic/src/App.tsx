@@ -28,6 +28,7 @@ import BookingPage from '@/pages/booking';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
+import DentalAssistant from '@/components/dental-assistant';
 import { Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
 
 const queryClient = new QueryClient();
@@ -346,6 +347,7 @@ function Home() {
           <div className="footer-bottom"><span>© 2026 Somil Dental Clinic. All rights reserved.</span><span>SDC · Mumbai, Maharashtra</span></div>
         </div>
       </footer>
+      <DentalAssistant onBookAppointment={() => openAppointment()} />
 
     </main>
   );
