@@ -157,7 +157,7 @@ function Home() {
               <div className="hero-visual-ring hero-visual-ring-one" aria-hidden="true" />
               <div className="hero-visual-ring hero-visual-ring-two" aria-hidden="true" />
               <div className="hero-visual-media">
-                <img src="/somil-doctor-portrait.jpg" alt="Somil Dental Clinic dentist in a modern clinic" />
+                <img src="/doctor-real.jpeg" alt="Dr. Somil V Gupta, dentist at Somil Dental Clinic" loading="eager" fetchPriority="high" decoding="sync" />
                 <div className="hero-visual-wash" aria-hidden="true" />
                 <div className="hero-visual-caption">
                   <span>SDC / CARE 01</span>
@@ -195,10 +195,6 @@ function Home() {
 
       <section className="section" id="about" aria-labelledby="about-heading">
         <Reveal className="container-sdc story-grid">
-          <div className="story-image">
-            <img src="/somil-doctor-portrait.jpg" alt="Dr. Somil V Gupta, lead dentist at Somil Dental Clinic" />
-            <div className="image-tag"><strong>Care, without the rush.</strong><span>Every visit starts with a conversation.</span></div>
-          </div>
           <div className="story-copy">
             <div className="eyebrow">About Somil Dental Clinic</div>
             <h2 id="about-heading" className="display">A healthier smile starts with feeling understood.</h2>
@@ -261,7 +257,7 @@ function Home() {
             <p>Meet the clinician behind Somil Dental Clinic and the patient-first approach that shapes every visit.</p>
           </div>
           <Reveal className="doctor-profile">
-            <div className="doctor-visual"><img src="/somil-doctor-portrait.jpg" alt="Dr. Somil V Gupta, lead dentist and endodontist" /><span className="doctor-visual-label">SDC / 01</span></div>
+            <div className="doctor-visual"><img src="/doctor-real.jpeg" alt="Dr. Somil V Gupta, lead dentist and endodontist" /><span className="doctor-visual-label">SDC / 01</span></div>
             <div className="doctor-copy">
               <div className="eyebrow">Lead Dentist / Endodontist</div>
               <h3>Dr. Somil V Gupta</h3>
