@@ -123,7 +123,7 @@
 .desktop-nav { display: flex; align-items: center; gap: 24px; margin-left: auto; margin-right: 31px; }
 .desktop-nav a { color: rgba(18,55,82,.76); font-size: 12px; font-weight: 600; text-decoration: none; transition: color .2s ease; }
 .desktop-nav a:hover, .desktop-nav a:focus-visible { color: hsl(var(--primary)); }
-.outline-top-button { display: inline-flex; align-items: center; gap: 8px; color: hsl(203 40% 98%); border: 1px solid hsl(var(--primary)); border-radius: 999px; padding: 12px 17px; font-weight: 800; font-size: 11px; letter-spacing: .01em; background: hsl(var(--primary)); box-shadow: 0 8px 18px rgba(25,71,106,.16); transition: background .2s ease, transform .2s ease, box-shadow .2s ease; cursor: pointer; }
+.outline-top-button { display: inline-flex; align-items: center; gap: 8px; min-height: 54px; color: hsl(203 40% 98%); border: 1px solid hsl(var(--primary)); border-radius: 999px; padding: 0 24px; font-weight: 800; font-size: 13px; letter-spacing: .01em; background: hsl(var(--primary)); box-shadow: 0 8px 18px rgba(25,71,106,.16); transition: background .2s ease, transform .2s ease, box-shadow .2s ease; cursor: pointer; }
 .outline-top-button:hover { background: hsl(211 58% 29%); transform: translateY(-2px); box-shadow: 0 11px 24px rgba(25,71,106,.23); }
 .menu-button { display: none; color: hsl(var(--primary)); background: transparent; border: 0; padding: 8px; cursor: pointer; }
 .mobile-nav { display: none; }
@@ -141,7 +141,7 @@
 .hero h1 em { display: block; font-style: normal; color: hsl(190 66% 34%); }
 .hero-lede { max-width: 520px; margin: 24px 0 30px; color: rgba(18,55,82,.76); font-size: 1rem; line-height: 1.7; }
 .button-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
-.button-primary, .button-light, .button-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 49px; border-radius: 999px; padding: 0 21px; font-weight: 700; font-size: 12px; text-decoration: none; transition: transform .2s ease, background .2s ease, box-shadow .2s ease, border-color .2s ease; cursor: pointer; }
+.button-primary, .button-light, .button-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 60px; border-radius: 999px; padding: 0 30px; font-weight: 700; font-size: 13.5px; text-decoration: none; transition: transform .2s ease, background .2s ease, box-shadow .2s ease, border-color .2s ease; cursor: pointer; }
 .button-primary { color: hsl(203 40% 98%); background: hsl(var(--accent)); border: 1px solid hsl(var(--accent)); box-shadow: 0 8px 18px rgba(6,109,143,.2); }
 .button-primary:hover { background: hsl(191 74% 37%); transform: translateY(-3px); box-shadow: 0 12px 24px rgba(6,109,143,.28); }
 .button-primary:active, .button-light:active, .button-ghost:active, .outline-top-button:active { transform: translateY(0) scale(.98); }
@@ -223,7 +223,7 @@
 .treatment-card p { color: hsl(var(--muted-foreground)); line-height: 1.5; font-size: 12px; margin: 0; }
 .treatment-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 19px; }
 .treatment-bottom strong { color: hsl(var(--primary)); font: 800 13px 'Manrope', sans-serif; }
-.treatment-bottom button { min-height: 31px; display: inline-flex; align-items: center; gap: 5px; padding: 0 10px; color: hsl(var(--accent)); border: 1px solid hsl(var(--border)); border-radius: 999px; background: transparent; font: 800 10px var(--app-font-sans); cursor: pointer; transition: transform .2s ease, background .2s ease, color .2s ease, box-shadow .2s ease; }
+.treatment-bottom button { min-height: 40px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; color: hsl(var(--accent)); border: 1px solid hsl(var(--border)); border-radius: 999px; background: transparent; font: 800 11px var(--app-font-sans); cursor: pointer; transition: transform .2s ease, background .2s ease, color .2s ease, box-shadow .2s ease; }
 .treatment-bottom button:hover { color: hsl(203 40% 98%); background: hsl(var(--accent)); border-color: hsl(var(--accent)); transform: translateY(-2px); box-shadow: 0 6px 13px rgba(6,109,143,.16); }
 .custom-plan { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 18px; margin-top: 30px; padding: 23px 25px; border: 1px solid hsl(191 38% 79%); border-radius: 14px; background: hsl(203 40% 98%); }
 .custom-plan-icon { width: 43px; height: 43px; display: grid; place-items: center; color: hsl(var(--accent)); border-radius: 11px; background: hsl(var(--secondary)); }
@@ -299,7 +299,7 @@
 .patient-name strong { display: block; font-size: 13px; }
 .patient-name span { display: block; color: rgba(226,248,253,.62); font-size: 11px; margin-top: 4px; }
 .testimonial-controls { display: flex; gap: 8px; }
-.circle-button { width: 35px; height: 35px; display: grid; place-items: center; border: 1px solid rgba(226,248,253,.25); border-radius: 50%; color: hsl(203 40% 98%); background: transparent; cursor: pointer; transition: background .2s, transform .2s; }
+.circle-button { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid rgba(226,248,253,.25); border-radius: 50%; color: hsl(203 40% 98%); background: transparent; cursor: pointer; transition: background .2s, transform .2s; }
 .circle-button:hover, .circle-button:focus-visible { background: rgba(226,248,253,.15); transform: translateY(-2px); }
 
 .contact-section { background: hsl(203 40% 98%); padding-top: 0; padding-bottom: 94px; }
@@ -411,7 +411,7 @@
 .booking-field .text-muted-foreground { color: hsl(var(--muted-foreground)); font-size: 11px; line-height: 1.4; }
 .form-section-label { display: flex; align-items: center; gap: 14px; margin-top: 5px; color: hsl(var(--primary)); font-size: 11px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
 .form-section-label i { height: 1px; flex: 1; background: hsl(var(--border)); }
-.booking-submit { width: 100%; min-height: 52px; margin-top: 2px; }
+.booking-submit { width: 100%; min-height: 60px; margin-top: 2px; }
 .booking-submit:disabled { cursor: wait; opacity: .72; transform: none; }
 .booking-disclaimer { margin: -6px 0 0; color: hsl(var(--muted-foreground)); font-size: 11px; line-height: 1.5; text-align: center; }
 .button-loading { width: 14px; height: 14px; display: inline-block; border: 2px solid rgba(238,250,251,.45); border-top-color: hsl(199 45% 98%); border-radius: 50%; animation: loading-turn .8s linear infinite; }
@@ -505,10 +505,15 @@
   .desktop-nav, .outline-top-button { display: none; }
   .menu-button { display: block; }
   .mobile-nav { display: grid; position: absolute; inset: 74px 18px auto; padding: 13px; background: hsl(var(--primary)); border: 1px solid rgba(18,55,82,.2); border-radius: 13px; box-shadow: var(--shadow-md); }
-  .mobile-nav a, .mobile-nav button { display: flex; align-items: center; justify-content: space-between; color: hsl(203 40% 98%); padding: 14px 12px; text-decoration: none; font: 600 14px var(--app-font-sans); border: 0; border-bottom: 1px solid rgba(226,248,253,.12); background: transparent; text-align: left; cursor: pointer; }
+  .mobile-nav a, .mobile-nav button { display: flex; align-items: center; justify-content: space-between; color: hsl(203 40% 98%); padding: 16px 12px; text-decoration: none; font: 600 14px var(--app-font-sans); border: 0; border-bottom: 1px solid rgba(226,248,253,.12); background: transparent; text-align: left; cursor: pointer; }
   .mobile-nav button { color: #a5dfe9; border: 0; }
   .hero-content { display: block; }
-  .hero-side { display: none; }
+  .hero-side { display: block; width: 100%; margin: 48px 0 0; }
+  .hero-visual { min-height: 360px; width: 100%; }
+  .hero-visual::before { width: 320px; height: 320px; }
+  .hero-visual-ring-one { width: 360px; height: 360px; }
+  .hero-visual-ring-two { width: 260px; height: 260px; }
+  .hero-visual-media { width: min(280px, 74%); }
   .hero-proof { position: static; margin-top: 55px; }
   .care-grid, .testimonial-layout { gap: 45px; }
   .footer-grid { grid-template-columns: 1.2fr 1fr 1fr; }
@@ -520,6 +525,8 @@
 @media (max-width: 700px) {
   .container-sdc { width: min(100% - 34px, 540px); }
   .sdc-header-inner { height: 72px; }
+  .button-row { gap: 10px; }
+  .button-primary, .button-light, .button-ghost { padding-inline: 17px; font-size: 13px; }
   .hero { min-height: 730px; }
   .hero-content { padding-top: 148px; }
   .hero h1 { font-size: 2.7rem; }
