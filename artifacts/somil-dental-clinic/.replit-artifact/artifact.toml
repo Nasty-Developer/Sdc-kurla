@@ -1,7 +1,15 @@
 kind = "web"
 previewPath = "/"
 title = "Somil Dental Clinic"
+<<<<<<< HEAD
+<<<<<<< HEAD
+description = "A premium, welcoming clinic website with service discovery, team profiles, testimonials, contact details, and appointment conversion points."
+=======
+description = "A premium, welcoming frontend website for Somil Dental Clinic with service discovery, team profiles, testimonials, contact details, and appointment conversion points."
+>>>>>>> origin/main
+=======
 description = "A premium, welcoming clinic website with treatment discovery, transparent pricing, team profiles, testimonials, clinic details, and an appointment request flow for patients in Mumbai."
+>>>>>>> 004477b (Initialize somil-dental-clinic project artifact)
 version = "1.0.0"
 id = "artifacts/somil-dental-clinic"
 router = "path"
