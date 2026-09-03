@@ -126,7 +126,7 @@ function Home() {
       <section className="section" id="about" aria-labelledby="about-heading">
          <Reveal className="container-sdc story-grid">
           <div className="story-image">
-            <img src="https://images.pexels.com/photos/3845983/pexels-photo-3845983.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Dentist speaking kindly with a patient in a bright treatment room" />
+             <img src="https://images.pexels.com/photos/3845734/pexels-photo-3845734.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Male dentist carefully treating a patient in a bright dental clinic" />
             <div className="image-tag"><strong>Here, you’re heard.</strong><span>Every visit starts with a conversation.</span></div>
           </div>
           <div className="story-copy">
@@ -184,14 +184,14 @@ function Home() {
             <p>Our small, dedicated team believes clinical excellence and kindness belong in the same room.</p>
           </div>
            <Reveal className="team-grid">
-             <article className="team-card team-card-featured" data-testid="card-team-somil"><img src="https://images.pexels.com/photos/5452291/pexels-photo-5452291.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Dr Somil V. Gupta, lead dentist" /><div className="team-meta"><strong>Dr Somil V. Gupta</strong><span>Lead dentist · BDS, MDS</span></div></article>
+             <article className="team-card team-card-featured" data-testid="card-team-somil"><img src="https://images.pexels.com/photos/3845737/pexels-photo-3845737.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Dr Somil V. Gupta treating a patient in the dental clinic" /><div className="team-meta"><strong>Dr Somil V. Gupta</strong><span>Lead dentist · BDS, MDS</span></div></article>
            </Reveal>
         </div>
       </section>
 
       <section className="section section-tint" aria-labelledby="reasons-heading">
          <Reveal className="container-sdc reasons-grid">
-          <div className="reasons-image"><img src="https://images.pexels.com/photos/3845749/pexels-photo-3845749.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="A relaxed patient smiling during a dental consultation" /></div>
+           <div className="reasons-image"><img src="https://images.unsplash.com/photo-1606811971618-4486d14f3f99?auto=format&fit=crop&w=1200&q=85" alt="Close-up dental examination with a mirror and dental instrument" /></div>
           <div>
             <div className="eyebrow">Why patients choose SDC</div>
             <h2 id="reasons-heading" className="display" style={{ color: 'hsl(var(--primary))', fontSize: 'clamp(2rem, 3.4vw, 3rem)', lineHeight: 1.1, letterSpacing: '-.06em', margin: '12px 0 0' }}>The little things make a big difference.</h2>

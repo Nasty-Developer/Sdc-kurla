@@ -1,0 +1,392 @@
+UPDATE THE EXISTING SOMIL DENTAL CLINIC (SDC) FRONTEND WITH THE REAL INFORMATION BELOW.
+
+IMPORTANT: This is still FRONTEND ONLY. Do not build backend, database, authentication, APIs, payments, admin panel, or server-side functionality.
+
+Keep the existing premium blue SDC design and improve it where necessary. Do not replace the polished UI with a generic template.
+
+BRAND
+
+Clinic Name:
+Somil Dental Clinic
+
+Logo / Brand:
+SDC
+
+Hero:
+Dr Somil Dental Clinic
+Your Perfect Smile Starts Here
+
+Tagline:
+Top Rated Dental Clinic in Mumbai
+
+DOCTOR
+
+Name:
+Dr. Somil V Gupta
+
+Qualification:
+BDS (JJ College)
+
+Role:
+Lead Dentist / Endodontist
+
+About:
+Dr. Somil is a highly skilled endodontist dedicated to providing pain-free root canal treatments and comprehensive dental care. He believes in a patient-first approach, ensuring comfort and excellent results.
+
+Expertise:
+
+- Root Canal Treatment
+- Cosmetic Dentistry
+- Pain Management
+
+Replace ALL previous/demo doctor information with this information.
+
+TREATMENTS & PRICES
+
+Use exactly these 11 treatments and starting prices:
+
+1. Dental Checkup
+   From ₹100
+   Complete oral examination and consultation.
+
+2. Teeth Cleaning
+   From ₹500
+   Professional scaling and polishing to remove plaque.
+
+3. Tooth Extraction
+   From ₹500
+   Safe and painless removal of damaged teeth.
+
+4. Root Canal Treatment
+   From ₹3000
+   Advanced endodontic therapy to save infected teeth.
+
+5. Dental Filling
+   From ₹500
+   Tooth-colored composite restorations for cavities.
+
+6. Teeth Whitening
+   From ₹3000
+   Advanced bleaching for a brighter, confident smile.
+
+7. Braces / Orthodontics
+   From ₹20000
+   Straighten your teeth and correct your bite.
+
+8. Dental Crown
+   From ₹1500
+   Ceramic caps to restore tooth shape and strength.
+
+9. Dental Implant
+   From ₹10000
+   Permanent replacement for missing teeth.
+
+10. Pediatric Dentistry
+    From ₹300
+    Specialized, gentle dental care for children.
+
+11. Dentures And RPD
+    From ₹1500
+    Removable bridge replacing missing teeth and gaps.
+
+IMPORTANT:
+Display prices as “From ₹X” or “Starting from ₹X”. These are NOT fixed final treatment prices.
+
+Do NOT invent any additional treatment or pricing.
+
+CUSTOM TREATMENT PLAN
+
+Add:
+
+Need a Custom Treatment Plan?
+
+Every smile is unique. Book a basic consultation and our experts will provide a detailed diagnosis and custom pricing plan.
+
+CTA:
+Book General Consultation
+
+ADDRESS
+
+Use this EXACT address everywhere:
+
+Chawl bazar ward, Jai Ambika nagar, near Rolex hotel, Halav Pool, Kunchi kurway, Mumbai, Maharashtra 400070
+
+CRITICAL:
+Completely remove every old, fake, placeholder, or demo address from the entire project.
+
+Check the:
+
+- Contact page
+- Footer
+- Homepage
+- Appointment page
+- Contact cards
+- Map section
+- Metadata if applicable
+- Mobile version
+- Any repeated components
+
+There must be NO old address remaining.
+
+CONTACT
+
+Phone:
++91 8591434914
+
+Email:
+somilg449@gmail.com
+
+Replace all old/demo contact information everywhere.
+
+CLINIC HOURS
+
+Monday - Saturday:
+6:30 PM - 10:00 PM
+
+Sunday:
+Closed for Maintenance
+
+CLINIC STATS
+
+Use:
+
+500+
+Happy Patients
+
+1000+
+Treatments Done
+
+5+
+Years Experience
+
+98%
+Patient Satisfaction
+
+Charity:
+50+ Patients Treated
+
+WHY CHOOSE SDC
+
+Modern Equipment
+State-of-the-art dental technology for painless treatments.
+
+Experienced Team
+Highly qualified professionals dedicated to your smile.
+
+Affordable Prices
+Quality care that doesn't break the bank.
+
+Emergency Care
+Prompt attention for severe toothaches and injuries.
+
+CHARITY SECTION
+
+Title:
+Help Poor Patients 💛
+
+Text:
+100% of your donation is used to provide free or heavily subsidized dental treatments to those who cannot afford them.
+
+CTA:
+Donate for Free Checkup
+
+Supporting information:
+50+ Patients Treated
+100% Transparent
+
+HERO
+
+Use:
+
+Top Rated Dental Clinic in Mumbai
+
+Dr Somil Dental Clinic
+Your Perfect Smile Starts Here
+
+Experience world-class dental care in a comfortable, relaxing environment. From routine checkups to advanced cosmetic dentistry, we've got you covered.
+
+Buttons:
+Book Appointment
+View Treatments
+
+Trust:
+Trusted by 500+ Happy Patients
+
+NAVIGATION
+
+Use:
+
+Home
+About
+Treatments & Pricing
+Team
+Testimonials
+Contact
+
+Primary CTA:
+Book Appointment
+
+Create a polished responsive mobile navigation.
+
+FOOTER
+
+SDC
+
+Providing world-class dental care with a gentle touch. Your smile is our top priority.
+
+Quick Links:
+Home
+Treatments & Pricing
+Book Appointment
+Contact Us
+Leave Feedback
+
+Contact:
+Chawl bazar ward, Jai Ambika nagar, near Rolex hotel, Halav Pool, Kunchi kurway, Mumbai, Maharashtra 400070
+
++91 8591434914
+somilg449@gmail.com
+
+Clinic Hours:
+Monday - Saturday
+6:30 PM - 10:00 PM
+
+Sunday
+Closed for Maintenance
+
+© 2026 Somil Dental Clinic. All rights reserved.
+
+APPOINTMENT FLOW
+
+When a user selects a treatment from the Treatments & Pricing section, the frontend should carry the selected treatment into the appointment UI.
+
+For example:
+Dental Checkup → selected treatment shown in appointment form.
+
+Do this only on the frontend using mock/static state. No backend.
+
+UI QUALITY
+
+The blue theme and UI quality are extremely important.
+
+Keep the interface:
+
+- Premium
+- Clean
+- Modern
+- Professional
+- Trustworthy
+- Medical
+- Welcoming
+
+Focus heavily on:
+
+- Typography
+- Spacing
+- Layout
+- Button design
+- Hover states
+- Focus states
+- Card interactions
+- Micro-interactions
+- Responsive behavior
+- Visual hierarchy
+
+Buttons should have excellent proportions, spacing, icons, hover states, press feedback and accessibility.
+
+Use subtle, smooth animations.
+
+Avoid:
+
+- Excessive glassmorphism
+- Neon colors
+- Cyberpunk effects
+- Random blobs
+- Excessive gradients
+- Huge unnecessary text
+- Excessive shadows
+- Constant motion
+- Flashy animations
+- Generic SaaS dashboard design
+
+The website should look premium because the DESIGN is excellent, not because it contains unnecessary effects.
+
+RESPONSIVE
+
+Make the website intentionally responsive for:
+
+- Mobile
+- Tablet
+- Laptop
+- Desktop
+
+Do not simply shrink the desktop layout.
+
+Pay special attention to:
+
+- Mobile navbar
+- Appointment buttons
+- Treatment cards
+- Pricing display
+- Doctor section
+- Contact section
+- Footer
+- Touch targets
+
+DATA CLEANUP
+
+Search the ENTIRE codebase and remove every previous placeholder/demo value.
+
+Replace:
+
+- Old clinic name
+- Old doctor
+- Old doctor bio
+- Old address
+- Old phone
+- Old email
+- Old opening hours
+- Old statistics
+- Old treatments
+- Fake prices
+- Fake clinic information
+
+Do not leave duplicate or conflicting information anywhere.
+
+Do NOT invent:
+
+- Treatment prices
+- Doctor qualifications
+- Additional doctors
+- Additional clinic locations
+- Additional services
+- Fake patient claims
+
+If testimonials are included, clearly treat demo testimonials as placeholder content unless real testimonials are provided.
+
+FINAL QUALITY CHECK
+
+Before finishing, inspect the entire frontend.
+
+Verify:
+
+1. SDC branding is consistent everywhere.
+2. Dr. Somil V Gupta information is correct.
+3. The exact Mumbai address is used everywhere.
+4. Phone and email are correct.
+5. Clinic hours are correct.
+6. All 11 treatments are present.
+7. All 11 starting prices are correct.
+8. Treatment descriptions are correct.
+9. Prices are displayed as “From”, not guaranteed fixed prices.
+10. No old/demo information remains.
+11. Appointment UI can receive the selected treatment.
+12. Mobile UI is polished.
+13. Buttons and hover states are excellent.
+14. Animations are smooth and restrained.
+15. Blue visual identity is consistent.
+16. No backend has been added.
+
+The final result should feel like a real, premium Somil Dental Clinic website in Mumbai, not an AI-generated template.
+
+FRONTEND ONLY. UI/UX QUALITY IS THE TOP PRIORITY.
