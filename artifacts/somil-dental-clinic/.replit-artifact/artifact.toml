@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Somil Dental Clinic"
+description = "A premium, welcoming clinic website with service discovery, team profiles, testimonials, contact details, and appointment conversion points."
+version = "1.0.0"
+id = "artifacts/somil-dental-clinic"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22522
+
+[services.development]
+run = "pnpm --filter @workspace/somil-dental-clinic run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/somil-dental-clinic", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/somil-dental-clinic/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22522"
+BASE_PATH = "/"

@@ -1,0 +1,212 @@
+SDC HERO BACKGROUND + PATIENT APPOINTMENT BOOKING
+
+Continue working on the existing Somil Dental Clinic (SDC) frontend.
+
+Do not change the overall blue design direction. Improve the hero and add a proper frontend appointment-booking experience.
+
+1. HERO BACKGROUND
+
+Make the hero background significantly better.
+
+IMPORTANT:
+A hero image is NOT required.
+
+If there is no genuinely high-quality dental image that fits the design, do not force an image into the hero.
+
+I prefer a clean, minimal, premium background over a random stock image.
+
+Create a sophisticated blue-based hero background using subtle visual depth such as:
+
+- Very subtle blue tonal layers
+- Extremely soft gradients if needed
+- Minimal abstract dental/medical-inspired shapes
+- Subtle light effects
+- Fine patterns or textures only if they genuinely improve the design
+- Clean negative space
+
+The background must remain calm and professional.
+
+DO NOT use:
+
+- Loud gradients
+- Neon effects
+- Giant abstract blobs
+- Excessive glassmorphism
+- 3D objects
+- Excessive particles
+- Busy patterns
+- Distracting animations
+- Random stock imagery
+
+The hero text must remain extremely readable.
+
+The background should make the SDC hero feel premium, modern, clean and memorable, while still looking like a professional dental clinic.
+
+If using animation, keep it extremely subtle, slow and elegant.
+
+The hero should look excellent even with ZERO images.
+
+2. PATIENT APPOINTMENT BOOKING
+
+Add a complete patient appointment-booking frontend flow.
+
+Patients should be able to actually fill out an appointment form through the website.
+
+This is currently FRONTEND ONLY, so do not create a backend or database yet.
+
+Create a proper reusable appointment-booking component/page.
+
+The appointment form should include:
+
+Patient Information
+
+- Full Name
+- Phone Number
+- Email
+- Age
+
+Appointment Details
+
+- Select Treatment
+- Preferred Date
+- Preferred Time
+- Additional Message / Problem Description
+
+Treatment dropdown should contain ALL 11 SDC treatments:
+
+- Dental Checkup
+- Teeth Cleaning
+- Tooth Extraction
+- Root Canal Treatment
+- Dental Filling
+- Teeth Whitening
+- Braces / Orthodontics
+- Dental Crown
+- Dental Implant
+- Pediatric Dentistry
+- Dentures And RPD
+
+Also provide an option:
+General Consultation
+
+3. TREATMENT SELECTION
+
+When a patient clicks Book Now on a treatment card, automatically open the appointment booking interface with that treatment already selected.
+
+Example:
+
+Dental Checkup → Appointment form opens with “Dental Checkup” selected.
+
+Root Canal Treatment → Appointment form opens with “Root Canal Treatment” selected.
+
+Do this using frontend state/query parameters only. No backend.
+
+4. FORM UX
+
+Make the booking form feel extremely polished.
+
+Use:
+
+- Clear field labels
+- Helpful placeholders
+- Excellent spacing
+- Clean input styling
+- Proper focus states
+- Smooth transitions
+- Accessible controls
+- Mobile-friendly layout
+- Clear validation messages
+- Proper required fields
+
+Do NOT make the form unnecessarily complicated.
+
+The patient should be able to understand it immediately.
+
+5. BOOKING SUBMISSION
+
+Since there is no backend yet, create a realistic frontend submission experience.
+
+When the patient submits:
+
+- Validate the form
+- Show a polished loading state
+- Then show a clear success confirmation
+- Display the submitted appointment summary
+- Show selected treatment
+- Show preferred date/time
+- Show patient name
+
+Clearly indicate that this is a frontend/demo booking flow until backend integration is added.
+
+Do NOT pretend that an appointment has actually been stored in a real database.
+
+6. BOOKING UI
+
+The appointment experience can be:
+
+- A dedicated "/book" page
+- Or a polished modal/drawer where appropriate
+
+Prefer a dedicated booking page if that provides a better patient experience.
+
+The page should maintain the same SDC blue visual identity.
+
+Include:
+Book Your Appointment
+
+Supporting text:
+“Choose your treatment and preferred time. Our clinic team will confirm your appointment.”
+
+Also include clinic contact information:
+
++91 8591434914
+somilg449@gmail.com
+
+Clinic Hours:
+Monday - Saturday
+6:30 PM - 10:00 PM
+
+Sunday:
+Closed for Maintenance
+
+7. MOBILE
+
+The appointment form must work beautifully on phones.
+
+Use:
+
+- Full-width inputs where appropriate
+- Comfortable touch targets
+- Easy date/time selection
+- No horizontal scrolling
+- Clear CTA
+- Excellent keyboard/input behavior
+
+8. FINAL UI QUALITY
+
+The hero and booking flow should feel like they were designed by the same professional design team.
+
+Maintain:
+
+- Sophisticated blue theme
+- Clean typography
+- Excellent spacing
+- Premium buttons
+- Refined hover states
+- Subtle micro-interactions
+- Smooth transitions
+- Strong accessibility
+
+No unnecessary fancy UI.
+
+The goal is:
+
+Clean + Minimal + Premium + Extremely Usable.
+
+Most importantly, a patient should be able to go from:
+
+Homepage → Treatment → Book Now → Appointment Form → Submit → Confirmation
+
+with a smooth and intuitive experience.
+
+FRONTEND ONLY for now. Backend/database integration will be added later.
