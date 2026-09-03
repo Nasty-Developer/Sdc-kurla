@@ -194,12 +194,6 @@ function Home() {
         </div>
       </section>
 
-      <section className="stats-strip" aria-label="Clinic statistics">
-        <Reveal className="container-sdc stats-grid">
-          {stats.map(([value, label], index) => <div className="stat-item" key={label} data-testid={`stat-clinic-${index}`}><strong>{value}</strong><span>{label}</span></div>)}
-        </Reveal>
-      </section>
-
       <section className="section" id="about" aria-labelledby="about-heading">
         <Reveal className="container-sdc story-grid">
           <div className="story-copy">
