@@ -1,0 +1,1 @@
+- [Imported repository sync](imported-repository-sync.md) — validate cloned artifact files for merge markers before relying on preview registration.

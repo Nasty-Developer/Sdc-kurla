@@ -110,8 +110,7 @@ function Home() {
       <header className="sdc-header">
         <div className="container-sdc sdc-header-inner">
           <a className="brand" href="#top" aria-label="Somil Dental Clinic home" data-testid="link-brand">
-            <span className="brand-mark">SDC</span>
-            <span className="brand-copy"><strong>SOMIL</strong><span>Dental clinic</span></span>
+            <img className="brand-logo" src="/sdc-logo.png" alt="Somil Dental Clinic" />
           </a>
           <nav className="desktop-nav" aria-label="Main navigation">
             <a href="#top" data-testid="link-nav-home">Home</a>
@@ -154,11 +153,29 @@ function Home() {
             <div className="hero-trust hero-step hero-step-five"><span className="trust-seal"><BadgeCheck size={15} /></span><span><strong>500+</strong> Happy Patients</span><i>Comfort-led care</i></div>
           </div>
           <div className="hero-side hero-step hero-step-seven">
-            <div className="hero-composition" aria-hidden="true">
-              <div className="hero-composition-ring hero-composition-ring-one" />
-              <div className="hero-composition-ring hero-composition-ring-two" />
-              <div className="hero-composition-smile"><Smile size={66} strokeWidth={1.1} /></div>
-              <span className="hero-composition-label">SDC / CARE 01</span>
+            <div className="hero-visual" aria-label="Somil Dental Clinic care team">
+              <div className="hero-visual-ring hero-visual-ring-one" aria-hidden="true" />
+              <div className="hero-visual-ring hero-visual-ring-two" aria-hidden="true" />
+              <div className="hero-visual-media">
+                <img src="/somil-doctor-portrait.jpg" alt="Somil Dental Clinic dentist in a modern clinic" />
+                <div className="hero-visual-wash" aria-hidden="true" />
+                <div className="hero-visual-caption">
+                  <span>SDC / CARE 01</span>
+                  <strong>Comfort-led dentistry</strong>
+                </div>
+              </div>
+              <div className="hero-floating-card hero-floating-card-patients">
+                <span className="hero-floating-icon"><BadgeCheck size={15} /></span>
+                <span><strong>500+</strong><small>Happy patients</small></span>
+              </div>
+              <div className="hero-floating-card hero-floating-card-care">
+                <span className="hero-floating-icon"><HeartHandshake size={15} /></span>
+                <span><strong>Pain-free</strong><small>Treatment approach</small></span>
+              </div>
+              <div className="hero-floating-card hero-floating-card-satisfaction">
+                <strong>98%</strong>
+                <small>Patient satisfaction</small>
+              </div>
             </div>
             <div className="hero-side-label">A considered approach to dental care</div>
             <div className="hero-side-line" />
