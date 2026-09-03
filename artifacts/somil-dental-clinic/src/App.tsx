@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ArrowRight, BadgeCheck, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, HeartHandshake, MapPin, Menu, Phone, ShieldCheck, Smile, Sparkles, Star, Stethoscope, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -23,6 +23,30 @@ const testimonials = [
   { quote: 'The team made my daughter feel completely at ease. She left asking when she could come back, which I never thought I would say about a dentist.', name: 'Anita M.', detail: 'Parent of a young patient' },
   { quote: 'I appreciated the honesty more than anything. The plan was clear, unhurried, and the result looks like me — just a little more confident.', name: 'Karan D.', detail: 'Cosmetic care patient' },
 ];
+
+function Reveal({ children, className = '', delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setVisible(true);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setVisible(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.12, rootMargin: '0px 0px -48px' });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  return <div ref={ref} className={`reveal-on-scroll ${visible ? 'is-visible' : ''} ${className}`} style={{ animationDelay: `${delay}ms` }}>{children}</div>;
+}
 
 function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -87,8 +111,8 @@ function Home() {
         </div>
       </section>
 
-      <section className="trust-strip" aria-label="Clinic assurances">
-        <div className="container-sdc trust-inner">
+       <section className="trust-strip" aria-label="Clinic assurances">
+         <Reveal className="container-sdc trust-inner">
           <p className="trust-label">A practice built around your peace of mind.</p>
           <div className="trust-list">
             <span><BadgeCheck size={18} /> Transparent care</span>
@@ -96,11 +120,11 @@ function Home() {
             <span><CalendarDays size={18} /> Flexible scheduling</span>
             <span><HeartHandshake size={18} /> Family friendly</span>
           </div>
-        </div>
+         </Reveal>
       </section>
 
       <section className="section" id="about" aria-labelledby="about-heading">
-        <div className="container-sdc story-grid">
+         <Reveal className="container-sdc story-grid">
           <div className="story-image">
             <img src="https://images.pexels.com/photos/3845983/pexels-photo-3845983.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Dentist speaking kindly with a patient in a bright treatment room" />
             <div className="image-tag"><strong>Here, you’re heard.</strong><span>Every visit starts with a conversation.</span></div>
@@ -116,7 +140,7 @@ function Home() {
             </div>
             <a href="#contact" className="button-ghost" data-testid="link-about-contact">Meet your neighborhood clinic <ArrowRight size={15} /></a>
           </div>
-        </div>
+         </Reveal>
       </section>
 
       <section className="section section-tint" id="care" aria-labelledby="care-heading">
@@ -125,19 +149,19 @@ function Home() {
             <div><div className="eyebrow">Our care</div><h2 id="care-heading">Everything your smile needs.<br />Nothing it doesn’t.</h2></div>
             <p>Personalized treatment, delivered with a light touch. Explore the ways we can help you feel at home in your smile.</p>
           </div>
-          <div className="services-grid">
+           <Reveal className="services-grid">
             {services.map(({ title, copy, icon: Icon }, index) => (
               <article className="service-card" key={title} data-testid={`card-service-${index}`}>
                 <div><span className="service-icon"><Icon size={20} /></span><h3>{title}</h3><p>{copy}</p></div>
                 <a href="#contact" className="service-link" data-testid={`link-service-${index}`}>Learn more <ArrowRight size={14} /></a>
               </article>
             ))}
-          </div>
+           </Reveal>
         </div>
       </section>
 
       <section className="section care-band" aria-labelledby="process-heading">
-        <div className="container-sdc care-grid">
+         <Reveal className="container-sdc care-grid">
           <div>
             <div className="eyebrow">A calmer way forward</div>
             <h2 id="process-heading">Your visit, at your pace.</h2>
@@ -150,7 +174,7 @@ function Home() {
             <div className="care-step"><span className="care-step-number">03</span><h3>Choose your next step</h3><p>You’ll leave knowing exactly what happens next.</p></div>
             <div className="care-step"><span className="care-step-number">04</span><h3>Keep your smile thriving</h3><p>We’re here for the long term, not just today.</p></div>
           </div>
-        </div>
+         </Reveal>
       </section>
 
       <section className="section" id="team" aria-labelledby="team-heading">
@@ -159,16 +183,14 @@ function Home() {
             <div><div className="eyebrow">The people behind the care</div><h2 id="team-heading">Warm people.<br />Exceptional dentistry.</h2></div>
             <p>Our small, dedicated team believes clinical excellence and kindness belong in the same room.</p>
           </div>
-          <div className="team-grid">
-            <article className="team-card" data-testid="card-team-somil"><img src="https://images.pexels.com/photos/5452291/pexels-photo-5452291.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Dr Somil Mehta, lead dentist" /><div className="team-meta"><strong>Dr Somil Mehta</strong><span>Lead dentist · BDS, MDS</span></div></article>
-            <article className="team-card" data-testid="card-team-anaya"><img src="https://images.pexels.com/photos/5214958/pexels-photo-5214958.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Anaya Rao, patient care coordinator" /><div className="team-meta"><strong>Anaya Rao</strong><span>Patient care coordinator</span></div></article>
-            <article className="team-card" data-testid="card-team-nikhil"><img src="https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Dr Nikhil Shah, restorative dentist" /><div className="team-meta"><strong>Dr Nikhil Shah</strong><span>Restorative dentist · BDS</span></div></article>
-          </div>
+           <Reveal className="team-grid">
+             <article className="team-card team-card-featured" data-testid="card-team-somil"><img src="https://images.pexels.com/photos/5452291/pexels-photo-5452291.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Dr Somil V. Gupta, lead dentist" /><div className="team-meta"><strong>Dr Somil V. Gupta</strong><span>Lead dentist · BDS, MDS</span></div></article>
+           </Reveal>
         </div>
       </section>
 
       <section className="section section-tint" aria-labelledby="reasons-heading">
-        <div className="container-sdc reasons-grid">
+         <Reveal className="container-sdc reasons-grid">
           <div className="reasons-image"><img src="https://images.pexels.com/photos/3845749/pexels-photo-3845749.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="A relaxed patient smiling during a dental consultation" /></div>
           <div>
             <div className="eyebrow">Why patients choose SDC</div>
@@ -179,11 +201,11 @@ function Home() {
               <div className="reason"><span>03</span><div><h3>Modern, thoughtful care</h3><p>Contemporary techniques and technology, used only when they genuinely help.</p></div></div>
             </div>
           </div>
-        </div>
+         </Reveal>
       </section>
 
       <section className="section testimonial-section" aria-labelledby="testimonial-heading">
-        <div className="container-sdc testimonial-layout">
+         <Reveal className="container-sdc testimonial-layout">
           <div className="testimonial-copy">
             <div className="quote-mark" aria-hidden="true">“</div>
             <div className="eyebrow">From our patients</div>
@@ -201,12 +223,12 @@ function Home() {
               </div>
             </div>
           </div>
-        </div>
+         </Reveal>
       </section>
 
       <section className="section contact-section" id="contact" aria-labelledby="contact-heading">
         <div className="container-sdc">
-          <div className="contact-card">
+           <Reveal className="contact-card">
             <div className="contact-copy">
               <div className="eyebrow">Come say hello</div>
               <h2 id="contact-heading">Your next best step starts here.</h2>
@@ -220,9 +242,9 @@ function Home() {
             </div>
             <div className="contact-map" aria-label="Illustrated map showing Somil Dental Clinic location">
               <div className="map-pin"><MapPin size={19} /></div><div className="map-label">Somil Dental Clinic</div>
-            </div>
+             </div>
+           </Reveal>
           </div>
-        </div>
       </section>
 
       <footer className="footer">
