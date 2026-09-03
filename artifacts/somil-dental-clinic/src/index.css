@@ -120,6 +120,8 @@
 .brand-copy { display: grid; gap: 1px; }
 .brand-copy strong { font: 800 15px 'Manrope', sans-serif; letter-spacing: .09em; }
 .brand-copy span { font-size: 9px; letter-spacing: .17em; opacity: .7; text-transform: uppercase; }
+.sdc-header .brand-copy strong { color: hsl(var(--primary)); font-size: 16px; }
+.sdc-header .brand-copy span { color: hsl(var(--primary)); font-size: 9px; }
 .desktop-nav { display: flex; align-items: center; gap: 24px; margin-left: auto; margin-right: 31px; }
 .desktop-nav a { color: rgba(18,55,82,.76); font-size: 12px; font-weight: 600; text-decoration: none; transition: color .2s ease; }
 .desktop-nav a:hover, .desktop-nav a:focus-visible { color: hsl(var(--primary)); }

@@ -111,6 +111,7 @@ function Home() {
         <div className="container-sdc sdc-header-inner">
           <a className="brand" href="#top" aria-label="Somil Dental Clinic home" data-testid="link-brand">
             <img className="brand-logo" src="/sdc-logo.png" alt="Somil Dental Clinic" />
+            <span className="brand-copy"><strong>SOMIL</strong><span>DENTAL CLINIC</span></span>
           </a>
           <nav className="desktop-nav" aria-label="Main navigation">
             <a href="#top" data-testid="link-nav-home">Home</a>
