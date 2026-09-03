@@ -182,7 +182,7 @@
 .hero-side-label { color: hsl(190 66% 34%); font: 700 11px/1.5 'Manrope', sans-serif; text-transform: uppercase; letter-spacing: .12em; }
 .hero-side-line { width: 44px; height: 1px; margin: 22px 0 17px; background: rgba(43,126,153,.48); }
 .hero-side p { color: rgba(18,55,82,.66); font-size: 12px; line-height: 1.6; margin: 0; }
-.hero-proof { position: absolute; right: 24px; bottom: 74px; display: flex; gap: 0; }
+.hero-proof { position: absolute; right: 24px; bottom: 28px; display: flex; gap: 0; }
 .proof-item { padding: 0 21px; border-left: 1px solid rgba(18,55,82,.2); }
 .proof-item:first-child { border-left: 0; }
 .proof-item strong { display: block; font: 800 1.25rem 'Manrope', sans-serif; }

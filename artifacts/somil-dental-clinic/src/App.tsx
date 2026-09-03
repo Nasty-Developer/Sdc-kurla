@@ -145,8 +145,8 @@ function Home() {
         <div className="container-sdc hero-content">
           <div className="hero-copy">
             <div className="hero-kicker eyebrow hero-step hero-step-one">Top Rated Dental Clinic in Mumbai</div>
-            <h1 id="hero-title" className="hero-step hero-step-two">Dr Somil Dental Clinic<br /><em>Your Perfect Smile Starts Here</em></h1>
-            <p className="hero-lede hero-step hero-step-three">Experience world-class dental care in a comfortable, relaxing environment. From routine checkups to advanced cosmetic dentistry, we've got you covered.</p>
+            <h1 id="hero-title" className="hero-step hero-step-two">Dr. Somil V Gupta<br /><em>Dentist at Somil Dental Clinic</em></h1>
+            <p className="hero-lede hero-step hero-step-three">Your perfect smile starts here. Experience world-class dental care in a comfortable, relaxing environment. From routine checkups to advanced cosmetic dentistry, we've got you covered.</p>
             <div className="button-row hero-step hero-step-four">
               <button className="button-primary" onClick={() => openAppointment()} data-testid="button-hero-appointment">Book Appointment <ArrowRight size={16} /></button>
               <a className="button-light" href="#treatments" data-testid="link-hero-treatments">View Treatments <ChevronRight size={16} /></a>
