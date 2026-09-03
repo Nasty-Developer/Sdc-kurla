@@ -26,6 +26,17 @@ const treatmentOptions = [
   'Dentures And RPD',
 ] as const;
 
+const appointmentTimes = [
+  '6:30 PM',
+  '7:00 PM',
+  '7:30 PM',
+  '8:00 PM',
+  '8:30 PM',
+  '9:00 PM',
+  '9:30 PM',
+  '10:00 PM',
+] as const;
+
 const bookingSchema = z.object({
   fullName: z.string().trim().min(2, 'Please enter your full name.').max(80, 'Please keep your name under 80 characters.'),
   phone: z.string().trim().regex(/^\+?[0-9\s()-]{10,18}$/, 'Enter a valid phone number.'),
@@ -38,7 +49,7 @@ const bookingSchema = z.object({
     today.setHours(0, 0, 0, 0);
     return !Number.isNaN(chosen.getTime()) && chosen >= today;
   }, 'Choose today or a future date.'),
-  preferredTime: z.string().min(1, 'Please choose a preferred time.').refine((value) => value >= '18:30' && value <= '22:00', 'Choose a time during clinic hours: 6:30 PM – 10:00 PM.'),
+  preferredTime: z.string().min(1, 'Please choose a preferred time.').refine((value) => appointmentTimes.includes(value as typeof appointmentTimes[number]), 'Choose one of the available appointment times.'),
   message: z.string().trim().max(500, 'Please keep your message under 500 characters.'),
 });
 
@@ -223,7 +234,12 @@ export default function BookingPage() {
                     <FormField control={form.control} name="preferredTime" render={({ field }) => (
                       <FormItem className="booking-field">
                         <FormLabel>Preferred Time <span>*</span></FormLabel>
-                        <FormControl><input {...field} type="time" min="18:30" max="22:00" data-testid="input-booking-time" /></FormControl>
+                        <FormControl>
+                          <select {...field} data-testid="select-booking-time">
+                            <option value="">Choose a time</option>
+                            {appointmentTimes.map((time) => <option value={time} key={time}>{time}</option>)}
+                          </select>
+                        </FormControl>
                         <FormDescription>Clinic hours: 6:30 PM – 10:00 PM.</FormDescription>
                         <FormMessage />
                       </FormItem>

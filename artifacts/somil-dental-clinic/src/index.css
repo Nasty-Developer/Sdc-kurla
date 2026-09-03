@@ -122,10 +122,10 @@
 .brand-copy span { font-size: 9px; letter-spacing: .17em; opacity: .7; text-transform: uppercase; }
 .sdc-header .brand-copy strong { color: hsl(var(--primary)); font-size: 16px; }
 .sdc-header .brand-copy span { color: hsl(var(--primary)); font-size: 9px; }
-.desktop-nav { display: flex; align-items: center; gap: 24px; margin-left: auto; margin-right: 31px; }
-.desktop-nav a { color: rgba(18,55,82,.76); font-size: 12px; font-weight: 600; text-decoration: none; transition: color .2s ease; }
+.desktop-nav { display: flex; align-items: center; gap: 26px; margin-left: auto; margin-right: 31px; }
+.desktop-nav a { color: rgba(18,55,82,.76); font-size: 13px; font-weight: 600; text-decoration: none; transition: color .2s ease; }
 .desktop-nav a:hover, .desktop-nav a:focus-visible { color: hsl(var(--primary)); }
-.outline-top-button { display: inline-flex; align-items: center; gap: 8px; min-height: 64px; color: hsl(203 40% 98%); border: 1px solid hsl(var(--primary)); border-radius: 999px; padding: 0 29px; font-weight: 800; font-size: 13px; letter-spacing: .01em; background: hsl(var(--primary)); box-shadow: 0 8px 18px rgba(25,71,106,.16); transition: background .2s ease, transform .2s ease, box-shadow .2s ease; cursor: pointer; }
+.outline-top-button { display: inline-flex; align-items: center; gap: 8px; min-height: 58px; color: hsl(203 40% 98%); border: 1px solid hsl(var(--primary)); border-radius: 999px; padding: 0 26px; font-weight: 800; font-size: 13px; letter-spacing: .01em; background: hsl(var(--primary)); box-shadow: 0 8px 18px rgba(25,71,106,.16); transition: background .2s ease, transform .2s ease, box-shadow .2s ease; cursor: pointer; }
 .outline-top-button:hover { background: hsl(211 58% 29%); transform: translateY(-2px); box-shadow: 0 11px 24px rgba(25,71,106,.23); }
 .menu-button { display: none; color: hsl(var(--primary)); background: transparent; border: 0; padding: 8px; cursor: pointer; }
 .mobile-nav { display: none; }
@@ -492,8 +492,8 @@
 :focus-visible { outline: 3px solid hsl(var(--accent) / .65); outline-offset: 3px; }
 
 @media (max-width: 1060px) {
-  .desktop-nav { gap: 15px; margin-right: 18px; }
-  .desktop-nav a { font-size: 11px; }
+  .desktop-nav { gap: 18px; margin-right: 18px; }
+  .desktop-nav a { font-size: 12px; }
   .treatments-grid { grid-template-columns: repeat(3, 1fr); }
   .hero-side { margin-right: 0; }
 }
