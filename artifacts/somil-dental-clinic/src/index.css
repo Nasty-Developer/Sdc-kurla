@@ -224,7 +224,7 @@
 .treatment-card p { color: hsl(var(--muted-foreground)); line-height: 1.5; font-size: 12px; margin: 0; }
 .treatment-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 22px; }
 .treatment-bottom strong { color: hsl(var(--primary)); font: 800 13px 'Manrope', sans-serif; }
-.treatment-bottom button { min-height: 40px; display: inline-flex; align-items: center; gap: 6px; padding: 0 15px; color: hsl(var(--accent)); border: 1px solid hsl(var(--border)); border-radius: 999px; background: transparent; font: 800 11px var(--app-font-sans); cursor: pointer; transition: transform .2s ease, background .2s ease, color .2s ease, box-shadow .2s ease; }
+.treatment-bottom button { min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding: 0 18px; color: hsl(var(--accent)); border: 1px solid hsl(var(--border)); border-radius: 999px; background: transparent; font: 800 11px var(--app-font-sans); cursor: pointer; transition: transform .2s ease, background .2s ease, color .2s ease, box-shadow .2s ease; }
 .treatment-bottom button:hover { color: hsl(203 40% 98%); background: hsl(var(--accent)); border-color: hsl(var(--accent)); transform: translateY(-2px); box-shadow: 0 6px 13px rgba(6,109,143,.16); }
 .custom-plan { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 18px; margin-top: 30px; padding: 23px 25px; border: 1px solid hsl(191 38% 79%); border-radius: 14px; background: hsl(203 40% 98%); }
 .custom-plan-icon { width: 43px; height: 43px; display: grid; place-items: center; color: hsl(var(--accent)); border-radius: 11px; background: hsl(var(--secondary)); }

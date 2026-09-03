@@ -158,7 +158,6 @@ function Home() {
               <button className="button-primary" onClick={() => openAppointment()} data-testid="button-hero-appointment">Book Appointment <ArrowRight size={16} /></button>
               <a className="button-light" href="#treatments" data-testid="link-hero-treatments">View Treatments <ChevronRight size={16} /></a>
             </div>
-            <div className="hero-trust hero-step hero-step-five"><span className="trust-seal"><BadgeCheck size={15} /></span><span><strong>500+</strong> Happy Patients</span><i>Comfort-led care</i></div>
           </div>
           <div className="hero-side hero-step hero-step-seven">
             <div className="hero-visual" aria-label="Somil Dental Clinic care team">
