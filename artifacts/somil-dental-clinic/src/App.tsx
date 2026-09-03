@@ -291,7 +291,7 @@ function Home() {
       <section className="charity-section" aria-labelledby="charity-heading">
         <Reveal className="container-sdc charity-card">
           <div className="charity-mark"><HeartHandshake size={24} /></div>
-          <div className="charity-copy"><div className="eyebrow">Care that reaches further</div><h2 id="charity-heading">Help Poor Patients 💛</h2><p>100% of your donation is used to provide free or heavily subsidized dental treatments to those who cannot afford them.</p></div>
+             <div className="charity-copy"><div className="eyebrow">Care that reaches further</div><h2 id="charity-heading">Help Poor Patients</h2><p>100% of your donation is used to provide free or heavily subsidized dental treatments to those who cannot afford them.</p></div>
           <div className="charity-side"><div><strong>50+</strong><span>Patients Treated</span></div><div><strong>100%</strong><span>Transparent</span></div><button className="button-light" onClick={() => openAppointment('Dental Checkup')} data-testid="button-charity-donate">Donate for Free Checkup <ArrowRight size={15} /></button></div>
         </Reveal>
       </section>
