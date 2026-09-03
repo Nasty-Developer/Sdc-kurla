@@ -150,30 +150,9 @@
 .button-ghost:hover { border-color: hsl(var(--accent)); color: hsl(var(--accent)); transform: translateY(-2px); }
 .hero-trust { display: flex; align-items: center; gap: 9px; color: rgba(226,248,253,.7); font-size: 11px; margin-top: 22px; }
 .trust-seal { width: 24px; height: 24px; display: grid; place-items: center; color: #a5dfe9; border: 1px solid rgba(165,223,233,.45); border-radius: 50%; }
-.hero-side { justify-self: end; align-self: center; width: min(100%, 470px); margin: 4px 4px 0 0; }
-.hero-visual { position: relative; min-height: 400px; display: grid; place-items: center; isolation: isolate; }
-.hero-visual::before { content: ''; position: absolute; z-index: -1; width: 360px; height: 360px; border: 1px solid rgba(173,226,233,.17); border-radius: 50%; background: radial-gradient(circle, rgba(165,223,233,.11), transparent 66%); animation: visual-breathe 7s ease-in-out infinite; }
-.hero-visual-ring { position: absolute; z-index: -1; border: 1px solid rgba(157,224,236,.18); border-radius: 50%; pointer-events: none; }
-.hero-visual-ring-one { width: 430px; height: 430px; transform: rotate(-12deg); }
-.hero-visual-ring-two { width: 300px; height: 300px; border-color: rgba(157,224,236,.11); transform: translate(38px, -9px); }
-.hero-visual-media { position: relative; z-index: 1; width: min(330px, 72%); aspect-ratio: .79; overflow: hidden; border: 1px solid rgba(226,248,253,.52); border-radius: 27px 27px 27px 9px; background: hsl(191 48% 83%); box-shadow: 0 28px 70px rgba(5,29,49,.28), 0 0 0 10px rgba(226,248,253,.06); transform: rotate(2deg); animation: visual-rise .95s .18s both cubic-bezier(.22, 1, .36, 1), visual-float 8s 1.3s ease-in-out infinite; }
-.hero-visual-media img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center 25%; filter: saturate(.9) contrast(.98); transition: transform .8s cubic-bezier(.22, 1, .36, 1), filter .5s ease; }
-.hero-visual-media:hover img { transform: scale(1.045); filter: saturate(1.03) contrast(1.01); }
-.hero-visual-wash { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,35,59,.03) 35%, rgba(8,35,59,.78) 100%); pointer-events: none; }
-.hero-visual-caption { position: absolute; z-index: 1; right: 18px; bottom: 18px; left: 18px; display: grid; gap: 5px; color: hsl(203 40% 98%); }
-.hero-visual-caption span { color: #a5dfe9; font: 700 9px var(--app-font-mono); letter-spacing: .12em; }
-.hero-visual-caption strong { font: 700 15px 'Manrope', sans-serif; letter-spacing: -.02em; }
-.hero-floating-card { position: absolute; z-index: 3; display: flex; align-items: center; gap: 9px; min-width: 136px; padding: 11px 13px; color: hsl(203 40% 98%); border: 1px solid rgba(226,248,253,.28); border-radius: 11px; background: rgba(18,55,82,.72); box-shadow: 0 14px 28px rgba(5,29,49,.2); backdrop-filter: blur(13px); animation: card-float 6s ease-in-out infinite; }
-.hero-floating-card strong, .hero-floating-card small { display: block; }
-.hero-floating-card strong { font: 800 12px 'Manrope', sans-serif; letter-spacing: -.02em; }
-.hero-floating-card small { margin-top: 3px; color: rgba(226,248,253,.68); font-size: 9px; line-height: 1.25; }
-.hero-floating-icon { width: 27px; height: 27px; display: grid; place-items: center; flex: 0 0 auto; color: #a5dfe9; border: 1px solid rgba(165,223,233,.38); border-radius: 50%; background: rgba(165,223,233,.08); }
-.hero-floating-card-patients { top: 33px; left: 2px; }
-.hero-floating-card-care { right: 1px; bottom: 33px; animation-delay: -2.2s; }
-.hero-floating-card-satisfaction { top: 91px; right: 6px; display: grid; gap: 3px; min-width: 104px; padding: 12px 14px; animation-delay: -4s; }
-.hero-floating-card-satisfaction strong { color: #a5dfe9; font-size: 20px; line-height: 1; }
+.hero-side { justify-self: end; align-self: center; width: 190px; margin: 4px 28px 0 0; }
 .hero-side-label { color: #a5dfe9; font: 700 11px/1.5 'Manrope', sans-serif; text-transform: uppercase; letter-spacing: .12em; }
-.hero-side-line { width: 44px; height: 1px; margin: 12px 0 11px; background: rgba(165,223,233,.55); }
+.hero-side-line { width: 44px; height: 1px; margin: 22px 0 17px; background: rgba(165,223,233,.55); }
 .hero-side p { color: rgba(226,248,253,.62); font-size: 12px; line-height: 1.6; margin: 0; }
 .hero-proof { position: absolute; right: 24px; bottom: 74px; display: flex; gap: 0; }
 .proof-item { padding: 0 21px; border-left: 1px solid rgba(226,248,253,.25); }
@@ -456,10 +435,6 @@
 .treatments-grid.is-visible .treatment-card:nth-child(11) { animation-delay: .5s; }
 @keyframes header-enter { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes hero-image-drift { from { transform: scale(1.01) translate3d(0, 0, 0); } to { transform: scale(1.08) translate3d(-1.5%, -1%, 0); } }
-@keyframes visual-rise { from { opacity: 0; transform: rotate(2deg) translateY(20px) scale(.97); } to { opacity: 1; transform: rotate(2deg) translateY(0) scale(1); } }
-@keyframes visual-float { 0%, 100% { transform: rotate(2deg) translateY(0); } 50% { transform: rotate(1deg) translateY(-7px); } }
-@keyframes visual-breathe { 0%, 100% { opacity: .7; transform: scale(.97); } 50% { opacity: 1; transform: scale(1.02); } }
-@keyframes card-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 @keyframes scroll-reveal { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes card-reveal { from { opacity: 0; transform: translateY(20px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes pin-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(25,71,106,.2), var(--shadow); } 50% { box-shadow: 0 0 0 12px rgba(25,71,106,0), var(--shadow); } }
