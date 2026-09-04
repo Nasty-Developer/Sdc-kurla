@@ -1,0 +1,126 @@
+FINAL PROFESSIONAL POLISH - DO NOT REDESIGN
+
+The current website theme and overall design are already approved. I only want professional finishing and better visibility/alignment.
+
+IMPORTANT: Keep the existing light blue + teal + navy theme EXACTLY unchanged. Do not switch to dark mode or introduce a new color palette.
+
+1. HEADER BRANDING
+
+Keep the exact attached SDC logo.
+
+Place the clinic name clearly beside it:
+
+SOMIL
+DENTAL CLINIC
+
+Make the logo + name combination look like a professional established dental-clinic brand.
+
+Keep the logo's original colors. Use the existing navy typography for the clinic name.
+
+Make sure it is clearly visible on both desktop and mobile.
+
+2. HERO / HOME
+
+Keep the existing hero design exactly as it is.
+
+Use the attached real doctor's photo as the doctor visual.
+
+Keep his real appearance and identity unchanged.
+Do not generate another doctor.
+Do not distort or stretch the photo.
+Crop and position it naturally.
+Make sure the image is sharp, clear, and high quality.
+Make sure the doctor remains clearly visible.
+Keep the existing circular/ripple background.
+
+On mobile, do not hide the doctor image. Move it below the hero content if necessary and make it properly sized for the screen.
+
+3. BUTTONS / CTA
+
+The current buttons are too small.
+
+Make the important buttons slightly larger, clearer, and easier to click while keeping their existing style and colors.
+
+Especially:
+
+Book Appointment
+Hero CTA buttons
+Book Now buttons in treatment cards
+Contact/action buttons
+
+Make buttons approximately 20–30% more substantial in height and horizontal padding.
+
+Keep:
+
+Existing colors
+Existing rounded shape
+Existing icons/arrows
+Existing typography style
+
+Book Appointment should be the strongest and most visible CTA.
+
+On mobile, buttons must be comfortably tappable and should never look tiny or cramped.
+
+4. TREATMENT CARDS
+
+Keep the existing treatment cards, treatments, prices, and layout.
+
+Only improve:
+
+Button visibility
+Consistent button sizing
+Alignment
+Spacing
+Readability
+
+Every Book Now button should look consistent and clearly clickable.
+
+5. ABOUT SECTION
+
+Remove the current About-section image completely.
+
+Do not replace it with another stock image.
+
+Rebalance the About section so removing the image does not create a large awkward empty area.
+
+Keep the existing text and typography style.
+
+6. OVERALL VISUAL POLISH
+
+Make the website feel more professional through small alignment and spacing improvements only:
+
+Consistent spacing between sections
+Consistent card proportions
+Consistent button sizes
+Clean alignment
+Proper text readability
+Subtle shadows where already appropriate
+No unnecessary animations or effects
+
+Make sure important content and buttons are clearly visible without being oversized.
+
+🚨 DO NOT CHANGE ANYTHING ELSE
+
+DO NOT change the light blue/teal/navy color palette.
+
+DO NOT introduce dark backgrounds.
+
+DO NOT redesign the website.
+
+DO NOT change the typography system.
+
+DO NOT change the navigation structure.
+
+DO NOT replace the SDC logo.
+
+DO NOT replace the real doctor photo.
+
+DO NOT add generic stock doctor images.
+
+DO NOT add unnecessary gradients, animations, decorative effects, or new sections.
+
+The goal is:
+
+Same approved website + real doctor + proper SDC branding + larger visible buttons + clean spacing + excellent desktop/mobile responsiveness.
+
+Make everything feel clear, professional, trustworthy, premium, and easy to use, while preserving the exact visual identity that already exists.

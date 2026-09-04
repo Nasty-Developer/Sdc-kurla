@@ -1,0 +1,189 @@
+BUILD A REAL PRODUCTION ADMIN PANEL FOR SDC
+
+Create a fully functional, authenticated Admin Panel for Somil Dental Clinic (SDC).
+
+This is not a mock dashboard or static UI. The Admin Panel must be connected to the real production backend/database used by the deployed Vercel website.
+
+1. ADMIN LOGIN
+
+Create a secure Admin Login page.
+
+Admin Panel must not be publicly accessible without authentication.
+Protect both frontend admin routes and backend/API admin routes.
+Never expose admin credentials in frontend code.
+Keep authentication secure for production deployment on Vercel.
+After login, redirect to the Admin Dashboard.
+Provide Logout functionality.
+2. ADMIN DASHBOARD
+
+Create a clean dashboard showing real database data:
+
+Total Bookings
+Pending Bookings
+Confirmed Bookings
+Completed Bookings
+Cancelled Bookings
+Total Inquiries
+Unread Inquiries
+Recent bookings
+Recent inquiries
+
+Use cards/statistics at the top and a clean recent-activity section below.
+
+All numbers must come from the production database. No hardcoded demo numbers.
+
+3. BOOKINGS MANAGEMENT
+
+Create a dedicated Bookings page.
+
+Every booking submitted from the public website must automatically appear here.
+
+Display:
+
+Patient name
+Phone number
+Email
+Treatment selected
+Appointment date
+Appointment time
+Patient message/notes
+Booking status
+Booking submission date/time
+
+Use clear status labels:
+
+Pending / Confirmed / Completed / Cancelled
+
+Admin should be able to:
+
+Open/view complete booking details
+Change booking status
+Confirm a pending booking
+Mark a confirmed booking as completed
+Cancel a booking
+Delete a booking when necessary
+
+Add useful filtering such as:
+
+All
+Pending
+Confirmed
+Completed
+Cancelled
+
+Also allow searching by patient name, phone, email, or booking ID.
+
+4. APPOINTMENT TIME
+
+The public booking form uses these available times:
+
+6:30 PM, 7:00 PM, 7:30 PM, 8:00 PM, 8:30 PM, 9:00 PM, 9:30 PM, 10:00 PM
+
+Store the selected date and exact time in the database and display them correctly in the Admin Panel.
+
+5. INQUIRIES / CONTACT MESSAGES
+
+Create a separate Inquiries page.
+
+Every message submitted through the public Contact form must automatically appear here.
+
+Display:
+
+Name
+Email
+Phone
+Message
+Submission date/time
+Read / Unread status
+
+Admin should be able to:
+
+Open the full inquiry
+Mark it as read
+Mark it as unread
+Delete it
+
+Add search/filtering for inquiries.
+
+6. PATIENT / BOOKING DATA
+
+Do not create a separate fake patient database just for the dashboard.
+
+Use the actual information submitted through the website forms.
+
+Make sure duplicate submissions are handled sensibly and each booking gets a unique ID.
+
+7. DATABASE + VERCEL
+
+The complete data flow must be:
+
+Public Website → Vercel API/Backend → Persistent Production Database → Admin Panel
+
+Do NOT use:
+
+localStorage as the main database
+in-memory arrays
+temporary server memory
+hardcoded JSON
+mock bookings
+fake dashboard statistics
+
+The data must persist after deployment, server restarts, and new sessions.
+
+Make sure the database/API implementation is compatible with Vercel production deployment.
+
+8. ADMIN UI
+
+Give the Admin Panel its own clean professional interface.
+
+Include a sidebar/navigation such as:
+
+Dashboard
+Bookings
+Inquiries
+Treatments
+Settings
+
+Keep the admin interface simple and practical rather than overly decorative.
+
+Make it fully responsive so it works on desktop, tablet, and mobile.
+
+9. TREATMENTS
+
+Show the existing dental treatments and prices inside the Admin Panel.
+
+If treatment editing is implemented, changes must update the actual production data safely and should not break the public website.
+
+Do not alter the existing public treatment list unless the admin explicitly changes it.
+
+10. PRODUCTION TEST
+
+Before declaring the Admin Panel finished, test the complete real workflow:
+
+1. Submit a test booking from the deployed public website.
+2. Confirm it is saved in the production database.
+3. Open the Admin Panel.
+4. Confirm the booking appears there with the correct patient, treatment, date, time, and status.
+5. Change its status in Admin Panel.
+6. Confirm the updated status persists after refreshing.
+
+Also test a Contact/Inquiry submission using the same process.
+
+🚨 IMPORTANT
+
+Do not redesign the existing public website.
+
+Keep the current:
+
+Light blue / teal / navy theme
+SDC logo
+SOMIL DENTAL CLINIC branding
+Doctor image
+Hero section
+Navigation
+Treatments
+Existing public pages
+
+The Admin Panel can have its own professional dashboard styling, but do not change the public website's approved visual identity.
+
+The most important requirement is that bookings and inquiries submitted on the live Vercel website actually reach the persistent database and appear in the authenticated Admin Panel.

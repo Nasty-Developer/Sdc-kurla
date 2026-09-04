@@ -1,0 +1,123 @@
+## CRITICAL: REPLACE EVERY DOCTOR IMAGE WITH A YOUNG MALE DENTIST
+
+Please make this change across the **ENTIRE SDC website**, not just one section.
+
+### MAIN REQUIREMENT
+
+Find **EVERY doctor/dentist image currently used anywhere in the project** and replace inappropriate, female, generic, old, or unrelated doctor images with a **professional young adult male dentist**.
+
+The visual identity must consistently represent:
+
+**Dr. Somil V Gupta**
+**BDS (JJ College)**
+**Lead Dentist / Endodontist**
+
+### IMPORTANT
+
+I want the doctor to look:
+
+* Young adult male
+* Smart
+* Handsome
+* Professional
+* Confident
+* Friendly
+* Approachable
+* Well-groomed
+* Trustworthy
+* Like a real qualified dentist
+
+Use a realistic, high-quality professional dental portrait.
+
+Preferred:
+
+* White dental coat or tasteful professional scrubs
+* Natural hairstyle
+* Clean professional grooming
+* Natural confident smile/expression
+* Modern dental clinic environment
+* Professional photography
+* Premium lighting
+* Realistic appearance
+
+He should look like a **smart, handsome young professional dentist**, not a fashion model, celebrity, influencer or exaggerated AI character.
+
+### REPLACE IMAGES EVERYWHERE
+
+Search the entire project and check every location where a doctor/dentist image appears:
+
+* Homepage hero
+* Doctor profile section
+* About section
+* Team section
+* Doctor cards
+* Appointment page
+* Booking page
+* Contact-related sections
+* Mobile layouts
+* Desktop layouts
+* Any reusable components
+* Any hidden sections
+* Any duplicated image assets
+
+If there are multiple doctor images, replace them all.
+
+### CONSISTENCY
+
+The website should NOT show:
+
+* Female doctor images
+* Random male doctors
+* Multiple unrelated dentists
+* Generic stock medical professionals
+
+The website should visually communicate **one consistent lead dentist: Dr. Somil V Gupta**.
+
+If multiple photographs are used, they should clearly look like the **same young adult male doctor** and have a consistent professional appearance.
+
+### HERO
+
+The homepage hero currently has a female doctor image.
+
+REMOVE IT COMPLETELY.
+
+Replace it with the same professional young male dentist identity.
+
+The hero must NOT contain a female doctor.
+
+### IMAGE QUALITY
+
+Make sure the replacement images:
+
+* Are high resolution
+* Have natural proportions
+* Have no distorted face
+* Have no strange hands
+* Have no obvious AI artifacts
+* Are correctly cropped
+* Look good on mobile and desktop
+* Fit naturally into the SDC blue design
+
+Do not distort or heavily filter the doctor's face.
+
+### DOCTOR INFORMATION MUST REMAIN
+
+Keep:
+
+**Dr. Somil V Gupta**
+**BDS (JJ College)**
+**Lead Dentist / Endodontist**
+
+About:
+
+“Dr. Somil is a highly skilled endodontist dedicated to providing pain-free root canal treatments and comprehensive dental care. He believes in a patient-first approach, ensuring comfort and excellent results.”
+
+### FINAL CHECK
+
+After making the changes, search the entire project again for doctor-related images/assets.
+
+Confirm that **EVERY visible doctor image on every page is a professional young adult male dentist representing Dr. Somil**.
+
+Do not leave even one old female/random doctor image behind.
+
+The final SDC website should have a **consistent, smart, handsome, professional young male dentist identity throughout the entire website**.
