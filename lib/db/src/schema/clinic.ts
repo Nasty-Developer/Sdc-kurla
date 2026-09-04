@@ -1,4 +1,4 @@
-import { boolean, index, integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, index, integer, pgTable, serial, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 
 export const appointmentStatusValues = [
   "pending",
@@ -54,3 +54,22 @@ export type Appointment = typeof appointmentsTable.$inferSelect;
 export type NewAppointment = typeof appointmentsTable.$inferInsert;
 export type Inquiry = typeof inquiriesTable.$inferSelect;
 export type NewInquiry = typeof inquiriesTable.$inferInsert;
+
+export const clinicAdminUsersTable = pgTable(
+  "clinic_admin_users",
+  {
+    id: serial("id").primaryKey(),
+    clerkUserId: text("clerk_user_id").notNull(),
+    email: text("email").notNull(),
+    isActive: boolean("is_active").notNull().default(true),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("clinic_admin_users_clerk_user_id_key").on(table.clerkUserId),
+    index("clinic_admin_users_active_idx").on(table.isActive),
+  ],
+);
+
+export type ClinicAdminUser = typeof clinicAdminUsersTable.$inferSelect;
+export type NewClinicAdminUser = typeof clinicAdminUsersTable.$inferInsert;
