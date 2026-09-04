@@ -1,5 +1,8 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ClerkProvider, Redirect, SignIn, SignUp, useAuth } from '@clerk/react';
+import { publishableKeyFromHost } from '@clerk/react/internal';
+import { shadcn } from '@clerk/themes';
 import {
   ArrowRight,
   BadgeCheck,
@@ -30,9 +33,17 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import DentalAssistant from '@/components/dental-assistant';
+import InquiryForm from '@/components/inquiry-form';
+import AdminPage from '@/pages/admin';
 import { Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
 
 const queryClient = new QueryClient();
+const clerkPubKey = publishableKeyFromHost(
+  window.location.hostname,
+  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
+);
+const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const clinicAddress = 'Chawl bazar ward, Jai Ambika nagar, near Rolex hotel, Halav Pool, Kunchi kurway, Mumbai, Maharashtra 400070';
 const clinicPhone = '+91 8591434914';
@@ -327,6 +338,7 @@ function Home() {
                 <span className="contact-detail"><Clock3 size={17} /> Monday - Saturday: 6:30 PM - 10:00 PM<br /><span className="hours-subline">Sunday: Closed for Maintenance</span></span>
               </div>
               <button className="button-primary" onClick={() => openAppointment()} data-testid="button-contact-appointment">Book Appointment <ArrowRight size={15} /></button>
+              <InquiryForm />
             </div>
             <div className="contact-map" aria-label={`Location: ${clinicAddress}`}>
               <div className="map-grid" aria-hidden="true" /><div className="map-pin"><MapPin size={19} /></div><div className="map-label"><strong>Somil Dental Clinic</strong><span>Mumbai 400070</span></div>
@@ -367,12 +379,35 @@ function Router() {
   return (
     <RoutedErrorBoundary>
       <Switch>
-        <Route path="/" component={Home} />
+        <Route path="/" component={HomeRedirect} />
         <Route path="/book" component={BookingPage} />
+        <Route path="/admin" component={AdminRoute} />
+        <Route path="/sign-in/*?" component={SignInPage} />
+        <Route path="/sign-up/*?" component={SignUpPage} />
         <Route component={NotFound} />
       </Switch>
     </RoutedErrorBoundary>
   );
+}
+
+function HomeRedirect() {
+  const { isLoaded, isSignedIn } = useAuth();
+  if (!isLoaded) return <div className="auth-loading"><div className="admin-spinner" /></div>;
+  return isSignedIn ? <Redirect to="/admin" /> : <Home />;
+}
+
+function AdminRoute() {
+  const { isLoaded, isSignedIn } = useAuth();
+  if (!isLoaded) return <div className="auth-loading"><div className="admin-spinner" /></div>;
+  return isSignedIn ? <AdminPage /> : <Redirect to="/sign-in" />;
+}
+
+function SignInPage() {
+  return <div className="auth-page"><SignIn routing="path" path={`${basePath}/sign-in`} signUpUrl={`${basePath}/sign-up`} /></div>;
+}
+
+function SignUpPage() {
+  return <div className="auth-page"><SignUp routing="path" path={`${basePath}/sign-up`} signInUrl={`${basePath}/sign-in`} /></div>;
 }
 
 function RoutedErrorBoundary({ children }: { children: ReactNode }) {
@@ -382,14 +417,60 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-          <Router />
-        </WouterRouter>
-        <Toaster />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ClerkProvider
+      publishableKey={clerkPubKey}
+      proxyUrl={clerkProxyUrl}
+      appearance={{
+        theme: shadcn,
+        options: {
+          logoPlacement: 'inside',
+          logoLinkUrl: basePath || '/',
+          logoImageUrl: `${window.location.origin}${basePath}/logo.svg`,
+        },
+        variables: {
+          colorPrimary: 'hsl(190 66% 34%)',
+          colorForeground: 'hsl(211 58% 20%)',
+          colorMutedForeground: 'hsl(204 18% 45%)',
+          colorDanger: 'hsl(0 70% 50%)',
+          colorBackground: 'hsl(203 40% 98%)',
+          colorInput: '#ffffff',
+          colorInputForeground: 'hsl(211 58% 20%)',
+          colorNeutral: 'hsl(191 38% 79%)',
+          fontFamily: "'Manrope', sans-serif",
+          borderRadius: '0.75rem',
+        },
+        elements: {
+          cardBox: 'bg-white rounded-2xl w-[440px] max-w-full overflow-hidden',
+          card: '!shadow-none !border-0 !bg-transparent !rounded-none',
+          footer: '!shadow-none !border-0 !bg-transparent !rounded-none',
+          headerTitle: 'text-slate-900',
+          headerSubtitle: 'text-slate-600',
+          socialButtonsBlockButtonText: 'text-slate-800',
+          formFieldLabel: 'text-slate-800',
+          footerActionLink: 'text-teal-700',
+          footerActionText: 'text-slate-600',
+          dividerText: 'text-slate-500',
+          formButtonPrimary: 'bg-teal-700 hover:bg-teal-800',
+          formFieldInput: 'border-slate-200 text-slate-900',
+          socialButtonsBlockButton: 'border-slate-200 bg-white',
+          alertText: 'text-red-700',
+          main: 'bg-transparent',
+        },
+      }}
+      signInUrl={`${basePath}/sign-in`}
+      signUpUrl={`${basePath}/sign-up`}
+      routerPush={(to) => window.history.pushState({}, '', to)}
+      routerReplace={(to) => window.history.replaceState({}, '', to)}
+    >
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <WouterRouter base={basePath}>
+            <Router />
+          </WouterRouter>
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ClerkProvider>
   );
 }
 

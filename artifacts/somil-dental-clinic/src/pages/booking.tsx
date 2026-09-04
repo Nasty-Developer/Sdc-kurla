@@ -97,13 +97,28 @@ export default function BookingPage() {
     form.setValue('treatment', treatmentFromQuery, { shouldValidate: true });
   }, [form, treatmentFromQuery]);
 
-  const handleSubmit = (values: BookingValues) => {
+  const handleSubmit = async (values: BookingValues) => {
     setIsSubmitting(true);
-    window.setTimeout(() => {
+    try {
+      const apiPath = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/api/appointments`;
+      const response = await fetch(apiPath, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(body.error || 'We could not save your appointment.');
+      }
       setSubmittedValues(values);
-      setIsSubmitting(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 850);
+    } catch (error) {
+      form.setError('root', {
+        message: error instanceof Error ? error.message : 'We could not save your appointment. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const resetBooking = () => {
@@ -138,8 +153,8 @@ export default function BookingPage() {
           <div className="eyebrow">Somil Dental Clinic / Appointment desk</div>
           <h1>Book your appointment.</h1>
           <p>Choose your treatment and preferred time. Our clinic team will confirm your appointment.</p>
-          <div className="booking-meta">
-            <span><ShieldCheck size={16} /> Frontend demo request</span>
+              <div className="booking-meta">
+                <span><ShieldCheck size={16} /> Secure booking request</span>
             <span><Clock3 size={16} /> {clinicHours}</span>
           </div>
         </div>
@@ -152,7 +167,7 @@ export default function BookingPage() {
               <div className="confirmation-icon"><CheckCircle2 size={28} /></div>
               <div className="eyebrow">Request prepared</div>
               <h2>Thank you, {submittedValues.fullName}.</h2>
-              <p className="confirmation-lede">Your frontend booking request has been prepared for the clinic team. It has <strong>not been stored or sent</strong> because this is a demonstration flow.</p>
+              <p className="confirmation-lede">Your appointment request has been securely sent to the clinic team. They will contact you to confirm availability.</p>
               <div className="confirmation-summary">
                 <div><span>Treatment</span><strong data-testid="text-confirmation-treatment">{submittedValues.treatment}</strong></div>
                 <div><span>Preferred date</span><strong data-testid="text-confirmation-date">{formatDate(submittedValues.preferredDate)}</strong></div>
@@ -256,7 +271,8 @@ export default function BookingPage() {
                   <button className="button-primary booking-submit" type="submit" disabled={isSubmitting} data-testid="button-submit-booking">
                     {isSubmitting ? <><span className="button-loading" aria-hidden="true" /> Preparing your request…</> : <>Review request <ArrowRight size={16} /></>}
                   </button>
-                  <p className="booking-disclaimer">This is a frontend demo booking request. Nothing is stored or sent to the clinic.</p>
+                  {form.formState.errors.root?.message ? <p className="booking-form-error" role="alert">{form.formState.errors.root.message}</p> : null}
+                  <p className="booking-disclaimer">Your details are stored securely so the clinic team can manage your request.</p>
                 </form>
               </Form>
             </section>
