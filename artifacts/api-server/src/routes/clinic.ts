@@ -38,7 +38,8 @@ const appointmentSchema = z.object({
 
 const inquirySchema = z.object({
   name: z.string().trim().min(2).max(80),
-  contact: z.string().trim().min(3).max(160),
+  email: z.string().trim().email().max(160),
+  phone: z.string().trim().min(10).max(30),
   message: z.string().trim().min(2).max(1000),
 });
 
@@ -123,7 +124,7 @@ router.get("/admin/dashboard", requireAdmin, async (req, res) => {
         type: "inquiry" as const,
         id: item.id,
         title: `${item.name} sent a message`,
-        detail: item.contact,
+        detail: `${item.email} · ${item.phone}`,
         status: item.isRead ? "read" : "unread",
         createdAt: item.submittedAt,
       })),
@@ -245,6 +246,53 @@ router.patch("/admin/inquiries/:id/read", requireAdmin, async (req, res) => {
   } catch (error) {
     req.log?.error({ err: error }, "Unable to update inquiry");
     res.status(500).json({ error: "Unable to update inquiry." });
+  }
+});
+
+router.patch("/admin/inquiries/:id/unread", requireAdmin, async (req, res) => {
+  const id = idSchema.safeParse(req.params.id);
+  if (!id.success) {
+    res.status(400).json({ error: "Invalid inquiry." });
+    return;
+  }
+
+  try {
+    const [inquiry] = await db
+      .update(inquiriesTable)
+      .set({ isRead: false, updatedAt: new Date() })
+      .where(eq(inquiriesTable.id, id.data))
+      .returning();
+    if (!inquiry) {
+      res.status(404).json({ error: "Inquiry not found." });
+      return;
+    }
+    res.json({ inquiry });
+  } catch (error) {
+    req.log?.error({ err: error }, "Unable to mark inquiry unread");
+    res.status(500).json({ error: "Unable to mark inquiry unread." });
+  }
+});
+
+router.delete("/admin/inquiries/:id", requireAdmin, async (req, res) => {
+  const id = idSchema.safeParse(req.params.id);
+  if (!id.success) {
+    res.status(400).json({ error: "Invalid inquiry." });
+    return;
+  }
+
+  try {
+    const [inquiry] = await db
+      .delete(inquiriesTable)
+      .where(eq(inquiriesTable.id, id.data))
+      .returning();
+    if (!inquiry) {
+      res.status(404).json({ error: "Inquiry not found." });
+      return;
+    }
+    res.status(204).send();
+  } catch (error) {
+    req.log?.error({ err: error }, "Unable to delete inquiry");
+    res.status(500).json({ error: "Unable to delete inquiry." });
   }
 });
 

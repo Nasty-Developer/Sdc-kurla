@@ -36,7 +36,9 @@ export const inquiriesTable = pgTable(
   {
     id: serial("id").primaryKey(),
     name: text("name").notNull(),
-    contact: text("contact").notNull(),
+    contact: text("contact").notNull().default(""),
+    email: text("email").notNull().default(""),
+    phone: text("phone").notNull().default(""),
     message: text("message").notNull(),
     isRead: boolean("is_read").notNull().default(false),
     submittedAt: timestamp("submitted_at", { withTimezone: true }).notNull().defaultNow(),
