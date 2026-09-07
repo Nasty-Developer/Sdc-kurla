@@ -18,6 +18,7 @@ export const appointmentsTable = pgTable(
     email: text("email").notNull(),
     age: integer("age").notNull(),
     treatment: text("treatment").notNull(),
+    branchId: integer("branch_id"),
     appointmentDate: text("appointment_date").notNull(),
     appointmentTime: text("appointment_time").notNull(),
     notes: text("notes").notNull().default(""),
@@ -73,6 +74,32 @@ export const clinicAdminUsersTable = pgTable(
 
 export type ClinicAdminUser = typeof clinicAdminUsersTable.$inferSelect;
 export type NewClinicAdminUser = typeof clinicAdminUsersTable.$inferInsert;
+
+export const clinicBranchesTable = pgTable(
+  "clinic_branches",
+  {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull(),
+    address: text("address").notNull(),
+    phone: text("phone").notNull(),
+    whatsapp: text("whatsapp").notNull(),
+    email: text("email").notNull(),
+    hours: text("hours").notNull(),
+    sundayHours: text("sunday_hours").notNull(),
+    mapUrl: text("map_url").notNull().default(""),
+    imagePath: text("image_path"),
+    isActive: boolean("is_active").notNull().default(true),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("clinic_branches_name_key").on(table.name),
+    index("clinic_branches_active_name_idx").on(table.isActive, table.name),
+  ],
+);
+
+export type ClinicBranch = typeof clinicBranchesTable.$inferSelect;
+export type NewClinicBranch = typeof clinicBranchesTable.$inferInsert;
 
 export const clinicTreatmentsTable = pgTable(
   "clinic_treatments",

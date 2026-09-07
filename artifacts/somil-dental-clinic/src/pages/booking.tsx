@@ -14,6 +14,12 @@ type BookingSettings = {
   sundayHours: string;
 };
 
+type BookingBranch = {
+  id: number;
+  name: string;
+  address: string;
+};
+
 const appointmentTimes = [
   '6:30 PM',
   '7:00 PM',
@@ -31,6 +37,7 @@ const bookingSchema = z.object({
   email: z.string().trim().email('Enter a valid email address.'),
   age: z.string().trim().regex(/^\d{1,3}$/, 'Enter your age in years.').refine((value) => Number(value) >= 1 && Number(value) <= 120, 'Age must be between 1 and 120.'),
   treatment: z.string().min(2, 'Please choose a treatment.'),
+  branchId: z.string().min(1, 'Please choose a clinic branch.'),
   preferredDate: z.string().min(1, 'Please choose a preferred date.').refine((value) => {
     const chosen = new Date(`${value}T00:00:00`);
     const today = new Date();
@@ -61,14 +68,17 @@ export default function BookingPage() {
   const [submittedValues, setSubmittedValues] = useState<BookingValues | null>(null);
   const [treatmentOptions, setTreatmentOptions] = useState<string[]>(['General Consultation']);
   const [settings, setSettings] = useState<BookingSettings | null>(null);
+  const [branches, setBranches] = useState<BookingBranch[]>([]);
   const today = useMemo(getToday, []);
   useEffect(() => {
     void Promise.all([
       fetch(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/api/treatments`).then((response) => response.ok ? response.json() : Promise.reject(new Error())),
       fetch(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/api/settings`).then((response) => response.ok ? response.json() : Promise.reject(new Error())),
-    ]).then(([treatmentResult, settingsResult]) => {
+      fetch(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/api/branches`).then((response) => response.ok ? response.json() : Promise.reject(new Error())),
+    ]).then(([treatmentResult, settingsResult, branchResult]) => {
       setTreatmentOptions(['General Consultation', ...treatmentResult.treatments.map((treatment: { title: string }) => treatment.title)]);
       setSettings(settingsResult.settings);
+      setBranches(branchResult.branches);
     }).catch(() => undefined);
   }, []);
   const treatmentFromQuery = useMemo(() => {
@@ -85,6 +95,7 @@ export default function BookingPage() {
       email: '',
       age: '',
       treatment: treatmentFromQuery,
+      branchId: '',
       preferredDate: '',
       preferredTime: '',
       message: '',
@@ -128,6 +139,7 @@ export default function BookingPage() {
       email: '',
       age: '',
       treatment: treatmentFromQuery,
+      branchId: '',
       preferredDate: '',
       preferredTime: '',
       message: '',
@@ -169,6 +181,7 @@ export default function BookingPage() {
               <p className="confirmation-lede">Your appointment request has been securely sent to the clinic team. They will contact you to confirm availability.</p>
               <div className="confirmation-summary">
                 <div><span>Treatment</span><strong>{submittedValues.treatment}</strong></div>
+                <div><span>Branch</span><strong>{branches.find((branch) => String(branch.id) === submittedValues.branchId)?.name || 'Selected branch'}</strong></div>
                 <div><span>Preferred date</span><strong>{formatDate(submittedValues.preferredDate)}</strong></div>
                 <div><span>Preferred time</span><strong>{submittedValues.preferredTime}</strong></div>
                 <div><span>Patient</span><strong>{submittedValues.fullName}</strong></div>
@@ -225,6 +238,19 @@ export default function BookingPage() {
                   </div>
 
                   <div className="form-section-label"><span>Appointment details</span><i /></div>
+                  <FormField control={form.control} name="branchId" render={({ field }) => (
+                    <FormItem className="booking-field">
+                      <FormLabel>Select Branch <span>*</span></FormLabel>
+                      <FormControl>
+                        <select {...field}>
+                          <option value="">Choose a branch</option>
+                          {branches.map((branch) => <option value={branch.id} key={branch.id}>{branch.name} — {branch.address}</option>)}
+                        </select>
+                      </FormControl>
+                      <FormDescription>Choose where you would like the clinic team to see you.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
                   <FormField control={form.control} name="treatment" render={({ field }) => (
                     <FormItem className="booking-field">
                       <FormLabel>Select Treatment <span>*</span></FormLabel>

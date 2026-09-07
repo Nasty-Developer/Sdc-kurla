@@ -14,6 +14,7 @@ import {
   LogOut,
   Mail,
   MailOpen,
+  MapPin,
   MessageSquare,
   Pencil,
   Plus,
@@ -29,7 +30,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useClerk, useUser } from "@clerk/react";
 
-type AdminView = "dashboard" | "appointments" | "inquiries" | "treatments" | "media" | "settings";
+type AdminView = "dashboard" | "appointments" | "inquiries" | "treatments" | "branches" | "media" | "settings";
 type AppointmentStatus = "pending" | "confirmed" | "completed" | "cancelled";
 type AppointmentFilter = "all" | AppointmentStatus;
 type InquiryFilter = "all" | "unread" | "read";
@@ -41,6 +42,7 @@ type Appointment = {
   email: string;
   age: number;
   treatment: string;
+  branchId: number | null;
   appointmentDate: string;
   appointmentTime: string;
   notes: string;
@@ -101,6 +103,20 @@ type MediaItem = {
   createdAt: string;
 };
 
+type Branch = {
+  id: number;
+  name: string;
+  address: string;
+  phone: string;
+  whatsapp: string;
+  email: string;
+  hours: string;
+  sundayHours: string;
+  mapUrl: string;
+  imagePath: string | null;
+  isActive: boolean;
+};
+
 type ClinicSettings = {
   id: number;
   clinicName: string;
@@ -157,6 +173,7 @@ export default function AdminPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [treatments, setTreatments] = useState<Treatment[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [settings, setSettings] = useState<ClinicSettings | null>(null);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
@@ -173,11 +190,12 @@ export default function AdminPage() {
     setIsLoading(true);
     setError("");
     try {
-      const [dashboardResult, appointmentResult, inquiryResult, treatmentResult, mediaResult, settingsResult] = await Promise.all([
+      const [dashboardResult, appointmentResult, inquiryResult, treatmentResult, branchResult, mediaResult, settingsResult] = await Promise.all([
         apiRequest<Dashboard>("/admin/dashboard"),
         apiRequest<{ appointments: Appointment[] }>("/admin/appointments"),
         apiRequest<{ inquiries: Inquiry[] }>("/admin/inquiries"),
         apiRequest<{ treatments: Treatment[] }>("/admin/treatments"),
+        apiRequest<{ branches: Branch[] }>("/admin/branches"),
         apiRequest<{ media: MediaItem[] }>("/admin/media"),
         apiRequest<{ settings: ClinicSettings }>("/admin/settings"),
       ]);
@@ -185,6 +203,7 @@ export default function AdminPage() {
       setAppointments(appointmentResult.appointments);
       setInquiries(inquiryResult.inquiries);
       setTreatments(treatmentResult.treatments);
+      setBranches(branchResult.branches);
       setMedia(mediaResult.media);
       setSettings(settingsResult.settings);
     } catch (loadError) {
@@ -350,6 +369,40 @@ export default function AdminPage() {
     }
   };
 
+  const saveBranch = async (
+    values: Omit<Branch, "id"> & { imagePath?: string | null },
+    id?: number,
+    file?: File | null,
+  ) => {
+    setBusyId(id ? `branch-${id}` : "new-branch");
+    try {
+      const imagePath = file ? await uploadImage(file) : values.imagePath ?? null;
+      await apiRequest(id ? `/admin/branches/${id}` : "/admin/branches", {
+        method: id ? "PATCH" : "POST",
+        body: JSON.stringify({ ...values, imagePath }),
+      });
+      await loadData();
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Unable to save branch.");
+      throw saveError;
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const deleteBranch = async (branch: Branch) => {
+    if (!window.confirm(`Delete ${branch.name}? Existing appointments will keep their patient details but lose this branch assignment.`)) return;
+    setBusyId(`delete-branch-${branch.id}`);
+    try {
+      await apiRequest(`/admin/branches/${branch.id}`, { method: "DELETE" });
+      await loadData();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Unable to delete branch.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   const deleteMedia = async (item: MediaItem) => {
     if (!window.confirm(`Remove ${item.originalName} from clinic media?`)) return;
     setBusyId(`media-${item.id}`);
@@ -381,6 +434,7 @@ export default function AdminPage() {
     { id: "appointments", label: "Appointments", icon: CalendarDays },
     { id: "inquiries", label: "Inquiries", icon: MessageSquare },
     { id: "treatments", label: "Treatments", icon: ClipboardList },
+    { id: "branches", label: "Branches", icon: MapPin },
     { id: "media", label: "Media", icon: ImageIcon },
     { id: "settings", label: "Settings", icon: Settings2 },
   ];
@@ -458,6 +512,7 @@ export default function AdminPage() {
             onSelect={setSelectedAppointment}
             onStatus={updateAppointmentStatus}
             onDelete={deleteAppointment}
+            branches={branches}
             busyId={busyId}
           />
         ) : null}
@@ -477,11 +532,12 @@ export default function AdminPage() {
         ) : null}
 
         {view === "treatments" ? <TreatmentsView treatments={treatments} onSave={saveTreatment} onDelete={deleteTreatment} busyId={busyId} /> : null}
+        {view === "branches" ? <BranchesView branches={branches} onSave={saveBranch} onDelete={deleteBranch} busyId={busyId} /> : null}
         {view === "media" ? <MediaView media={media} onUpload={uploadImage} onDelete={deleteMedia} busyId={busyId} /> : null}
         {view === "settings" ? <SettingsView user={user} settings={settings} onSave={saveSettings} busyId={busyId} /> : null}
       </section>
 
-      {selectedAppointment ? <AppointmentDetailModal appointment={selectedAppointment} onClose={() => setSelectedAppointment(null)} onStatus={updateAppointmentStatus} onSchedule={rescheduleAppointment} onDelete={deleteAppointment} busyId={busyId} /> : null}
+      {selectedAppointment ? <AppointmentDetailModal appointment={selectedAppointment} branches={branches} onClose={() => setSelectedAppointment(null)} onStatus={updateAppointmentStatus} onSchedule={rescheduleAppointment} onDelete={deleteAppointment} busyId={busyId} /> : null}
 
       {selectedInquiry ? (
         <InquiryDetailModal
@@ -529,8 +585,9 @@ function DashboardView({ dashboard, onNavigate }: { dashboard: Dashboard; onNavi
   );
 }
 
-function AppointmentsView({ appointments, searchTerm, onSearch, filter, onFilter, onSelect, onStatus, onDelete, busyId }: {
+function AppointmentsView({ appointments, branches, searchTerm, onSearch, filter, onFilter, onSelect, onStatus, onDelete, busyId }: {
   appointments: Appointment[];
+  branches: Branch[];
   searchTerm: string;
   onSearch: (value: string) => void;
   filter: AppointmentFilter;
@@ -549,14 +606,15 @@ function AppointmentsView({ appointments, searchTerm, onSearch, filter, onFilter
         <span className="admin-data-note"><ShieldCheck size={14} /> Live database records</span>
       </div>
       <div className="admin-table-card">
-        <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Patient</th><th>Treatment</th><th>Preferred visit</th><th>Submitted</th><th>Status</th><th><span className="sr-only">Actions</span></th></tr></thead><tbody>{appointments.map((appointment) => <tr key={appointment.id}><td><button className="patient-cell" onClick={() => onSelect(appointment)}><span className="patient-initial">{appointment.patientName[0]}</span><span><strong>{appointment.patientName}</strong><small>{appointment.phone}</small></span></button></td><td><span className="table-primary">{appointment.treatment}</span><small className="table-secondary">{appointment.email}</small></td><td><span className="table-primary">{formatDate(appointment.appointmentDate)}</span><small className="table-secondary">{appointment.appointmentTime}</small></td><td><span className="table-secondary">{formatDateTime(appointment.submittedAt)}</span></td><td><select className={`status-select status-${appointment.status}`} value={appointment.status} onChange={(event) => void onStatus(appointment, event.target.value as AppointmentStatus)} disabled={busyId === `appointment-${appointment.id}`} aria-label={`Status for ${appointment.patientName}`}>{(["pending", "confirmed", "completed", "cancelled"] as AppointmentStatus[]).map((status) => <option value={status} key={status}>{statusLabel(status)}</option>)}</select></td><td><div className="table-actions"><button onClick={() => onSelect(appointment)} aria-label={`View ${appointment.patientName}'s booking`}><Eye size={15} /></button><button onClick={() => void onDelete(appointment)} disabled={busyId === `delete-${appointment.id}`} aria-label={`Delete ${appointment.patientName}'s booking`}><Trash2 size={15} /></button></div></td></tr>)}</tbody></table>{appointments.length === 0 ? <EmptyState icon={CalendarDays} title="No appointments found" copy={searchTerm ? "Try a different search term." : "New booking requests will appear here automatically."} /> : null}</div>
+        <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Patient</th><th>Treatment</th><th>Branch</th><th>Preferred visit</th><th>Submitted</th><th>Status</th><th><span className="sr-only">Actions</span></th></tr></thead><tbody>{appointments.map((appointment) => <tr key={appointment.id}><td><button className="patient-cell" onClick={() => onSelect(appointment)}><span className="patient-initial">{appointment.patientName[0]}</span><span><strong>{appointment.patientName}</strong><small>{appointment.phone}</small></span></button></td><td><span className="table-primary">{appointment.treatment}</span><small className="table-secondary">{appointment.email}</small></td><td><span className="table-primary">{branches.find((branch) => branch.id === appointment.branchId)?.name || "Unassigned"}</span></td><td><span className="table-primary">{formatDate(appointment.appointmentDate)}</span><small className="table-secondary">{appointment.appointmentTime}</small></td><td><span className="table-secondary">{formatDateTime(appointment.submittedAt)}</span></td><td><select className={`status-select status-${appointment.status}`} value={appointment.status} onChange={(event) => void onStatus(appointment, event.target.value as AppointmentStatus)} disabled={busyId === `appointment-${appointment.id}`} aria-label={`Status for ${appointment.patientName}`}>{(["pending", "confirmed", "completed", "cancelled"] as AppointmentStatus[]).map((status) => <option value={status} key={status}>{statusLabel(status)}</option>)}</select></td><td><div className="table-actions"><button onClick={() => onSelect(appointment)} aria-label={`View ${appointment.patientName}'s booking`}><Eye size={15} /></button><button onClick={() => void onDelete(appointment)} disabled={busyId === `delete-${appointment.id}`} aria-label={`Delete ${appointment.patientName}'s booking`}><Trash2 size={15} /></button></div></td></tr>)}</tbody></table>{appointments.length === 0 ? <EmptyState icon={CalendarDays} title="No appointments found" copy={searchTerm ? "Try a different search term." : "New booking requests will appear here automatically."} /> : null}</div>
       </div>
     </div>
   );
 }
 
-function AppointmentDetailModal({ appointment, onClose, onStatus, onSchedule, onDelete, busyId }: {
+function AppointmentDetailModal({ appointment, branches, onClose, onStatus, onSchedule, onDelete, busyId }: {
   appointment: Appointment;
+  branches: Branch[];
   onClose: () => void;
   onStatus: (appointment: Appointment, status: AppointmentStatus) => void;
   onSchedule: (appointment: Appointment, date: string, time: string) => Promise<void>;
@@ -579,6 +637,7 @@ function AppointmentDetailModal({ appointment, onClose, onStatus, onSchedule, on
         <div className="admin-detail-grid">
           <div><span>Patient</span><strong>{appointment.patientName}, {appointment.age}</strong></div>
           <div><span>Treatment</span><strong>{appointment.treatment}</strong></div>
+          <div><span>Branch</span><strong>{branches.find((branch) => branch.id === appointment.branchId)?.name || "Unassigned"}</strong></div>
           <div><span>Preferred visit</span><strong>{formatDate(appointment.appointmentDate)} · {appointment.appointmentTime}</strong></div>
           <div><span>Submitted</span><strong>{formatDateTime(appointment.submittedAt)}</strong></div>
           <div><span>Phone</span><a href={`tel:${appointment.phone}`}><Phone size={13} /> {appointment.phone}</a></div>
@@ -713,9 +772,90 @@ function TreatmentForm({ treatment, onSave, onClose, busy }: { treatment: Treatm
         <label>Display order<input type="number" min="0" value={draft.displayOrder} onChange={(event) => update("displayOrder", Number(event.target.value))} /></label>
         <label>Icon<select value={draft.icon} onChange={(event) => update("icon", event.target.value)}><option>Stethoscope</option><option>Sparkles</option><option>ShieldCheck</option><option>CheckCircle2</option><option>Smile</option><option>CircleDollarSign</option><option>Baby</option></select></label>
         <label className="admin-checkbox"><input type="checkbox" checked={draft.isActive} onChange={(event) => update("isActive", event.target.checked)} /> Show on public website</label>
-        <label className="admin-form-wide">Treatment image<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><small>{file?.name || (draft.imagePath ? "Current image retained" : "Optional, up to 10 MB")}</small></label>
+        <label className="admin-form-wide">Treatment image<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><small>{file?.name || (draft.imagePath ? "Current image retained" : "Optional, up to 10 MB")}</small>{draft.imagePath ? <button type="button" className="admin-quiet-button" onClick={() => { update("imagePath", null); setFile(null); }}>Remove current image</button> : null}</label>
       </div>
       <div className="admin-detail-actions"><button className="admin-primary-button" type="submit" disabled={busy}>{busy ? "Saving…" : "Save treatment"}</button><button className="admin-quiet-button" type="button" onClick={onClose}>Cancel</button></div>
+    </form>
+  );
+}
+
+type BranchDraft = Omit<Branch, "id"> & { imagePath: string | null };
+type SaveBranch = (draft: BranchDraft, id?: number, file?: File | null) => Promise<void>;
+
+function BranchesView({ branches, onSave, onDelete, busyId }: {
+  branches: Branch[];
+  onSave: SaveBranch;
+  onDelete: (branch: Branch) => void;
+  busyId: string | null;
+}) {
+  const [editing, setEditing] = useState<Branch | null | undefined>(undefined);
+  return (
+    <div className="admin-content">
+      <div className="admin-section-intro">
+        <div><h2>Branches</h2><p>Manage the clinic locations available to patients and the public website.</p></div>
+        <button className="admin-primary-button" onClick={() => setEditing(null)}><Plus size={15} /> Add branch</button>
+      </div>
+      {editing !== undefined ? <BranchForm branch={editing} onSave={onSave} onClose={() => setEditing(undefined)} busy={busyId === (editing ? `branch-${editing.id}` : "new-branch")} /> : null}
+      <div className="admin-branch-grid">
+        {branches.map((branch) => (
+          <article className={`admin-branch-card ${!branch.isActive ? "is-disabled" : ""}`} key={branch.id}>
+            <div className="admin-branch-image">{branch.imagePath ? <img src={`${baseApiPath}/storage${branch.imagePath}`} alt="" /> : <MapPin size={22} />}</div>
+            <div className="admin-branch-content">
+              <div className="admin-branch-heading"><div><h3>{branch.name}</h3><small>{branch.isActive ? "Available for booking" : "Hidden from booking"}</small></div><strong>{branch.phone}</strong></div>
+              <p>{branch.address}</p>
+              <div className="admin-branch-meta"><span>{branch.hours}</span><span>{branch.email}</span></div>
+              <div className="admin-card-actions"><button className="admin-quiet-button" onClick={() => setEditing(branch)}><Pencil size={14} /> Edit</button><button className="admin-danger-button" onClick={() => void onDelete(branch)} disabled={busyId === `delete-branch-${branch.id}`}><Trash2 size={14} /> Delete</button></div>
+            </div>
+          </article>
+        ))}
+      </div>
+      {branches.length === 0 ? <EmptyState icon={MapPin} title="No branches yet" copy="Add a branch so patients can choose where to book." /> : null}
+    </div>
+  );
+}
+
+function BranchForm({ branch, onSave, onClose, busy }: { branch: Branch | null; onSave: SaveBranch; onClose: () => void; busy: boolean }) {
+  const [draft, setDraft] = useState<BranchDraft>(() => branch ? {
+    name: branch.name,
+    address: branch.address,
+    phone: branch.phone,
+    whatsapp: branch.whatsapp,
+    email: branch.email,
+    hours: branch.hours,
+    sundayHours: branch.sundayHours,
+    mapUrl: branch.mapUrl,
+    imagePath: branch.imagePath,
+    isActive: branch.isActive,
+  } : {
+    name: "",
+    address: "",
+    phone: "",
+    whatsapp: "",
+    email: "",
+    hours: "",
+    sundayHours: "",
+    mapUrl: "",
+    imagePath: null,
+    isActive: true,
+  });
+  const [file, setFile] = useState<File | null>(null);
+  const update = <K extends keyof BranchDraft>(key: K, value: BranchDraft[K]) => setDraft((current) => ({ ...current, [key]: value }));
+  return (
+    <form className="admin-editor-card" onSubmit={(event) => { event.preventDefault(); void onSave(draft, branch?.id, file).then(onClose).catch(() => undefined); }}>
+      <div className="admin-panel-heading"><div><div className="eyebrow">{branch ? "Edit clinic location" : "New clinic location"}</div><h2>{branch ? "Update branch" : "Add branch"}</h2></div><button type="button" className="admin-close-button" onClick={onClose}><X size={16} /></button></div>
+      <div className="admin-form-grid">
+        <label>Branch name<input required value={draft.name} onChange={(event) => update("name", event.target.value)} placeholder="SDC Kurla" /></label>
+        <label>Phone number<input required value={draft.phone} onChange={(event) => update("phone", event.target.value)} /></label>
+        <label>WhatsApp number<input required value={draft.whatsapp} onChange={(event) => update("whatsapp", event.target.value)} /></label>
+        <label>Email<input required type="email" value={draft.email} onChange={(event) => update("email", event.target.value)} /></label>
+        <label className="admin-form-wide">Full address<textarea required rows={2} value={draft.address} onChange={(event) => update("address", event.target.value)} /></label>
+        <label>Opening / appointment hours<input required value={draft.hours} onChange={(event) => update("hours", event.target.value)} /></label>
+        <label>Sunday hours<input required value={draft.sundayHours} onChange={(event) => update("sundayHours", event.target.value)} /></label>
+        <label className="admin-form-wide">Google Maps URL<input value={draft.mapUrl} onChange={(event) => update("mapUrl", event.target.value)} /></label>
+        <label className="admin-checkbox"><input type="checkbox" checked={draft.isActive} onChange={(event) => update("isActive", event.target.checked)} /> Allow patients to book this branch</label>
+        <label className="admin-form-wide">Branch image<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><small>{file?.name || (draft.imagePath ? "Current image retained" : "Optional, up to 10 MB")}</small>{draft.imagePath ? <button type="button" className="admin-quiet-button" onClick={() => { update("imagePath", null); setFile(null); }}>Remove current image</button> : null}</label>
+      </div>
+      <div className="admin-detail-actions"><button className="admin-primary-button" type="submit" disabled={busy}>{busy ? "Saving…" : "Save branch"}</button><button className="admin-quiet-button" type="button" onClick={onClose}>Cancel</button></div>
     </form>
   );
 }

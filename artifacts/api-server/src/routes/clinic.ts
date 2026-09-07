@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
   appointmentStatusValues,
   appointmentsTable,
+  clinicBranchesTable,
   clinicMediaTable,
   clinicSettingsTable,
   clinicTreatmentsTable,
@@ -21,6 +22,7 @@ const appointmentSchema = z.object({
   email: z.string().trim().email().max(160),
   age: z.coerce.number().int().min(1).max(120),
   treatment: z.string().trim().min(2).max(120),
+  branchId: z.coerce.number().int().positive(),
   preferredDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   preferredTime: z.string().trim().min(2).max(40),
   message: z.string().trim().max(500).default(""),
@@ -66,6 +68,31 @@ const mediaSchema = z.object({
   contentType: z.string().trim().regex(/^image\/(jpeg|png|webp|gif)$/),
   size: z.coerce.number().int().positive().max(10 * 1024 * 1024),
 });
+const branchSchema = z.object({
+  name: z.string().trim().min(2).max(120),
+  address: z.string().trim().min(5).max(300),
+  phone: z.string().trim().min(7).max(30),
+  whatsapp: z.string().trim().min(7).max(30),
+  email: z.string().trim().email().max(160),
+  hours: z.string().trim().min(2).max(120),
+  sundayHours: z.string().trim().min(2).max(120),
+  mapUrl: z.string().trim().max(500).default(""),
+  imagePath: z.string().trim().startsWith("/objects/").nullable().optional(),
+  isActive: z.boolean().default(true),
+});
+
+router.get("/branches", async (_req, res) => {
+  try {
+    const branches = await db
+      .select()
+      .from(clinicBranchesTable)
+      .where(eq(clinicBranchesTable.isActive, true))
+      .orderBy(asc(clinicBranchesTable.name));
+    res.json({ branches });
+  } catch (error) {
+    res.status(500).json({ error: "Unable to load clinic branches." });
+  }
+});
 
 router.get("/treatments", async (_req, res) => {
   try {
@@ -101,6 +128,14 @@ router.post("/appointments", async (req, res) => {
   }
 
   try {
+    const [branch] = await db
+      .select({ id: clinicBranchesTable.id })
+      .from(clinicBranchesTable)
+      .where(and(eq(clinicBranchesTable.id, parsed.data.branchId), eq(clinicBranchesTable.isActive, true)));
+    if (!branch) {
+      res.status(400).json({ error: "Please choose an available clinic branch." });
+      return;
+    }
     const [appointment] = await db
       .insert(appointmentsTable)
       .values({
@@ -109,6 +144,7 @@ router.post("/appointments", async (req, res) => {
         email: parsed.data.email,
         age: parsed.data.age,
         treatment: parsed.data.treatment,
+        branchId: parsed.data.branchId,
         appointmentDate: parsed.data.preferredDate,
         appointmentTime: parsed.data.preferredTime,
         notes: parsed.data.message,
@@ -408,6 +444,7 @@ router.patch("/admin/treatments/:id", requireAdmin, async (req, res) => {
     return;
   }
   try {
+    const [existing] = await db.select({ imagePath: clinicTreatmentsTable.imagePath }).from(clinicTreatmentsTable).where(eq(clinicTreatmentsTable.id, id.data));
     const [treatment] = await db.update(clinicTreatmentsTable)
       .set({ ...parsed.data, updatedAt: new Date() })
       .where(eq(clinicTreatmentsTable.id, id.data))
@@ -415,6 +452,10 @@ router.patch("/admin/treatments/:id", requireAdmin, async (req, res) => {
     if (!treatment) {
       res.status(404).json({ error: "Treatment not found." });
       return;
+    }
+    if (existing?.imagePath && existing.imagePath !== treatment.imagePath) {
+      await objectStorageService.delete(existing.imagePath).catch(() => undefined);
+      await db.delete(clinicMediaTable).where(eq(clinicMediaTable.objectPath, existing.imagePath));
     }
     res.json({ treatment });
   } catch (error) {
@@ -486,6 +527,82 @@ router.delete("/admin/media/:id", requireAdmin, async (req, res) => {
   } catch (error) {
     req.log?.error({ err: error }, "Unable to delete media");
     res.status(500).json({ error: "Unable to delete media." });
+  }
+});
+
+router.get("/admin/branches", requireAdmin, async (_req, res) => {
+  try {
+    const branches = await db.select().from(clinicBranchesTable).orderBy(asc(clinicBranchesTable.name));
+    res.json({ branches });
+  } catch (error) {
+    res.status(500).json({ error: "Unable to load clinic branches." });
+  }
+});
+
+router.post("/admin/branches", requireAdmin, async (req, res) => {
+  const parsed = branchSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Please check the branch details." });
+    return;
+  }
+  try {
+    const [branch] = await db.insert(clinicBranchesTable).values(parsed.data).returning();
+    res.status(201).json({ branch });
+  } catch (error) {
+    req.log?.error({ err: error }, "Unable to create branch");
+    res.status(500).json({ error: "Unable to create branch. Branch names must be unique." });
+  }
+});
+
+router.patch("/admin/branches/:id", requireAdmin, async (req, res) => {
+  const id = idSchema.safeParse(req.params.id);
+  const parsed = branchSchema.partial().safeParse(req.body);
+  if (!id.success || !parsed.success) {
+    res.status(400).json({ error: "Please check the branch details." });
+    return;
+  }
+  try {
+    const [existing] = await db.select({ imagePath: clinicBranchesTable.imagePath }).from(clinicBranchesTable).where(eq(clinicBranchesTable.id, id.data));
+    const [branch] = await db.update(clinicBranchesTable)
+      .set({ ...parsed.data, updatedAt: new Date() })
+      .where(eq(clinicBranchesTable.id, id.data))
+      .returning();
+    if (!branch) {
+      res.status(404).json({ error: "Branch not found." });
+      return;
+    }
+    if (existing?.imagePath && existing.imagePath !== branch.imagePath) {
+      await objectStorageService.delete(existing.imagePath).catch(() => undefined);
+      await db.delete(clinicMediaTable).where(eq(clinicMediaTable.objectPath, existing.imagePath));
+    }
+    res.json({ branch });
+  } catch (error) {
+    req.log?.error({ err: error }, "Unable to update branch");
+    res.status(500).json({ error: "Unable to update branch." });
+  }
+});
+
+router.delete("/admin/branches/:id", requireAdmin, async (req, res) => {
+  const id = idSchema.safeParse(req.params.id);
+  if (!id.success) {
+    res.status(400).json({ error: "Invalid branch." });
+    return;
+  }
+  try {
+    const [branch] = await db.select().from(clinicBranchesTable).where(eq(clinicBranchesTable.id, id.data));
+    if (!branch) {
+      res.status(404).json({ error: "Branch not found." });
+      return;
+    }
+    await db.update(appointmentsTable).set({ branchId: null, updatedAt: new Date() }).where(eq(appointmentsTable.branchId, id.data));
+    await db.delete(clinicBranchesTable).where(eq(clinicBranchesTable.id, id.data));
+    if (branch.imagePath) {
+      await objectStorageService.delete(branch.imagePath).catch(() => undefined);
+    }
+    res.status(204).send();
+  } catch (error) {
+    req.log?.error({ err: error }, "Unable to delete branch");
+    res.status(500).json({ error: "Unable to delete branch." });
   }
 });
 

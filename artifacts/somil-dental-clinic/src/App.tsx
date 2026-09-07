@@ -59,6 +59,19 @@ type PublicTreatment = {
   imagePath: string | null;
 };
 
+type PublicBranch = {
+  id: number;
+  name: string;
+  address: string;
+  phone: string;
+  whatsapp: string;
+  email: string;
+  hours: string;
+  sundayHours: string;
+  mapUrl: string;
+  imagePath: string | null;
+};
+
 const iconMap = { Baby, CheckCircle2, CircleDollarSign, ShieldCheck, Smile, Sparkles, Stethoscope };
 const baseApiPath = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/api`;
 
@@ -99,6 +112,7 @@ function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [settings, setSettings] = useState<ClinicSettings | null>(null);
   const [treatments, setTreatments] = useState<PublicTreatment[]>([]);
+  const [branches, setBranches] = useState<PublicBranch[]>([]);
   const [, setLocation] = useLocation();
 
   useEffect(() => {
@@ -106,10 +120,12 @@ function Home() {
     void Promise.all([
       fetch(`${baseApiPath}/settings`).then((response) => response.ok ? response.json() : Promise.reject(new Error('Unable to load clinic settings.'))),
       fetch(`${baseApiPath}/treatments`).then((response) => response.ok ? response.json() : Promise.reject(new Error('Unable to load treatments.'))),
-    ]).then(([settingsResult, treatmentsResult]) => {
+      fetch(`${baseApiPath}/branches`).then((response) => response.ok ? response.json() : Promise.reject(new Error('Unable to load clinic branches.'))),
+    ]).then(([settingsResult, treatmentsResult, branchesResult]) => {
       if (cancelled) return;
       setSettings(settingsResult.settings);
       setTreatments(treatmentsResult.treatments);
+      setBranches(branchesResult.branches);
     }).catch(() => undefined);
     return () => { cancelled = true; };
   }, []);
@@ -327,6 +343,7 @@ function Home() {
                 <a className="contact-detail" href={`mailto:${clinicEmail}`}><Mail size={17} /> {clinicEmail}</a>
                 <span className="contact-detail"><MapPin size={17} /> {clinicAddress}</span>
                 <span className="contact-detail"><Clock3 size={17} /> {settings?.hours}<br /><span className="hours-subline">{settings?.sundayHours}</span></span>
+                <div className="contact-branches"><span className="contact-branches-label">Our branches</span>{branches.map((branch) => <span className="contact-branch" key={branch.id}><strong>{branch.name}</strong><small>{branch.address}</small></span>)}</div>
               </div>
               <button className="button-primary" onClick={() => openAppointment()}>Book Appointment <ArrowRight size={15} /></button>
               <InquiryForm />

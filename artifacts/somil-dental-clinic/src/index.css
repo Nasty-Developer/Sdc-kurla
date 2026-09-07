@@ -298,6 +298,10 @@
 .contact-detail { display: flex; gap: 12px; align-items: flex-start; color: hsl(var(--primary)); font-size: 12px; line-height: 1.45; text-decoration: none; }
 .contact-detail svg { flex: 0 0 auto; color: hsl(var(--accent)); margin-top: 1px; }
 .hours-subline { color: hsl(var(--muted-foreground)); }
+.contact-branches { display: grid; gap: 6px; margin-top: 2px; padding-top: 13px; border-top: 1px solid hsl(191 38% 86%); }
+.contact-branches-label { color: hsl(var(--muted-foreground)); font-size: 9px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.contact-branch { display: grid; gap: 2px; padding-left: 29px; color: hsl(var(--primary)); font-size: 11px; }
+.contact-branch small { color: hsl(var(--muted-foreground)); font-size: 10px; }
 .contact-map { min-height: 360px; position: relative; background: hsl(190 42% 84%); overflow: hidden; }
 .map-grid { position: absolute; inset: -20%; opacity: .55; background: repeating-linear-gradient(34deg, transparent 0 33px, rgba(203,239,242,.85) 34px 37px, transparent 38px 80px), repeating-linear-gradient(120deg, transparent 0 72px, rgba(93,166,181,.28) 73px 77px); transform: rotate(-9deg); }
 .contact-map::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 54% 48%, transparent 0 53px, rgba(14,78,98,.08) 54px 55px, transparent 56px); }
@@ -797,6 +801,18 @@ button:disabled { cursor: not-allowed; }
 .admin-treatment-card > strong { color: hsl(var(--accent)); font: 800 12px 'Manrope', sans-serif; white-space: nowrap; }
 .admin-card-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 6px; padding-top: 10px; border-top: 1px solid hsl(191 38% 93%); }
 .admin-card-actions button { min-height: 30px; }
+.admin-branch-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; }
+.admin-branch-card { display: grid; grid-template-columns: 94px 1fr; gap: 15px; padding: 14px; border: 1px solid hsl(191 38% 86%); border-radius: 12px; background: #fff; }
+.admin-branch-card.is-disabled { opacity: .62; }
+.admin-branch-image { display: grid; place-items: center; min-height: 94px; color: hsl(var(--accent)); border-radius: 9px; background: hsl(187 69% 91%); overflow: hidden; }
+.admin-branch-image img { width: 100%; height: 100%; min-height: 94px; object-fit: cover; }
+.admin-branch-content { min-width: 0; }
+.admin-branch-heading { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+.admin-branch-heading h3 { margin: 1px 0 4px; color: hsl(var(--primary)); font: 800 12px 'Manrope', sans-serif; }
+.admin-branch-heading small { color: hsl(var(--muted-foreground)); font-size: 9px; }
+.admin-branch-heading > strong { color: hsl(var(--accent)); font: 800 10px 'Manrope', sans-serif; white-space: nowrap; }
+.admin-branch-content > p { margin: 12px 0 7px; color: hsl(var(--muted-foreground)); font-size: 10px; line-height: 1.45; }
+.admin-branch-meta { display: grid; gap: 3px; color: hsl(var(--muted-foreground)); font-size: 9px; line-height: 1.35; }
 .admin-editor-card { max-width: 900px; margin-bottom: 20px; padding: 23px; border: 1px solid hsl(191 38% 86%); border-radius: 14px; background: #fff; box-shadow: 0 8px 24px rgba(30,100,128,.04); }
 .admin-form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 .admin-form-grid label { display: grid; gap: 6px; color: hsl(var(--primary)); font-size: 10px; font-weight: 800; }
@@ -897,6 +913,7 @@ button:disabled { cursor: not-allowed; }
   .admin-filter { width: 100%; }
   .admin-filter select { width: 100%; }
   .admin-treatment-grid { grid-template-columns: 1fr; }
+  .admin-branch-grid { grid-template-columns: 1fr; }
   .admin-media-grid { grid-template-columns: repeat(2, 1fr); }
   .admin-settings-grid { grid-template-columns: 1fr; }
   .admin-inline-error { margin-top: -12px; }
