@@ -73,3 +73,61 @@ export const clinicAdminUsersTable = pgTable(
 
 export type ClinicAdminUser = typeof clinicAdminUsersTable.$inferSelect;
 export type NewClinicAdminUser = typeof clinicAdminUsersTable.$inferInsert;
+
+export const clinicTreatmentsTable = pgTable(
+  "clinic_treatments",
+  {
+    id: serial("id").primaryKey(),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    price: text("price").notNull(),
+    icon: text("icon").notNull().default("Stethoscope"),
+    imagePath: text("image_path"),
+    isActive: boolean("is_active").notNull().default(true),
+    displayOrder: integer("display_order").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("clinic_treatments_title_key").on(table.title),
+    index("clinic_treatments_active_order_idx").on(table.isActive, table.displayOrder),
+  ],
+);
+
+export const clinicMediaTable = pgTable(
+  "clinic_media",
+  {
+    id: serial("id").primaryKey(),
+    objectPath: text("object_path").notNull(),
+    originalName: text("original_name").notNull(),
+    contentType: text("content_type").notNull(),
+    size: integer("size").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("clinic_media_object_path_key").on(table.objectPath),
+    index("clinic_media_created_at_idx").on(table.createdAt),
+  ],
+);
+
+export const clinicSettingsTable = pgTable("clinic_settings", {
+  id: integer("id").primaryKey().default(1),
+  clinicName: text("clinic_name").notNull(),
+  phone: text("phone").notNull(),
+  whatsapp: text("whatsapp").notNull(),
+  email: text("email").notNull(),
+  address: text("address").notNull(),
+  hours: text("hours").notNull(),
+  sundayHours: text("sunday_hours").notNull(),
+  socialInstagram: text("social_instagram").notNull().default(""),
+  socialFacebook: text("social_facebook").notNull().default(""),
+  mapUrl: text("map_url").notNull().default(""),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type ClinicTreatment = typeof clinicTreatmentsTable.$inferSelect;
+export type NewClinicTreatment = typeof clinicTreatmentsTable.$inferInsert;
+export type ClinicMedia = typeof clinicMediaTable.$inferSelect;
+export type NewClinicMedia = typeof clinicMediaTable.$inferInsert;
+export type ClinicSettings = typeof clinicSettingsTable.$inferSelect;
+export type NewClinicSettings = typeof clinicSettingsTable.$inferInsert;

@@ -8,6 +8,9 @@ type AssistantMessage = {
   showBooking?: boolean;
 };
 
+type AssistantSettings = { address: string; phone: string; email: string; hours: string; sundayHours: string };
+type AssistantTreatment = { title: string; price: string };
+
 const quickPrompts = [
   'What are your clinic hours?',
   'How much is a root canal?',
@@ -15,12 +18,17 @@ const quickPrompts = [
   'I need an appointment',
 ];
 
-const clinicAddress = 'Chawl bazar ward, Jai Ambika nagar, near Rolex hotel, Halav Pool, Kunchi kurway, Mumbai, Maharashtra 400070';
-const clinicPhone = '+91 8591434914';
-const clinicEmail = 'somilg449@gmail.com';
-
-function getAssistantReply(question: string): Omit<AssistantMessage, 'id'> {
+function getAssistantReply(question: string, settings: AssistantSettings | null, treatments: AssistantTreatment[]): Omit<AssistantMessage, 'id'> {
   const input = question.toLowerCase().trim();
+  const clinicAddress = settings?.address || 'the clinic address listed on the contact section';
+  const clinicPhone = settings?.phone || 'the clinic phone number listed on the contact section';
+  const clinicEmail = settings?.email || 'the clinic email listed on the contact section';
+  const findTreatment = (pattern: RegExp) => treatments.find((treatment) => pattern.test(treatment.title.toLowerCase()));
+  const rootCanal = findTreatment(/root canal|rct/);
+  const cleaning = findTreatment(/clean|scaling/);
+  const whitening = findTreatment(/whiten|bright/);
+  const braces = findTreatment(/brace|orthodont/);
+  const pediatric = findTreatment(/child|kid|pediatric/);
 
   if (/appointment|book|visit|schedule|consult/.test(input)) {
     return {
@@ -33,14 +41,14 @@ function getAssistantReply(question: string): Omit<AssistantMessage, 'id'> {
   if (/hour|open|close|time|when/.test(input)) {
     return {
       role: 'assistant',
-      text: 'The clinic is open Monday to Saturday from 6:30 PM to 10:00 PM. Sunday is closed for maintenance.',
+      text: `The clinic hours are ${settings?.hours || 'available in the contact section'}. ${settings?.sundayHours || ''}`.trim(),
     };
   }
 
   if (/root canal|rct|endodont/.test(input)) {
     return {
       role: 'assistant',
-      text: 'Root Canal Treatment is listed at ₹3,000. Dr. Somil focuses on comfortable, patient-first endodontic care. Final treatment needs are confirmed during consultation.',
+      text: `${rootCanal?.title || 'Root Canal Treatment'} is listed at ${rootCanal?.price || 'a consultation-based price'}. Dr. Somil focuses on comfortable, patient-first endodontic care. Final treatment needs are confirmed during consultation.`,
       showBooking: true,
     };
   }
@@ -48,7 +56,7 @@ function getAssistantReply(question: string): Omit<AssistantMessage, 'id'> {
   if (/clean|scaling|polish/.test(input)) {
     return {
       role: 'assistant',
-      text: 'Teeth Cleaning is listed at ₹500 and includes professional scaling and polishing to remove plaque.',
+      text: `${cleaning?.title || 'Teeth Cleaning'} is listed at ${cleaning?.price || 'a consultation-based price'} and includes professional scaling and polishing to remove plaque.`,
       showBooking: true,
     };
   }
@@ -56,7 +64,7 @@ function getAssistantReply(question: string): Omit<AssistantMessage, 'id'> {
   if (/whiten|bright/.test(input)) {
     return {
       role: 'assistant',
-      text: 'Teeth Whitening is listed at ₹3,000. The clinic can guide you on the right approach after checking your teeth and gums.',
+      text: `${whitening?.title || 'Teeth Whitening'} is listed at ${whitening?.price || 'a consultation-based price'}. The clinic can guide you on the right approach after checking your teeth and gums.`,
       showBooking: true,
     };
   }
@@ -64,7 +72,7 @@ function getAssistantReply(question: string): Omit<AssistantMessage, 'id'> {
   if (/brace|orthodont/.test(input)) {
     return {
       role: 'assistant',
-      text: 'Braces / Orthodontics is listed at ₹20,000. Book a consultation so the team can discuss the right plan for your bite and smile.',
+      text: `${braces?.title || 'Braces / Orthodontics'} is listed at ${braces?.price || 'a consultation-based price'}. Book a consultation so the team can discuss the right plan for your bite and smile.`,
       showBooking: true,
     };
   }
@@ -72,7 +80,7 @@ function getAssistantReply(question: string): Omit<AssistantMessage, 'id'> {
   if (/child|kid|pediatric/.test(input)) {
     return {
       role: 'assistant',
-      text: 'Pediatric Dentistry is listed at ₹300, with a gentle approach designed for children.',
+      text: `${pediatric?.title || 'Pediatric Dentistry'} is listed at ${pediatric?.price || 'a consultation-based price'}, with a gentle approach designed for children.`,
       showBooking: true,
     };
   }
@@ -80,7 +88,7 @@ function getAssistantReply(question: string): Omit<AssistantMessage, 'id'> {
   if (/price|cost|fee|how much|rate|₹|rupee/.test(input)) {
     return {
       role: 'assistant',
-      text: 'Listed treatments start at ₹100 for a Dental Checkup. Other examples: Teeth Cleaning ₹500, Root Canal Treatment ₹3,000, Teeth Whitening ₹3,000, Dental Implant ₹10,000, and Braces / Orthodontics ₹20,000. The clinic confirms the final plan after consultation.',
+      text: treatments.length ? `Listed treatments include ${treatments.slice(0, 6).map((treatment) => `${treatment.title} ${treatment.price}`).join(', ')}. The clinic confirms the final plan after consultation.` : 'Treatment prices are available after the clinic catalog loads. The clinic confirms the final plan after consultation.',
       showBooking: true,
     };
   }
@@ -88,7 +96,7 @@ function getAssistantReply(question: string): Omit<AssistantMessage, 'id'> {
   if (/treatment|service|offer|do you do/.test(input)) {
     return {
       role: 'assistant',
-      text: 'The clinic offers checkups, cleaning, extractions, root canals, fillings, whitening, braces, crowns, implants, pediatric dentistry, and dentures / RPD.',
+      text: treatments.length ? `The clinic offers ${treatments.map((treatment) => treatment.title).join(', ')}.` : 'The clinic treatment catalog is available in the Treatments section.',
       showBooking: true,
     };
   }
@@ -110,7 +118,7 @@ function getAssistantReply(question: string): Omit<AssistantMessage, 'id'> {
   if (/pain|emergency|injur|swelling|bleed/.test(input)) {
     return {
       role: 'assistant',
-      text: 'For severe pain, swelling, bleeding, or a dental injury, please contact the clinic directly at +91 8591434914. If you have a serious medical emergency, contact local emergency services.',
+      text: `For severe pain, swelling, bleeding, or a dental injury, please contact the clinic directly at ${clinicPhone}. If you have a serious medical emergency, contact local emergency services.`,
     };
   }
 
@@ -120,7 +128,7 @@ function getAssistantReply(question: string): Omit<AssistantMessage, 'id'> {
   };
 }
 
-export default function DentalAssistant({ onBookAppointment }: { onBookAppointment: () => void }) {
+export default function DentalAssistant({ onBookAppointment, settings, treatments }: { onBookAppointment: () => void; settings: AssistantSettings | null; treatments: AssistantTreatment[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -146,7 +154,7 @@ export default function DentalAssistant({ onBookAppointment }: { onBookAppointme
     setIsTyping(true);
 
     window.setTimeout(() => {
-      setMessages((current) => [...current, { id: Date.now() + 1, ...getAssistantReply(trimmedQuestion) }]);
+      setMessages((current) => [...current, { id: Date.now() + 1, ...getAssistantReply(trimmedQuestion, settings, treatments) }]);
       setIsTyping(false);
     }, 420);
   };

@@ -1,29 +1,19 @@
 import { Router, type IRouter } from "express";
-import { and, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import {
   appointmentStatusValues,
   appointmentsTable,
+  clinicMediaTable,
+  clinicSettingsTable,
+  clinicTreatmentsTable,
   db,
   inquiriesTable,
 } from "@workspace/db";
 import { requireAdmin } from "../middlewares/adminAuth";
+import { objectStorageService } from "../lib/objectStorage";
 
 const router: IRouter = Router();
-
-const treatmentOptions = [
-  { title: "Dental Checkup", price: "₹100", copy: "Complete oral examination and consultation." },
-  { title: "Teeth Cleaning", price: "₹500", copy: "Professional scaling and polishing to remove plaque." },
-  { title: "Tooth Extraction", price: "₹500", copy: "Safe and painless removal of damaged teeth." },
-  { title: "Root Canal Treatment", price: "₹3000", copy: "Advanced endodontic therapy to save infected teeth." },
-  { title: "Dental Filling", price: "₹500", copy: "Tooth-colored composite restorations for cavities." },
-  { title: "Teeth Whitening", price: "₹3000", copy: "Advanced bleaching for a brighter, confident smile." },
-  { title: "Braces / Orthodontics", price: "₹20000", copy: "Straighten your teeth and correct your bite." },
-  { title: "Dental Crown", price: "₹1500", copy: "Ceramic caps to restore tooth shape and strength." },
-  { title: "Dental Implant", price: "₹10000", copy: "Permanent replacement for missing teeth." },
-  { title: "Pediatric Dentistry", price: "₹300", copy: "Specialized, gentle dental care for children." },
-  { title: "Dentures And RPD", price: "₹1500", copy: "Removable bridge replacing missing teeth and gaps." },
-] as const;
 
 const appointmentSchema = z.object({
   fullName: z.string().trim().min(2).max(80),
@@ -45,6 +35,63 @@ const inquirySchema = z.object({
 
 const idSchema = z.coerce.number().int().positive();
 const statusSchema = z.enum(appointmentStatusValues);
+const appointmentScheduleSchema = z.object({
+  appointmentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  appointmentTime: z.enum(["6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM"]),
+});
+const treatmentSchema = z.object({
+  title: z.string().trim().min(2).max(120),
+  description: z.string().trim().min(2).max(500),
+  price: z.string().trim().min(1).max(40),
+  icon: z.string().trim().min(1).max(40).default("Stethoscope"),
+  imagePath: z.string().trim().startsWith("/objects/").nullable().optional(),
+  isActive: z.boolean().default(true),
+  displayOrder: z.coerce.number().int().min(0).max(9999).default(0),
+});
+const settingsSchema = z.object({
+  clinicName: z.string().trim().min(2).max(120),
+  phone: z.string().trim().min(7).max(30),
+  whatsapp: z.string().trim().min(7).max(30),
+  email: z.string().trim().email().max(160),
+  address: z.string().trim().min(5).max(300),
+  hours: z.string().trim().min(2).max(120),
+  sundayHours: z.string().trim().min(2).max(120),
+  socialInstagram: z.string().trim().max(300).default(""),
+  socialFacebook: z.string().trim().max(300).default(""),
+  mapUrl: z.string().trim().max(500).default(""),
+});
+const mediaSchema = z.object({
+  objectPath: z.string().trim().startsWith("/objects/"),
+  originalName: z.string().trim().min(1).max(255),
+  contentType: z.string().trim().regex(/^image\/(jpeg|png|webp|gif)$/),
+  size: z.coerce.number().int().positive().max(10 * 1024 * 1024),
+});
+
+router.get("/treatments", async (_req, res) => {
+  try {
+    const treatments = await db
+      .select()
+      .from(clinicTreatmentsTable)
+      .where(eq(clinicTreatmentsTable.isActive, true))
+      .orderBy(asc(clinicTreatmentsTable.displayOrder), asc(clinicTreatmentsTable.title));
+    res.json({ treatments });
+  } catch (error) {
+    res.status(500).json({ error: "Unable to load treatments." });
+  }
+});
+
+router.get("/settings", async (_req, res) => {
+  try {
+    const [settings] = await db.select().from(clinicSettingsTable).limit(1);
+    if (!settings) {
+      res.status(404).json({ error: "Clinic settings are not configured." });
+      return;
+    }
+    res.json({ settings });
+  } catch (error) {
+    res.status(500).json({ error: "Unable to load clinic settings." });
+  }
+});
 
 router.post("/appointments", async (req, res) => {
   const parsed = appointmentSchema.safeParse(req.body);
@@ -96,9 +143,10 @@ router.post("/inquiries", async (req, res) => {
 
 router.get("/admin/dashboard", requireAdmin, async (req, res) => {
   try {
-    const [appointments, inquiries] = await Promise.all([
+    const [appointments, inquiries, activeTreatments] = await Promise.all([
       db.select().from(appointmentsTable).orderBy(desc(appointmentsTable.submittedAt)),
       db.select().from(inquiriesTable).orderBy(desc(inquiriesTable.submittedAt)),
+      db.select({ id: clinicTreatmentsTable.id }).from(clinicTreatmentsTable).where(eq(clinicTreatmentsTable.isActive, true)),
     ]);
 
     const counts = {
@@ -109,6 +157,7 @@ router.get("/admin/dashboard", requireAdmin, async (req, res) => {
       cancelledAppointments: appointments.filter((item) => item.status === "cancelled").length,
       totalInquiries: inquiries.length,
       unreadInquiries: inquiries.filter((item) => !item.isRead).length,
+      activeTreatments: activeTreatments.length,
     };
 
     const recentActivity = [
@@ -181,6 +230,37 @@ router.patch("/admin/appointments/:id/status", requireAdmin, async (req, res) =>
   } catch (error) {
     req.log?.error({ err: error }, "Unable to update appointment");
     res.status(500).json({ error: "Unable to update appointment." });
+  }
+});
+
+router.patch("/admin/appointments/:id/schedule", requireAdmin, async (req, res) => {
+  const id = idSchema.safeParse(req.params.id);
+  const schedule = appointmentScheduleSchema.safeParse(req.body);
+  if (!id.success || !schedule.success) {
+    res.status(400).json({ error: "Choose a valid future date and clinic appointment time." });
+    return;
+  }
+  const selectedDate = new Date(`${schedule.data.appointmentDate}T00:00:00`);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (Number.isNaN(selectedDate.getTime()) || selectedDate < today) {
+    res.status(400).json({ error: "Appointments must be scheduled for today or a future date." });
+    return;
+  }
+  try {
+    const [appointment] = await db
+      .update(appointmentsTable)
+      .set({ ...schedule.data, updatedAt: new Date() })
+      .where(eq(appointmentsTable.id, id.data))
+      .returning();
+    if (!appointment) {
+      res.status(404).json({ error: "Appointment not found." });
+      return;
+    }
+    res.json({ appointment });
+  } catch (error) {
+    req.log?.error({ err: error }, "Unable to reschedule appointment");
+    res.status(500).json({ error: "Unable to reschedule appointment." });
   }
 });
 
@@ -296,8 +376,144 @@ router.delete("/admin/inquiries/:id", requireAdmin, async (req, res) => {
   }
 });
 
-router.get("/admin/treatments", requireAdmin, (_req, res) => {
-  res.json({ treatments: treatmentOptions });
+router.get("/admin/treatments", requireAdmin, async (_req, res) => {
+  try {
+    const treatments = await db.select().from(clinicTreatmentsTable).orderBy(asc(clinicTreatmentsTable.displayOrder), asc(clinicTreatmentsTable.title));
+    res.json({ treatments });
+  } catch (error) {
+    res.status(500).json({ error: "Unable to load treatments." });
+  }
+});
+
+router.post("/admin/treatments", requireAdmin, async (req, res) => {
+  const parsed = treatmentSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Please check the treatment details." });
+    return;
+  }
+  try {
+    const [treatment] = await db.insert(clinicTreatmentsTable).values(parsed.data).returning();
+    res.status(201).json({ treatment });
+  } catch (error) {
+    req.log?.error({ err: error }, "Unable to create treatment");
+    res.status(500).json({ error: "Unable to create treatment. Titles must be unique." });
+  }
+});
+
+router.patch("/admin/treatments/:id", requireAdmin, async (req, res) => {
+  const id = idSchema.safeParse(req.params.id);
+  const parsed = treatmentSchema.partial().safeParse(req.body);
+  if (!id.success || !parsed.success) {
+    res.status(400).json({ error: "Please check the treatment details." });
+    return;
+  }
+  try {
+    const [treatment] = await db.update(clinicTreatmentsTable)
+      .set({ ...parsed.data, updatedAt: new Date() })
+      .where(eq(clinicTreatmentsTable.id, id.data))
+      .returning();
+    if (!treatment) {
+      res.status(404).json({ error: "Treatment not found." });
+      return;
+    }
+    res.json({ treatment });
+  } catch (error) {
+    req.log?.error({ err: error }, "Unable to update treatment");
+    res.status(500).json({ error: "Unable to update treatment." });
+  }
+});
+
+router.delete("/admin/treatments/:id", requireAdmin, async (req, res) => {
+  const id = idSchema.safeParse(req.params.id);
+  if (!id.success) {
+    res.status(400).json({ error: "Invalid treatment." });
+    return;
+  }
+  try {
+    const [treatment] = await db.delete(clinicTreatmentsTable).where(eq(clinicTreatmentsTable.id, id.data)).returning();
+    if (!treatment) {
+      res.status(404).json({ error: "Treatment not found." });
+      return;
+    }
+    if (treatment.imagePath) {
+      await objectStorageService.delete(treatment.imagePath).catch(() => undefined);
+    }
+    res.status(204).send();
+  } catch (error) {
+    req.log?.error({ err: error }, "Unable to delete treatment");
+    res.status(500).json({ error: "Unable to delete treatment." });
+  }
+});
+
+router.get("/admin/media", requireAdmin, async (_req, res) => {
+  try {
+    const media = await db.select().from(clinicMediaTable).orderBy(desc(clinicMediaTable.createdAt));
+    res.json({ media });
+  } catch (error) {
+    res.status(500).json({ error: "Unable to load media." });
+  }
+});
+
+router.post("/admin/media", requireAdmin, async (req, res) => {
+  const parsed = mediaSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Please check the uploaded image details." });
+    return;
+  }
+  try {
+    const [media] = await db.insert(clinicMediaTable).values(parsed.data).returning();
+    res.status(201).json({ media });
+  } catch (error) {
+    req.log?.error({ err: error }, "Unable to save media");
+    res.status(500).json({ error: "Unable to save uploaded image." });
+  }
+});
+
+router.delete("/admin/media/:id", requireAdmin, async (req, res) => {
+  const id = idSchema.safeParse(req.params.id);
+  if (!id.success) {
+    res.status(400).json({ error: "Invalid media item." });
+    return;
+  }
+  try {
+    const [media] = await db.delete(clinicMediaTable).where(eq(clinicMediaTable.id, id.data)).returning();
+    if (!media) {
+      res.status(404).json({ error: "Media item not found." });
+      return;
+    }
+    await objectStorageService.delete(media.objectPath).catch(() => undefined);
+    res.status(204).send();
+  } catch (error) {
+    req.log?.error({ err: error }, "Unable to delete media");
+    res.status(500).json({ error: "Unable to delete media." });
+  }
+});
+
+router.get("/admin/settings", requireAdmin, async (_req, res) => {
+  const [settings] = await db.select().from(clinicSettingsTable).limit(1);
+  if (!settings) {
+    res.status(404).json({ error: "Clinic settings are not configured." });
+    return;
+  }
+  res.json({ settings });
+});
+
+router.patch("/admin/settings", requireAdmin, async (req, res) => {
+  const parsed = settingsSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Please check the clinic settings." });
+    return;
+  }
+  try {
+    const [existing] = await db.select().from(clinicSettingsTable).limit(1);
+    const [settings] = existing
+      ? await db.update(clinicSettingsTable).set({ ...parsed.data, updatedAt: new Date() }).where(eq(clinicSettingsTable.id, existing.id)).returning()
+      : await db.insert(clinicSettingsTable).values({ id: 1, ...parsed.data }).returning();
+    res.json({ settings });
+  } catch (error) {
+    req.log?.error({ err: error }, "Unable to update clinic settings");
+    res.status(500).json({ error: "Unable to update clinic settings." });
+  }
 });
 
 export default router;

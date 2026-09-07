@@ -1,1 +1,2 @@
 - [Imported repository sync](imported-repository-sync.md) — validate cloned artifact files for merge markers before relying on preview registration.
+- [Clinic build inputs](clinic-build-inputs.md) — the production Vite build requires PORT and BASE_PATH in its environment.

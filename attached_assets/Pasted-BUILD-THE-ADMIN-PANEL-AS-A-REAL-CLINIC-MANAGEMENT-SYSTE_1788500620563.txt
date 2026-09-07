@@ -1,0 +1,204 @@
+BUILD THE ADMIN PANEL AS A REAL CLINIC MANAGEMENT SYSTEM
+
+The public website is already designed and approved. Do not redesign or change the public website's existing theme, colors, branding, typography, hero, doctor image, or layout.
+
+I want to make the Admin Panel fully functional, so I can actually manage my dental clinic website from one place.
+
+1. APPOINTMENT MANAGEMENT
+
+Create a complete Appointments management system in the Admin Panel.
+
+Every appointment submitted from the public website must automatically appear in the Admin Panel using the real production database.
+
+For every appointment, show:
+
+Patient name
+Phone
+Email
+Treatment
+Appointment date
+Appointment time
+Patient notes/message
+Booking ID
+Created date/time
+Current status
+
+Allow the admin to:
+
+View full appointment details
+Confirm an appointment
+Mark it as pending
+Mark it as completed
+Cancel it
+Reschedule/change date and time
+Delete an appointment
+
+Include useful filters:
+
+All | Pending | Confirmed | Completed | Cancelled
+
+Also include search by patient name, phone, email, treatment, or booking ID.
+
+2. INQUIRY MANAGEMENT
+
+Every Contact/Inquiry submitted from the public website must appear in the Admin Panel.
+
+Show:
+
+Name
+Phone
+Email
+Message
+Date/time
+Read/unread status
+
+Allow the admin to:
+
+Open an inquiry
+Mark it read/unread
+Delete it
+Search and filter inquiries
+3. TREATMENT MANAGEMENT
+
+Do NOT make Treatments & Pricing read-only.
+
+I want the Admin Panel to be able to manage the public treatment catalog.
+
+Allow admin to:
+
+Add a new treatment
+Edit an existing treatment
+Delete a treatment
+Change treatment name
+Add/edit a short description
+Add/edit price
+Add a treatment image
+Change the treatment image
+Enable/disable a treatment
+Control its display/order on the public website
+
+Example:
+
+Treatment: Root Canal Treatment
+Short info: Professional root canal treatment for damaged or infected teeth.
+Price: ₹3000
+Image: uploaded by admin
+
+When the admin adds or edits a treatment, the public Treatments & Pricing section should automatically use the updated database data.
+
+No hardcoded treatment cards for the production catalog.
+
+4. IMAGE / MEDIA MANAGEMENT
+
+Add a simple admin area where I can manage clinic images.
+
+I should be able to:
+
+Upload images
+Replace images
+Remove images
+Add images for treatments
+Manage relevant clinic/website images
+
+Use proper persistent storage suitable for the Vercel production deployment. Do not store important uploaded images only in temporary server storage.
+
+5. SETTINGS
+
+Create a useful Settings section for clinic administration.
+
+Include editable settings where appropriate, such as:
+
+Clinic name
+Clinic phone number
+WhatsApp number
+Email
+Clinic address
+Opening/appointment hours
+Social/contact information
+Website contact details
+
+Changes should be saved to the production database and used by the public website where applicable.
+
+6. DASHBOARD
+
+The Admin Dashboard should show real-time/real database information:
+
+Total appointments
+Pending
+Confirmed
+Completed
+Cancelled
+Total inquiries
+Unread inquiries
+Number of active treatments
+Recent appointments
+Recent inquiries
+
+Do not use fake or hardcoded numbers.
+
+7. REAL PRODUCTION DATA
+
+Everything must use the real production data flow:
+
+Public Website → Vercel Backend/API → Persistent Database → Admin Panel
+
+And:
+
+Admin Panel → Database → Public Website
+
+for treatments, prices, images, and editable settings.
+
+Do NOT use:
+
+Mock data
+Hardcoded bookings
+Fake inquiries
+In-memory arrays
+localStorage as the database
+Temporary data
+Frontend-only state
+8. SECURITY
+
+Keep the Admin Panel protected by the existing Clerk authentication system.
+
+Only authorized admin accounts can access /admin.
+
+Normal patients/users must NOT be able to access the Admin Panel.
+
+Protect the backend/API routes too, not just the frontend page.
+
+Never expose admin credentials or secrets in frontend code.
+
+9. PRODUCTION DEPLOYMENT
+
+The entire system must work correctly when deployed on Vercel.
+
+Before finishing, test:
+
+Public booking → database → Admin Panel
+
+Public inquiry → database → Admin Panel
+
+Admin adds treatment → public website displays it
+
+Admin edits price → public website shows updated price
+
+Admin uploads/replaces image → public website uses the updated image
+
+Admin changes appointment status → status persists after refresh
+
+🚨 DO NOT REDESIGN THE PUBLIC WEBSITE
+
+This task is about making the Admin Panel functional, not redesigning the website.
+
+Preserve the existing:
+
+Light blue / teal / navy theme
+SDC logo
+SOMIL DENTAL CLINIC branding
+Real doctor photo
+Hero section
+Navigation
+Existing public layout
+
+Build the Admin Panel as a real production management system, not a static dashboard mockup.

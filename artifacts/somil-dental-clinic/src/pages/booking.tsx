@@ -6,25 +6,13 @@ import { Link, useLocation } from 'wouter';
 import { z } from 'zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
-const clinicAddress = 'Chawl bazar ward, Jai Ambika nagar, near Rolex hotel, Halav Pool, Kunchi kurway, Mumbai, Maharashtra 400070';
-const clinicPhone = '+91 8591434914';
-const clinicEmail = 'somilg449@gmail.com';
-const clinicHours = 'Monday - Saturday, 6:30 PM - 10:00 PM';
-
-const treatmentOptions = [
-  'General Consultation',
-  'Dental Checkup',
-  'Teeth Cleaning',
-  'Tooth Extraction',
-  'Root Canal Treatment',
-  'Dental Filling',
-  'Teeth Whitening',
-  'Braces / Orthodontics',
-  'Dental Crown',
-  'Dental Implant',
-  'Pediatric Dentistry',
-  'Dentures And RPD',
-] as const;
+type BookingSettings = {
+  phone: string;
+  email: string;
+  address: string;
+  hours: string;
+  sundayHours: string;
+};
 
 const appointmentTimes = [
   '6:30 PM',
@@ -42,7 +30,7 @@ const bookingSchema = z.object({
   phone: z.string().trim().regex(/^\+?[0-9\s()-]{10,18}$/, 'Enter a valid phone number.'),
   email: z.string().trim().email('Enter a valid email address.'),
   age: z.string().trim().regex(/^\d{1,3}$/, 'Enter your age in years.').refine((value) => Number(value) >= 1 && Number(value) <= 120, 'Age must be between 1 and 120.'),
-  treatment: z.enum(treatmentOptions, { errorMap: () => ({ message: 'Please choose a treatment.' }) }),
+  treatment: z.string().min(2, 'Please choose a treatment.'),
   preferredDate: z.string().min(1, 'Please choose a preferred date.').refine((value) => {
     const chosen = new Date(`${value}T00:00:00`);
     const today = new Date();
@@ -71,12 +59,23 @@ export default function BookingPage() {
   const [location, setLocation] = useLocation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedValues, setSubmittedValues] = useState<BookingValues | null>(null);
+  const [treatmentOptions, setTreatmentOptions] = useState<string[]>(['General Consultation']);
+  const [settings, setSettings] = useState<BookingSettings | null>(null);
   const today = useMemo(getToday, []);
+  useEffect(() => {
+    void Promise.all([
+      fetch(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/api/treatments`).then((response) => response.ok ? response.json() : Promise.reject(new Error())),
+      fetch(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/api/settings`).then((response) => response.ok ? response.json() : Promise.reject(new Error())),
+    ]).then(([treatmentResult, settingsResult]) => {
+      setTreatmentOptions(['General Consultation', ...treatmentResult.treatments.map((treatment: { title: string }) => treatment.title)]);
+      setSettings(settingsResult.settings);
+    }).catch(() => undefined);
+  }, []);
   const treatmentFromQuery = useMemo(() => {
     const query = location.split('?')[1] ?? '';
     const value = new URLSearchParams(query).get('treatment');
-    return value && treatmentOptions.includes(value as typeof treatmentOptions[number]) ? value as typeof treatmentOptions[number] : 'General Consultation';
-  }, [location]);
+    return value && treatmentOptions.includes(value) ? value : 'General Consultation';
+  }, [location, treatmentOptions]);
 
   const form = useForm<BookingValues>({
     resolver: zodResolver(bookingSchema),
@@ -139,11 +138,11 @@ export default function BookingPage() {
     <main className="booking-page">
       <header className="booking-header">
         <div className="container-sdc booking-header-inner">
-          <Link href="/" className="brand booking-brand" data-testid="link-booking-brand">
+            <Link href="/" className="brand booking-brand">
             <span className="brand-mark">SDC</span>
             <span className="brand-copy"><strong>SOMIL</strong><span>Dental clinic</span></span>
           </Link>
-          <Link href="/" className="booking-back" data-testid="link-booking-home"><ArrowLeft size={15} /> Back to clinic</Link>
+          <Link href="/" className="booking-back"><ArrowLeft size={15} /> Back to clinic</Link>
         </div>
       </header>
 
@@ -155,7 +154,7 @@ export default function BookingPage() {
           <p>Choose your treatment and preferred time. Our clinic team will confirm your appointment.</p>
               <div className="booking-meta">
                 <span><ShieldCheck size={16} /> Secure booking request</span>
-            <span><Clock3 size={16} /> {clinicHours}</span>
+            <span><Clock3 size={16} /> {settings?.hours || 'Clinic hours available after settings load'}</span>
           </div>
         </div>
       </section>
@@ -163,24 +162,24 @@ export default function BookingPage() {
       <section className="booking-content">
         <div className="container-sdc booking-layout">
           {submittedValues ? (
-            <section className="booking-confirmation" aria-live="polite" data-testid="status-booking-confirmation">
+            <section className="booking-confirmation" aria-live="polite">
               <div className="confirmation-icon"><CheckCircle2 size={28} /></div>
               <div className="eyebrow">Request prepared</div>
               <h2>Thank you, {submittedValues.fullName}.</h2>
               <p className="confirmation-lede">Your appointment request has been securely sent to the clinic team. They will contact you to confirm availability.</p>
               <div className="confirmation-summary">
-                <div><span>Treatment</span><strong data-testid="text-confirmation-treatment">{submittedValues.treatment}</strong></div>
-                <div><span>Preferred date</span><strong data-testid="text-confirmation-date">{formatDate(submittedValues.preferredDate)}</strong></div>
-                <div><span>Preferred time</span><strong data-testid="text-confirmation-time">{submittedValues.preferredTime}</strong></div>
-                <div><span>Patient</span><strong data-testid="text-confirmation-name">{submittedValues.fullName}</strong></div>
+                <div><span>Treatment</span><strong>{submittedValues.treatment}</strong></div>
+                <div><span>Preferred date</span><strong>{formatDate(submittedValues.preferredDate)}</strong></div>
+                <div><span>Preferred time</span><strong>{submittedValues.preferredTime}</strong></div>
+                <div><span>Patient</span><strong>{submittedValues.fullName}</strong></div>
               </div>
               <div className="confirmation-note">
                 <strong>To confirm your visit</strong>
-                <p>Please call Somil Dental Clinic on <a href={`tel:${clinicPhone.replace(/\s/g, '')}`} data-testid="link-confirmation-phone">{clinicPhone}</a>. The team can confirm availability and the next step.</p>
+                <p>Please call Somil Dental Clinic on <a href={`tel:${settings?.phone.replace(/\s/g, '')}`}>{settings?.phone}</a>. The team can confirm availability and the next step.</p>
               </div>
               <div className="confirmation-actions">
-                <button className="button-primary" onClick={resetBooking} data-testid="button-book-another">Make another request <ArrowRight size={15} /></button>
-                <Link href="/" className="button-ghost" data-testid="link-confirmation-home">Return to home</Link>
+                <button className="button-primary" onClick={resetBooking}>Make another request <ArrowRight size={15} /></button>
+                <Link href="/" className="button-ghost">Return to home</Link>
               </div>
             </section>
           ) : (
@@ -198,28 +197,28 @@ export default function BookingPage() {
                     <FormField control={form.control} name="fullName" render={({ field }) => (
                       <FormItem className="booking-field">
                         <FormLabel>Full Name <span>*</span></FormLabel>
-                        <FormControl><input {...field} autoComplete="name" placeholder="e.g. Aisha Mehta" data-testid="input-booking-full-name" /></FormControl>
+                        <FormControl><input {...field} autoComplete="name" placeholder="e.g. Aisha Mehta" /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )} />
                     <FormField control={form.control} name="phone" render={({ field }) => (
                       <FormItem className="booking-field">
                         <FormLabel>Phone Number <span>*</span></FormLabel>
-                        <FormControl><input {...field} type="tel" inputMode="tel" autoComplete="tel" placeholder="+91 85914 34914" data-testid="input-booking-phone" /></FormControl>
+                        <FormControl><input {...field} type="tel" inputMode="tel" autoComplete="tel" placeholder="+91 85914 34914" /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )} />
                     <FormField control={form.control} name="email" render={({ field }) => (
                       <FormItem className="booking-field">
                         <FormLabel>Email <span>*</span></FormLabel>
-                        <FormControl><input {...field} type="email" inputMode="email" autoComplete="email" placeholder="you@example.com" data-testid="input-booking-email" /></FormControl>
+                        <FormControl><input {...field} type="email" inputMode="email" autoComplete="email" placeholder="you@example.com" /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )} />
                     <FormField control={form.control} name="age" render={({ field }) => (
                       <FormItem className="booking-field">
                         <FormLabel>Age <span>*</span></FormLabel>
-                        <FormControl><input {...field} type="number" inputMode="numeric" min="1" max="120" placeholder="Your age" data-testid="input-booking-age" /></FormControl>
+                        <FormControl><input {...field} type="number" inputMode="numeric" min="1" max="120" placeholder="Your age" /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )} />
@@ -230,7 +229,7 @@ export default function BookingPage() {
                     <FormItem className="booking-field">
                       <FormLabel>Select Treatment <span>*</span></FormLabel>
                       <FormControl>
-                        <select {...field} data-testid="select-booking-treatment">
+                        <select {...field}>
                           {treatmentOptions.map((option) => <option value={option} key={option}>{option}</option>)}
                         </select>
                       </FormControl>
@@ -242,7 +241,7 @@ export default function BookingPage() {
                     <FormField control={form.control} name="preferredDate" render={({ field }) => (
                       <FormItem className="booking-field">
                         <FormLabel>Preferred Date <span>*</span></FormLabel>
-                        <FormControl><input {...field} type="date" min={today} data-testid="input-booking-date" /></FormControl>
+                        <FormControl><input {...field} type="date" min={today} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )} />
@@ -250,12 +249,12 @@ export default function BookingPage() {
                       <FormItem className="booking-field">
                         <FormLabel>Preferred Time <span>*</span></FormLabel>
                         <FormControl>
-                          <select {...field} data-testid="select-booking-time">
+                          <select {...field}>
                             <option value="">Choose a time</option>
                             {appointmentTimes.map((time) => <option value={time} key={time}>{time}</option>)}
                           </select>
                         </FormControl>
-                        <FormDescription>Clinic hours: 6:30 PM – 10:00 PM.</FormDescription>
+                        <FormDescription>Clinic hours: {settings?.hours || 'Please check with the clinic.'}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )} />
@@ -263,12 +262,12 @@ export default function BookingPage() {
                   <FormField control={form.control} name="message" render={({ field }) => (
                     <FormItem className="booking-field">
                       <FormLabel>Additional Message / Problem Description</FormLabel>
-                      <FormControl><textarea {...field} rows={4} placeholder="Tell us briefly what you would like help with." data-testid="textarea-booking-message" /></FormControl>
+                      <FormControl><textarea {...field} rows={4} placeholder="Tell us briefly what you would like help with." /></FormControl>
                       <FormDescription>Optional · 500 characters maximum.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )} />
-                  <button className="button-primary booking-submit" type="submit" disabled={isSubmitting} data-testid="button-submit-booking">
+                  <button className="button-primary booking-submit" type="submit" disabled={isSubmitting}>
                     {isSubmitting ? <><span className="button-loading" aria-hidden="true" /> Preparing your request…</> : <>Review request <ArrowRight size={16} /></>}
                   </button>
                   {form.formState.errors.root?.message ? <p className="booking-form-error" role="alert">{form.formState.errors.root.message}</p> : null}
@@ -283,14 +282,14 @@ export default function BookingPage() {
               <div className="eyebrow">Need a hand?</div>
               <h2>Prefer to speak directly?</h2>
               <p>Call or email the clinic if you have a question about your care.</p>
-              <a href={`tel:${clinicPhone.replace(/\s/g, '')}`} className="aside-contact-link" data-testid="link-booking-phone"><Phone size={16} /> {clinicPhone}</a>
-              <a href={`mailto:${clinicEmail}`} className="aside-contact-link" data-testid="link-booking-email"><Mail size={16} /> {clinicEmail}</a>
+              <a href={`tel:${settings?.phone.replace(/\s/g, '')}`} className="aside-contact-link"><Phone size={16} /> {settings?.phone}</a>
+              <a href={`mailto:${settings?.email}`} className="aside-contact-link"><Mail size={16} /> {settings?.email}</a>
             </div>
             <div className="aside-card aside-hours">
               <div className="aside-icon"><CalendarDays size={18} /></div>
-              <div><div className="eyebrow">Clinic hours</div><strong>Monday – Saturday</strong><span>6:30 PM – 10:00 PM</span><strong>Sunday</strong><span>Closed for Maintenance</span></div>
+              <div><div className="eyebrow">Clinic hours</div><strong>{settings?.hours}</strong><strong>{settings?.sundayHours}</strong></div>
             </div>
-            <div className="aside-address"><MapPin size={16} /><span>{clinicAddress}</span></div>
+            <div className="aside-address"><MapPin size={16} /><span>{settings?.address}</span></div>
           </aside>
         </div>
       </section>

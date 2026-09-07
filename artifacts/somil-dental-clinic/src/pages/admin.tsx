@@ -9,23 +9,27 @@ import {
   Eye,
   FileText,
   Filter,
+  Image as ImageIcon,
   LayoutDashboard,
   LogOut,
   Mail,
   MailOpen,
   MessageSquare,
+  Pencil,
+  Plus,
   Phone,
   Search,
   Settings2,
   ShieldCheck,
   Trash2,
+  Upload,
   Users,
   X,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useClerk, useUser } from "@clerk/react";
 
-type AdminView = "dashboard" | "appointments" | "inquiries" | "treatments" | "settings";
+type AdminView = "dashboard" | "appointments" | "inquiries" | "treatments" | "media" | "settings";
 type AppointmentStatus = "pending" | "confirmed" | "completed" | "cancelled";
 type AppointmentFilter = "all" | AppointmentStatus;
 type InquiryFilter = "all" | "unread" | "read";
@@ -65,6 +69,7 @@ type Dashboard = {
     cancelledAppointments: number;
     totalInquiries: number;
     unreadInquiries: number;
+    activeTreatments: number;
   };
   recentActivity: Array<{
     type: "appointment" | "inquiry";
@@ -76,7 +81,39 @@ type Dashboard = {
   }>;
 };
 
-type Treatment = { title: string; price: string; copy: string };
+type Treatment = {
+  id: number;
+  title: string;
+  price: string;
+  description: string;
+  icon: string;
+  imagePath: string | null;
+  isActive: boolean;
+  displayOrder: number;
+};
+
+type MediaItem = {
+  id: number;
+  objectPath: string;
+  originalName: string;
+  contentType: string;
+  size: number;
+  createdAt: string;
+};
+
+type ClinicSettings = {
+  id: number;
+  clinicName: string;
+  phone: string;
+  whatsapp: string;
+  email: string;
+  address: string;
+  hours: string;
+  sundayHours: string;
+  socialInstagram: string;
+  socialFacebook: string;
+  mapUrl: string;
+};
 
 const baseApiPath = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/api`;
 
@@ -120,6 +157,8 @@ export default function AdminPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [treatments, setTreatments] = useState<Treatment[]>([]);
+  const [media, setMedia] = useState<MediaItem[]>([]);
+  const [settings, setSettings] = useState<ClinicSettings | null>(null);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -134,16 +173,20 @@ export default function AdminPage() {
     setIsLoading(true);
     setError("");
     try {
-      const [dashboardResult, appointmentResult, inquiryResult, treatmentResult] = await Promise.all([
+      const [dashboardResult, appointmentResult, inquiryResult, treatmentResult, mediaResult, settingsResult] = await Promise.all([
         apiRequest<Dashboard>("/admin/dashboard"),
         apiRequest<{ appointments: Appointment[] }>("/admin/appointments"),
         apiRequest<{ inquiries: Inquiry[] }>("/admin/inquiries"),
         apiRequest<{ treatments: Treatment[] }>("/admin/treatments"),
+        apiRequest<{ media: MediaItem[] }>("/admin/media"),
+        apiRequest<{ settings: ClinicSettings }>("/admin/settings"),
       ]);
       setDashboard(dashboardResult);
       setAppointments(appointmentResult.appointments);
       setInquiries(inquiryResult.inquiries);
       setTreatments(treatmentResult.treatments);
+      setMedia(mediaResult.media);
+      setSettings(settingsResult.settings);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Unable to load the admin panel.");
     } finally {
@@ -197,6 +240,23 @@ export default function AdminPage() {
     }
   };
 
+  const rescheduleAppointment = async (appointment: Appointment, appointmentDate: string, appointmentTime: string) => {
+    setBusyId(`schedule-${appointment.id}`);
+    try {
+      const result = await apiRequest<{ appointment: Appointment }>(`/admin/appointments/${appointment.id}/schedule`, {
+        method: "PATCH",
+        body: JSON.stringify({ appointmentDate, appointmentTime }),
+      });
+      await loadData();
+      setSelectedAppointment(result.appointment);
+    } catch (scheduleError) {
+      setError(scheduleError instanceof Error ? scheduleError.message : "Unable to reschedule appointment.");
+      throw scheduleError;
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   const deleteAppointment = async (appointment: Appointment) => {
     if (!window.confirm(`Delete the appointment request from ${appointment.patientName}?`)) return;
     setBusyId(`delete-${appointment.id}`);
@@ -238,11 +298,90 @@ export default function AdminPage() {
     }
   };
 
+  const uploadImage = async (file: File) => {
+    const uploadResponse = await apiRequest<{ uploadURL: string; objectPath: string }>("/storage/uploads/request-url", {
+      method: "POST",
+      body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
+    });
+    const response = await fetch(uploadResponse.uploadURL, {
+      method: "PUT",
+      headers: { "Content-Type": file.type },
+      body: file,
+    });
+    if (!response.ok) throw new Error("Unable to upload image.");
+    await apiRequest("/admin/media", {
+      method: "POST",
+      body: JSON.stringify({ objectPath: uploadResponse.objectPath, originalName: file.name, contentType: file.type, size: file.size }),
+    });
+    return uploadResponse.objectPath;
+  };
+
+  const saveTreatment = async (
+    values: Omit<Treatment, "id" | "imagePath"> & { imagePath?: string | null },
+    id?: number,
+    file?: File | null,
+  ) => {
+    setBusyId(id ? `treatment-${id}` : "new-treatment");
+    try {
+      const imagePath = file ? await uploadImage(file) : values.imagePath ?? null;
+      await apiRequest(id ? `/admin/treatments/${id}` : "/admin/treatments", {
+        method: id ? "PATCH" : "POST",
+        body: JSON.stringify({ ...values, imagePath }),
+      });
+      await loadData();
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Unable to save treatment.");
+      throw saveError;
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const deleteTreatment = async (treatment: Treatment) => {
+    if (!window.confirm(`Delete ${treatment.title} from the public catalog?`)) return;
+    setBusyId(`delete-treatment-${treatment.id}`);
+    try {
+      await apiRequest(`/admin/treatments/${treatment.id}`, { method: "DELETE" });
+      await loadData();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Unable to delete treatment.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const deleteMedia = async (item: MediaItem) => {
+    if (!window.confirm(`Remove ${item.originalName} from clinic media?`)) return;
+    setBusyId(`media-${item.id}`);
+    try {
+      await apiRequest(`/admin/media/${item.id}`, { method: "DELETE" });
+      await loadData();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Unable to delete media.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const saveSettings = async (nextSettings: Omit<ClinicSettings, "id">) => {
+    setBusyId("settings");
+    try {
+      await apiRequest("/admin/settings", { method: "PATCH", body: JSON.stringify(nextSettings) });
+      await loadData();
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Unable to save clinic settings.");
+      throw saveError;
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   const navItems: Array<{ id: AdminView; label: string; icon: typeof LayoutDashboard }> = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "appointments", label: "Appointments", icon: CalendarDays },
     { id: "inquiries", label: "Inquiries", icon: MessageSquare },
     { id: "treatments", label: "Treatments", icon: ClipboardList },
+    { id: "media", label: "Media", icon: ImageIcon },
     { id: "settings", label: "Settings", icon: Settings2 },
   ];
 
@@ -337,36 +476,12 @@ export default function AdminPage() {
           />
         ) : null}
 
-        {view === "treatments" ? <TreatmentsView treatments={treatments} /> : null}
-        {view === "settings" ? <SettingsView user={user} /> : null}
+        {view === "treatments" ? <TreatmentsView treatments={treatments} onSave={saveTreatment} onDelete={deleteTreatment} busyId={busyId} /> : null}
+        {view === "media" ? <MediaView media={media} onUpload={uploadImage} onDelete={deleteMedia} busyId={busyId} /> : null}
+        {view === "settings" ? <SettingsView user={user} settings={settings} onSave={saveSettings} busyId={busyId} /> : null}
       </section>
 
-      {selectedAppointment ? (
-        <div className="admin-modal-backdrop" role="presentation" onClick={() => setSelectedAppointment(null)}>
-          <section className="admin-detail-modal" role="dialog" aria-modal="true" aria-labelledby="appointment-detail-title" onClick={(event) => event.stopPropagation()}>
-            <div className="admin-detail-head">
-              <div><div className="eyebrow">Appointment request</div><h2 id="appointment-detail-title">{selectedAppointment.patientName}</h2></div>
-              <button className="admin-close-button" onClick={() => setSelectedAppointment(null)} aria-label="Close details"><X size={18} /></button>
-            </div>
-            <span className={`status-badge status-${selectedAppointment.status}`}>{statusLabel(selectedAppointment.status)}</span>
-            <div className="admin-detail-grid">
-              <div><span>Patient</span><strong>{selectedAppointment.patientName}, {selectedAppointment.age}</strong></div>
-              <div><span>Treatment</span><strong>{selectedAppointment.treatment}</strong></div>
-              <div><span>Preferred visit</span><strong>{formatDate(selectedAppointment.appointmentDate)} · {selectedAppointment.appointmentTime}</strong></div>
-              <div><span>Submitted</span><strong>{formatDateTime(selectedAppointment.submittedAt)}</strong></div>
-              <div><span>Phone</span><a href={`tel:${selectedAppointment.phone}`}><Phone size={13} /> {selectedAppointment.phone}</a></div>
-              <div><span>Email</span><a href={`mailto:${selectedAppointment.email}`}><Mail size={13} /> {selectedAppointment.email}</a></div>
-            </div>
-            <div className="admin-detail-notes"><span>Message / notes</span><p>{selectedAppointment.notes || "No additional notes were provided."}</p></div>
-            <div className="admin-detail-actions">
-              {selectedAppointment.status !== "confirmed" ? <button className="admin-primary-button" onClick={() => void updateAppointmentStatus(selectedAppointment, "confirmed")} disabled={busyId === `appointment-${selectedAppointment.id}`}><Check size={15} /> Confirm</button> : null}
-              {selectedAppointment.status !== "completed" ? <button className="admin-secondary-button" onClick={() => void updateAppointmentStatus(selectedAppointment, "completed")} disabled={busyId === `appointment-${selectedAppointment.id}`}><CheckCircle2 size={15} /> Complete</button> : null}
-              {selectedAppointment.status !== "cancelled" ? <button className="admin-danger-button" onClick={() => void updateAppointmentStatus(selectedAppointment, "cancelled")} disabled={busyId === `appointment-${selectedAppointment.id}`}><X size={15} /> Cancel</button> : null}
-              <button className="admin-quiet-button" onClick={() => void deleteAppointment(selectedAppointment)} disabled={busyId === `delete-${selectedAppointment.id}`}><Trash2 size={15} /> Delete</button>
-            </div>
-          </section>
-        </div>
-      ) : null}
+      {selectedAppointment ? <AppointmentDetailModal appointment={selectedAppointment} onClose={() => setSelectedAppointment(null)} onStatus={updateAppointmentStatus} onSchedule={rescheduleAppointment} onDelete={deleteAppointment} busyId={busyId} /> : null}
 
       {selectedInquiry ? (
         <InquiryDetailModal
@@ -390,6 +505,7 @@ function DashboardView({ dashboard, onNavigate }: { dashboard: Dashboard; onNavi
     { label: "Completed", value: counts.completedAppointments, icon: CheckCircle2, tone: "green" },
     { label: "Cancelled", value: counts.cancelledAppointments, icon: X, tone: "rose" },
     { label: "Total inquiries", value: counts.totalInquiries, icon: MessageSquare, tone: "blue" },
+    { label: "Active treatments", value: counts.activeTreatments, icon: ClipboardList, tone: "teal" },
   ];
 
   return (
@@ -435,6 +551,55 @@ function AppointmentsView({ appointments, searchTerm, onSearch, filter, onFilter
       <div className="admin-table-card">
         <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Patient</th><th>Treatment</th><th>Preferred visit</th><th>Submitted</th><th>Status</th><th><span className="sr-only">Actions</span></th></tr></thead><tbody>{appointments.map((appointment) => <tr key={appointment.id}><td><button className="patient-cell" onClick={() => onSelect(appointment)}><span className="patient-initial">{appointment.patientName[0]}</span><span><strong>{appointment.patientName}</strong><small>{appointment.phone}</small></span></button></td><td><span className="table-primary">{appointment.treatment}</span><small className="table-secondary">{appointment.email}</small></td><td><span className="table-primary">{formatDate(appointment.appointmentDate)}</span><small className="table-secondary">{appointment.appointmentTime}</small></td><td><span className="table-secondary">{formatDateTime(appointment.submittedAt)}</span></td><td><select className={`status-select status-${appointment.status}`} value={appointment.status} onChange={(event) => void onStatus(appointment, event.target.value as AppointmentStatus)} disabled={busyId === `appointment-${appointment.id}`} aria-label={`Status for ${appointment.patientName}`}>{(["pending", "confirmed", "completed", "cancelled"] as AppointmentStatus[]).map((status) => <option value={status} key={status}>{statusLabel(status)}</option>)}</select></td><td><div className="table-actions"><button onClick={() => onSelect(appointment)} aria-label={`View ${appointment.patientName}'s booking`}><Eye size={15} /></button><button onClick={() => void onDelete(appointment)} disabled={busyId === `delete-${appointment.id}`} aria-label={`Delete ${appointment.patientName}'s booking`}><Trash2 size={15} /></button></div></td></tr>)}</tbody></table>{appointments.length === 0 ? <EmptyState icon={CalendarDays} title="No appointments found" copy={searchTerm ? "Try a different search term." : "New booking requests will appear here automatically."} /> : null}</div>
       </div>
+    </div>
+  );
+}
+
+function AppointmentDetailModal({ appointment, onClose, onStatus, onSchedule, onDelete, busyId }: {
+  appointment: Appointment;
+  onClose: () => void;
+  onStatus: (appointment: Appointment, status: AppointmentStatus) => void;
+  onSchedule: (appointment: Appointment, date: string, time: string) => Promise<void>;
+  onDelete: (appointment: Appointment) => void;
+  busyId: string | null;
+}) {
+  const [appointmentDate, setAppointmentDate] = useState(appointment.appointmentDate);
+  const [appointmentTime, setAppointmentTime] = useState(appointment.appointmentTime);
+  const appointmentTimes = ["6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM"];
+  const today = new Date();
+  const minimumDate = new Date(today.getTime() - today.getTimezoneOffset() * 60 * 1000).toISOString().split("T")[0];
+  return (
+    <div className="admin-modal-backdrop" role="presentation" onClick={onClose}>
+      <section className="admin-detail-modal" role="dialog" aria-modal="true" aria-labelledby="appointment-detail-title" onClick={(event) => event.stopPropagation()}>
+        <div className="admin-detail-head">
+          <div><div className="eyebrow">Appointment request</div><h2 id="appointment-detail-title">{appointment.patientName}</h2></div>
+          <button className="admin-close-button" onClick={onClose} aria-label="Close details"><X size={18} /></button>
+        </div>
+        <span className={`status-badge status-${appointment.status}`}>{statusLabel(appointment.status)}</span>
+        <div className="admin-detail-grid">
+          <div><span>Patient</span><strong>{appointment.patientName}, {appointment.age}</strong></div>
+          <div><span>Treatment</span><strong>{appointment.treatment}</strong></div>
+          <div><span>Preferred visit</span><strong>{formatDate(appointment.appointmentDate)} · {appointment.appointmentTime}</strong></div>
+          <div><span>Submitted</span><strong>{formatDateTime(appointment.submittedAt)}</strong></div>
+          <div><span>Phone</span><a href={`tel:${appointment.phone}`}><Phone size={13} /> {appointment.phone}</a></div>
+          <div><span>Email</span><a href={`mailto:${appointment.email}`}><Mail size={13} /> {appointment.email}</a></div>
+        </div>
+        <form className="admin-schedule-form" onSubmit={(event) => { event.preventDefault(); void onSchedule(appointment, appointmentDate, appointmentTime); }}>
+          <div className="eyebrow">Reschedule visit</div>
+          <div className="admin-form-grid">
+            <label>Date<input required type="date" min={minimumDate} value={appointmentDate} onChange={(event) => setAppointmentDate(event.target.value)} /></label>
+            <label>Time<select value={appointmentTime} onChange={(event) => setAppointmentTime(event.target.value)}>{appointmentTimes.map((time) => <option value={time} key={time}>{time}</option>)}</select></label>
+          </div>
+          <button className="admin-secondary-button" type="submit" disabled={busyId === `schedule-${appointment.id}`}>{busyId === `schedule-${appointment.id}` ? "Saving…" : "Save new visit time"}</button>
+        </form>
+        <div className="admin-detail-notes"><span>Message / notes</span><p>{appointment.notes || "No additional notes were provided."}</p></div>
+        <div className="admin-detail-actions">
+          {appointment.status !== "confirmed" ? <button className="admin-primary-button" onClick={() => void onStatus(appointment, "confirmed")} disabled={busyId === `appointment-${appointment.id}`}><Check size={15} /> Confirm</button> : null}
+          {appointment.status !== "completed" ? <button className="admin-secondary-button" onClick={() => void onStatus(appointment, "completed")} disabled={busyId === `appointment-${appointment.id}`}><CheckCircle2 size={15} /> Complete</button> : null}
+          {appointment.status !== "cancelled" ? <button className="admin-danger-button" onClick={() => void onStatus(appointment, "cancelled")} disabled={busyId === `appointment-${appointment.id}`}><X size={15} /> Cancel</button> : null}
+          <button className="admin-quiet-button" onClick={() => void onDelete(appointment)} disabled={busyId === `delete-${appointment.id}`}><Trash2 size={15} /> Delete</button>
+        </div>
+      </section>
     </div>
   );
 }
@@ -503,32 +668,95 @@ function InquiryDetailModal({ inquiry, onClose, onRead, onDelete, busyId }: {
   );
 }
 
-function TreatmentsView({ treatments }: { treatments: Treatment[] }) {
+type TreatmentDraft = Omit<Treatment, "id" | "imagePath"> & { imagePath: string | null };
+type SaveTreatment = (draft: TreatmentDraft, id?: number, file?: File | null) => Promise<void>;
+
+function TreatmentsView({ treatments, onSave, onDelete, busyId }: {
+  treatments: Treatment[];
+  onSave: SaveTreatment;
+  onDelete: (treatment: Treatment) => void;
+  busyId: string | null;
+}) {
+  const [editing, setEditing] = useState<Treatment | null | undefined>(undefined);
   return (
     <div className="admin-content">
-      <div className="admin-section-intro"><div><h2>Treatments & pricing</h2><p>Review the treatments currently shown on the public clinic website.</p></div><span className="admin-data-note"><FileText size={14} /> Read-only public catalog</span></div>
-      <div className="admin-treatment-grid">{treatments.map((treatment) => <article className="admin-treatment-card" key={treatment.title}><div className="admin-treatment-icon"><ClipboardList size={17} /></div><div><h3>{treatment.title}</h3><p>{treatment.copy}</p></div><strong>{treatment.price}</strong></article>)}</div>
+      <div className="admin-section-intro">
+        <div><h2>Treatments & pricing</h2><p>Changes are saved to the database and appear on the public website.</p></div>
+        <button className="admin-primary-button" onClick={() => setEditing(null)}><Plus size={15} /> Add treatment</button>
+      </div>
+      {editing !== undefined ? <TreatmentForm treatment={editing} onSave={onSave} onClose={() => setEditing(undefined)} busy={busyId === (editing ? `treatment-${editing.id}` : "new-treatment")} /> : null}
+      <div className="admin-treatment-grid">
+        {treatments.map((treatment) => (
+          <article className={`admin-treatment-card ${!treatment.isActive ? "is-disabled" : ""}`} key={treatment.id}>
+            <div className="admin-treatment-icon">{treatment.imagePath ? <img src={`${baseApiPath}/storage${treatment.imagePath}`} alt="" /> : <ClipboardList size={17} />}</div>
+            <div><h3>{treatment.title}</h3><p>{treatment.description}</p><small>Order {treatment.displayOrder} · {treatment.isActive ? "Public" : "Hidden"}</small></div>
+            <strong>{treatment.price}</strong>
+            <div className="admin-card-actions"><button className="admin-quiet-button" onClick={() => setEditing(treatment)}><Pencil size={14} /> Edit</button><button className="admin-danger-button" onClick={() => void onDelete(treatment)} disabled={busyId === `delete-treatment-${treatment.id}`}><Trash2 size={14} /> Delete</button></div>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }
 
-function SettingsView({ user }: { user: ReturnType<typeof useUser>["user"] }) {
+function TreatmentForm({ treatment, onSave, onClose, busy }: { treatment: Treatment | null; onSave: SaveTreatment; onClose: () => void; busy: boolean }) {
+  const [draft, setDraft] = useState<TreatmentDraft>(() => treatment ? { title: treatment.title, description: treatment.description, price: treatment.price, icon: treatment.icon, isActive: treatment.isActive, displayOrder: treatment.displayOrder, imagePath: treatment.imagePath } : { title: "", description: "", price: "", icon: "Stethoscope", isActive: true, displayOrder: 0, imagePath: null });
+  const [file, setFile] = useState<File | null>(null);
+  const update = <K extends keyof TreatmentDraft>(key: K, value: TreatmentDraft[K]) => setDraft((current) => ({ ...current, [key]: value }));
+  return (
+    <form className="admin-editor-card" onSubmit={(event) => { event.preventDefault(); void onSave(draft, treatment?.id, file).then(onClose).catch(() => undefined); }}>
+      <div className="admin-panel-heading"><div><div className="eyebrow">{treatment ? "Edit catalog item" : "New catalog item"}</div><h2>{treatment ? "Update treatment" : "Add treatment"}</h2></div><button type="button" className="admin-close-button" onClick={onClose}><X size={16} /></button></div>
+      <div className="admin-form-grid">
+        <label>Title<input required value={draft.title} onChange={(event) => update("title", event.target.value)} /></label>
+        <label>Price<input required value={draft.price} onChange={(event) => update("price", event.target.value)} placeholder="₹500" /></label>
+        <label className="admin-form-wide">Short description<textarea required rows={3} value={draft.description} onChange={(event) => update("description", event.target.value)} /></label>
+        <label>Display order<input type="number" min="0" value={draft.displayOrder} onChange={(event) => update("displayOrder", Number(event.target.value))} /></label>
+        <label>Icon<select value={draft.icon} onChange={(event) => update("icon", event.target.value)}><option>Stethoscope</option><option>Sparkles</option><option>ShieldCheck</option><option>CheckCircle2</option><option>Smile</option><option>CircleDollarSign</option><option>Baby</option></select></label>
+        <label className="admin-checkbox"><input type="checkbox" checked={draft.isActive} onChange={(event) => update("isActive", event.target.checked)} /> Show on public website</label>
+        <label className="admin-form-wide">Treatment image<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /><small>{file?.name || (draft.imagePath ? "Current image retained" : "Optional, up to 10 MB")}</small></label>
+      </div>
+      <div className="admin-detail-actions"><button className="admin-primary-button" type="submit" disabled={busy}>{busy ? "Saving…" : "Save treatment"}</button><button className="admin-quiet-button" type="button" onClick={onClose}>Cancel</button></div>
+    </form>
+  );
+}
+
+function MediaView({ media, onUpload, onDelete, busyId }: { media: MediaItem[]; onUpload: (file: File) => Promise<string>; onDelete: (item: MediaItem) => void; busyId: string | null }) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
   return (
     <div className="admin-content">
-      <div className="admin-section-intro"><div><h2>Workspace settings</h2><p>Review the secure clinic workspace and signed-in account.</p></div><span className="admin-data-note"><ShieldCheck size={14} /> Protected by Clerk</span></div>
-      <div className="admin-settings-grid">
-        <section className="admin-panel-card">
-          <div className="admin-panel-heading"><div><div className="eyebrow">Signed-in account</div><h2>Admin identity</h2></div><ShieldCheck size={19} /></div>
-          <div className="admin-settings-row"><span>Name</span><strong>{user?.fullName || user?.firstName || "Clinic admin"}</strong></div>
-          <div className="admin-settings-row"><span>Email</span><strong>{user?.primaryEmailAddress?.emailAddress || user?.emailAddresses[0]?.emailAddress}</strong></div>
-          <p className="admin-settings-copy">Only approved clinic staff accounts can load bookings, inquiries, and dashboard statistics.</p>
-        </section>
-        <section className="admin-panel-card">
-          <div className="admin-panel-heading"><div><div className="eyebrow">Data connection</div><h2>Persistent records</h2></div><Settings2 size={19} /></div>
-          <div className="admin-settings-status"><span className="admin-settings-status-dot" /> Connected to the clinic database</div>
-          <p className="admin-settings-copy">Public appointment and contact forms write directly to the persistent database. Changes made here remain available after refreshes and server restarts.</p>
-        </section>
-      </div>
+      <div className="admin-section-intro"><div><h2>Clinic media</h2><p>Persistent images used by treatments and the public clinic website.</p></div><label className="admin-primary-button"><Upload size={15} /> {uploading ? "Uploading…" : "Upload image"}<input className="sr-only" type="file" accept="image/jpeg,image/png,image/webp,image/gif" disabled={uploading} onChange={async (event) => { const file = event.target.files?.[0]; if (!file) return; setError(""); setUploading(true); try { await onUpload(file); } catch (uploadError) { setError(uploadError instanceof Error ? uploadError.message : "Unable to upload image."); } finally { setUploading(false); event.target.value = ""; } }} /></label></div>
+      {error ? <div className="admin-inline-error" role="alert">{error}</div> : null}
+      <div className="admin-media-grid">{media.map((item) => <article className="admin-media-card" key={item.id}><img src={`${baseApiPath}/storage${item.objectPath}`} alt={item.originalName} /><div><strong>{item.originalName}</strong><small>{Math.ceil(item.size / 1024)} KB</small></div><button className="admin-danger-button" onClick={() => void onDelete(item)} disabled={busyId === `media-${item.id}`}><Trash2 size={14} /> Remove</button></article>)}</div>
+      {media.length === 0 ? <EmptyState icon={ImageIcon} title="No clinic media yet" copy="Uploaded treatment and clinic images will appear here." /> : null}
+    </div>
+  );
+}
+
+function SettingsView({ user, settings, onSave, busyId }: { user: ReturnType<typeof useUser>["user"]; settings: ClinicSettings | null; onSave: (settings: Omit<ClinicSettings, "id">) => Promise<void>; busyId: string | null }) {
+  const [draft, setDraft] = useState<Omit<ClinicSettings, "id"> | null>(settings ? { ...settings } : null);
+  useEffect(() => { if (settings) setDraft({ ...settings }); }, [settings]);
+  if (!draft) return <div className="admin-content"><EmptyState icon={Settings2} title="Settings unavailable" copy="Clinic settings could not be loaded." /></div>;
+  const update = (key: keyof typeof draft, value: string) => setDraft((current) => current ? { ...current, [key]: value } : current);
+  return (
+    <div className="admin-content">
+      <div className="admin-section-intro"><div><h2>Clinic settings</h2><p>These values are used by the public website and contact flows.</p></div><span className="admin-data-note"><ShieldCheck size={14} /> Protected by Clerk</span></div>
+      <form className="admin-editor-card" onSubmit={(event) => { event.preventDefault(); void onSave(draft).catch(() => undefined); }}>
+        <div className="admin-form-grid">
+          <label>Clinic name<input required value={draft.clinicName} onChange={(event) => update("clinicName", event.target.value)} /></label>
+          <label>Phone<input required value={draft.phone} onChange={(event) => update("phone", event.target.value)} /></label>
+          <label>WhatsApp number<input required value={draft.whatsapp} onChange={(event) => update("whatsapp", event.target.value)} /></label>
+          <label>Email<input required type="email" value={draft.email} onChange={(event) => update("email", event.target.value)} /></label>
+          <label className="admin-form-wide">Address<textarea required rows={2} value={draft.address} onChange={(event) => update("address", event.target.value)} /></label>
+          <label>Opening hours<input required value={draft.hours} onChange={(event) => update("hours", event.target.value)} /></label>
+          <label>Sunday hours<input required value={draft.sundayHours} onChange={(event) => update("sundayHours", event.target.value)} /></label>
+          <label>Instagram URL<input value={draft.socialInstagram} onChange={(event) => update("socialInstagram", event.target.value)} /></label>
+          <label>Facebook URL<input value={draft.socialFacebook} onChange={(event) => update("socialFacebook", event.target.value)} /></label>
+          <label className="admin-form-wide">Map URL<input value={draft.mapUrl} onChange={(event) => update("mapUrl", event.target.value)} /></label>
+        </div>
+        <div className="admin-detail-actions"><button className="admin-primary-button" type="submit" disabled={busyId === "settings"}>{busyId === "settings" ? "Saving…" : "Save settings"}</button></div>
+      </form>
+      <div className="admin-settings-grid"><section className="admin-panel-card"><div className="admin-panel-heading"><div><div className="eyebrow">Signed-in account</div><h2>Admin identity</h2></div><ShieldCheck size={19} /></div><div className="admin-settings-row"><span>Name</span><strong>{user?.fullName || user?.firstName || "Clinic admin"}</strong></div><div className="admin-settings-row"><span>Email</span><strong>{user?.primaryEmailAddress?.emailAddress || user?.emailAddresses[0]?.emailAddress}</strong></div></section></div>
     </div>
   );
 }

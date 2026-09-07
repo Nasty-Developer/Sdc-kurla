@@ -10,7 +10,7 @@ export default function NotFound() {
         <p className="not-found-code">404</p>
         <h1>That page is not part of this visit.</h1>
         <p className="not-found-copy">Return to Somil Dental Clinic to explore treatments, pricing, and appointment information.</p>
-        <Link href="/" className="button-primary" data-testid="link-not-found-home"><ArrowLeft size={15} /> Back to home</Link>
+        <Link href="/" className="button-primary"><ArrowLeft size={15} /> Back to home</Link>
         <span className="not-found-location"><MapPin size={13} /> Mumbai, Maharashtra 400070</span>
       </div>
     </main>

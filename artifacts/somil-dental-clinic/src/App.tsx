@@ -1,5 +1,4 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ClerkProvider, SignIn, SignUp, useAuth } from '@clerk/react';
 import { publishableKeyFromHost } from '@clerk/react/internal';
 import { shadcn } from '@clerk/themes';
@@ -10,7 +9,6 @@ import {
   CalendarDays,
   Check,
   CheckCircle2,
-  ChevronLeft,
   ChevronRight,
   CircleDollarSign,
   Clock3,
@@ -22,22 +20,18 @@ import {
   ShieldCheck,
   Smile,
   Sparkles,
-  Star,
   Stethoscope,
   X,
 } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { ErrorBoundary } from '@/components/error-boundary';
 import BookingPage from '@/pages/booking';
-import { Toaster } from '@/components/ui/toaster';
-import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import DentalAssistant from '@/components/dental-assistant';
 import InquiryForm from '@/components/inquiry-form';
 import AdminPage from '@/pages/admin';
 import { Redirect, Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
 
-const queryClient = new QueryClient();
 const clerkPubKey = publishableKeyFromHost(
   window.location.hostname,
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
@@ -45,31 +39,30 @@ const clerkPubKey = publishableKeyFromHost(
 const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-const clinicAddress = 'Chawl bazar ward, Jai Ambika nagar, near Rolex hotel, Halav Pool, Kunchi kurway, Mumbai, Maharashtra 400070';
-const clinicPhone = '+91 8591434914';
-const clinicWhatsApp = clinicPhone.replace(/\D/g, '');
-const clinicEmail = 'somilg449@gmail.com';
-const clinicHours = 'Monday - Saturday, 6:30 PM - 10:00 PM';
+type ClinicSettings = {
+  clinicName: string;
+  phone: string;
+  whatsapp: string;
+  email: string;
+  address: string;
+  hours: string;
+  sundayHours: string;
+  mapUrl: string;
+};
 
-const treatments = [
-  { title: 'Dental Checkup', price: '₹100', copy: 'Complete oral examination and consultation.', icon: Stethoscope },
-  { title: 'Teeth Cleaning', price: '₹500', copy: 'Professional scaling and polishing to remove plaque.', icon: Sparkles },
-  { title: 'Tooth Extraction', price: '₹500', copy: 'Safe and painless removal of damaged teeth.', icon: ShieldCheck },
-  { title: 'Root Canal Treatment', price: '₹3000', copy: 'Advanced endodontic therapy to save infected teeth.', icon: Stethoscope },
-  { title: 'Dental Filling', price: '₹500', copy: 'Tooth-colored composite restorations for cavities.', icon: CheckCircle2 },
-  { title: 'Teeth Whitening', price: '₹3000', copy: 'Advanced bleaching for a brighter, confident smile.', icon: Smile },
-  { title: 'Braces / Orthodontics', price: '₹20000', copy: 'Straighten your teeth and correct your bite.', icon: Smile },
-  { title: 'Dental Crown', price: '₹1500', copy: 'Ceramic caps to restore tooth shape and strength.', icon: ShieldCheck },
-  { title: 'Dental Implant', price: '₹10000', copy: 'Permanent replacement for missing teeth.', icon: CircleDollarSign },
-  { title: 'Pediatric Dentistry', price: '₹300', copy: 'Specialized, gentle dental care for children.', icon: Baby },
-  { title: 'Dentures And RPD', price: '₹1500', copy: 'Removable bridge replacing missing teeth and gaps.', icon: Smile },
-];
+type PublicTreatment = {
+  id: number;
+  title: string;
+  price: string;
+  description: string;
+  icon: string;
+  imagePath: string | null;
+};
 
-const testimonials = [
-  { quote: 'Sample patient story — replace with a verified review from a Somil Dental Clinic patient.', name: 'Demo testimonial', detail: 'Placeholder content' },
-  { quote: 'Sample patient story — this space is reserved for feedback shared with the clinic.', name: 'Demo testimonial', detail: 'Placeholder content' },
-  { quote: 'Sample patient story — thoughtful care deserves to be described in a patient’s own words.', name: 'Demo testimonial', detail: 'Placeholder content' },
-];
+const iconMap = { Baby, CheckCircle2, CircleDollarSign, ShieldCheck, Smile, Sparkles, Stethoscope };
+const baseApiPath = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/api`;
+
+const treatmentIcon = (name: string) => iconMap[name as keyof typeof iconMap] ?? Stethoscope;
 
 const stats = [
   ['500+', 'Happy Patients'],
@@ -104,9 +97,27 @@ function Reveal({ children, className = '', delay = 0 }: { children: ReactNode; 
 
 function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const [settings, setSettings] = useState<ClinicSettings | null>(null);
+  const [treatments, setTreatments] = useState<PublicTreatment[]>([]);
   const [, setLocation] = useLocation();
-  const testimonial = testimonials[testimonialIndex];
+
+  useEffect(() => {
+    let cancelled = false;
+    void Promise.all([
+      fetch(`${baseApiPath}/settings`).then((response) => response.ok ? response.json() : Promise.reject(new Error('Unable to load clinic settings.'))),
+      fetch(`${baseApiPath}/treatments`).then((response) => response.ok ? response.json() : Promise.reject(new Error('Unable to load treatments.'))),
+    ]).then(([settingsResult, treatmentsResult]) => {
+      if (cancelled) return;
+      setSettings(settingsResult.settings);
+      setTreatments(treatmentsResult.treatments);
+    }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, []);
+
+  const clinicPhone = settings?.phone || '';
+  const clinicWhatsApp = (settings?.whatsapp || settings?.phone || '').replace(/\D/g, '');
+  const clinicEmail = settings?.email || '';
+  const clinicAddress = settings?.address || '';
 
   const openAppointment = (treatment = 'General Consultation') => {
     setMenuOpen(false);
@@ -116,42 +127,37 @@ function Home() {
     setMenuOpen(false);
     document.getElementById(target)?.scrollIntoView({ behavior: 'smooth' });
   };
-  const previousTestimonial = () => setTestimonialIndex((current) => (current - 1 + testimonials.length) % testimonials.length);
-  const nextTestimonial = () => setTestimonialIndex((current) => (current + 1) % testimonials.length);
-
   return (
     <main className="sdc-site">
       <header className="sdc-header">
         <div className="container-sdc sdc-header-inner">
-          <a className="brand" href="#top" aria-label="Somil Dental Clinic home" data-testid="link-brand">
+          <a className="brand" href="#top" aria-label="Somil Dental Clinic home">
             <img className="brand-logo" src="/sdc-logo.png" alt="Somil Dental Clinic" />
             <span className="brand-copy"><strong>SOMIL</strong><span>DENTAL CLINIC</span></span>
           </a>
           <nav className="desktop-nav" aria-label="Main navigation">
-            <a href="#top" data-testid="link-nav-home">Home</a>
-            <a href="#about" data-testid="link-nav-about">About</a>
-            <a href="#treatments" data-testid="link-nav-treatments">Treatments &amp; Pricing</a>
-            <a href="#team" data-testid="link-nav-team">Team</a>
-            <a href="#testimonials" data-testid="link-nav-testimonials">Testimonials</a>
-            <a href="#contact" data-testid="link-nav-contact">Contact</a>
+            <a href="#top">Home</a>
+            <a href="#about">About</a>
+            <a href="#treatments">Treatments &amp; Pricing</a>
+            <a href="#team">Team</a>
+            <a href="#contact">Contact</a>
           </nav>
-          <a className="header-call-button" href={`tel:${clinicPhone.replace(/\s/g, '')}`} data-testid="link-header-call">
+          <a className="header-call-button" href={`tel:${clinicPhone.replace(/\s/g, '')}`}>
             <Phone size={14} />
             <span>Call</span>
           </a>
-          <button className="outline-top-button" onClick={() => openAppointment()} data-testid="button-header-appointment">Book Appointment <ArrowRight size={14} /></button>
-          <button className="menu-button" onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-controls="mobile-navigation" aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} data-testid="button-mobile-menu">
+          <button className="outline-top-button" onClick={() => openAppointment()}>Book Appointment <ArrowRight size={14} /></button>
+          <button className="menu-button" onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-controls="mobile-navigation" aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}>
             {menuOpen ? <X size={22} /> : <Menu size={23} />}
           </button>
           {menuOpen && (
             <nav className="mobile-nav" id="mobile-navigation" aria-label="Mobile navigation">
-              <a href="#top" onClick={() => goTo('top')} data-testid="link-mobile-home">Home</a>
-              <a href="#about" onClick={() => goTo('about')} data-testid="link-mobile-about">About</a>
-              <a href="#treatments" onClick={() => goTo('treatments')} data-testid="link-mobile-treatments">Treatments &amp; Pricing</a>
-              <a href="#team" onClick={() => goTo('team')} data-testid="link-mobile-team">Team</a>
-              <a href="#testimonials" onClick={() => goTo('testimonials')} data-testid="link-mobile-testimonials">Testimonials</a>
-              <a href="#contact" onClick={() => goTo('contact')} data-testid="link-mobile-contact">Contact</a>
-              <button onClick={() => openAppointment()} data-testid="button-mobile-appointment">Book Appointment <ArrowRight size={15} /></button>
+              <a href="#top" onClick={() => goTo('top')}>Home</a>
+              <a href="#about" onClick={() => goTo('about')}>About</a>
+              <a href="#treatments" onClick={() => goTo('treatments')}>Treatments &amp; Pricing</a>
+              <a href="#team" onClick={() => goTo('team')}>Team</a>
+              <a href="#contact" onClick={() => goTo('contact')}>Contact</a>
+              <button onClick={() => openAppointment()}>Book Appointment <ArrowRight size={15} /></button>
             </nav>
           )}
         </div>
@@ -166,8 +172,8 @@ function Home() {
             <h1 id="hero-title" className="hero-step hero-step-two">Dr. Somil V Gupta<br /><em>Dentist at Somil Dental Clinic</em></h1>
             <p className="hero-lede hero-step hero-step-three">Your perfect smile starts here. Experience world-class dental care in a comfortable, relaxing environment. From routine checkups to advanced cosmetic dentistry, we've got you covered.</p>
             <div className="button-row hero-step hero-step-four">
-              <button className="button-primary" onClick={() => openAppointment()} data-testid="button-hero-appointment">Book Appointment <ArrowRight size={16} /></button>
-              <a className="button-light" href="#treatments" data-testid="link-hero-treatments">View Treatments <ChevronRight size={16} /></a>
+              <button className="button-primary" onClick={() => openAppointment()}>Book Appointment <ArrowRight size={16} /></button>
+              <a className="button-light" href="#treatments">View Treatments <ChevronRight size={16} /></a>
             </div>
           </div>
           <div className="hero-side hero-step hero-step-seven">
@@ -216,7 +222,7 @@ function Home() {
               <div className="story-point"><span className="point-icon"><ShieldCheck size={16} /></span><div><strong>Clear treatment guidance</strong><span>We explain your options in a way that is easy to understand.</span></div></div>
               <div className="story-point"><span className="point-icon"><Check size={16} /></span><div><strong>Comfort-focused visits</strong><span>Thoughtful care for routine needs and complex treatment alike.</span></div></div>
             </div>
-            <a href="#contact" className="button-ghost" data-testid="link-about-contact">Find the clinic <ArrowRight size={15} /></a>
+            <a href="#contact" className="button-ghost">Find the clinic <ArrowRight size={15} /></a>
           </div>
         </Reveal>
       </section>
@@ -228,19 +234,21 @@ function Home() {
             <p>Explore our treatments and starting prices. Final pricing depends on your diagnosis and care plan.</p>
           </div>
           <Reveal className="treatments-grid">
-            {treatments.map(({ title, price, copy, icon: Icon }, index) => (
-              <article className="treatment-card" key={title} data-testid={`card-treatment-${index}`}>
-                <div className="treatment-top"><span className="service-icon"><Icon size={19} /></span><span className="treatment-number">0{index + 1}</span></div>
+            {treatments.map(({ title, price, description, icon, imagePath }, index) => {
+              const Icon = treatmentIcon(icon);
+              return (
+              <article className="treatment-card" key={title}>
+                <div className="treatment-top"><span className="service-icon">{imagePath ? <img src={`${baseApiPath}/storage${imagePath}`} alt="" /> : <Icon size={19} />}</span><span className="treatment-number">{String(index + 1).padStart(2, '0')}</span></div>
                 <h3>{title}</h3>
-                <p>{copy}</p>
-                <div className="treatment-bottom"><strong>From {price}</strong><button className="treatment-book" onClick={() => openAppointment(title)} aria-label={`Book ${title}`} data-testid={`button-book-treatment-${index}`}>Book now <ArrowRight size={14} /></button></div>
+                <p>{description}</p>
+                <div className="treatment-bottom"><strong>From {price}</strong><button className="treatment-book" onClick={() => openAppointment(title)} aria-label={`Book ${title}`}>Book now <ArrowRight size={14} /></button></div>
               </article>
-            ))}
+            );})}
           </Reveal>
           <Reveal className="custom-plan">
             <div className="custom-plan-icon"><CalendarDays size={20} /></div>
             <div><div className="eyebrow">Personalized care</div><h3>Need a Custom Treatment Plan?</h3><p>Every smile is unique. Book a basic consultation and our experts will provide a detailed diagnosis and custom pricing plan.</p></div>
-            <button className="button-primary" onClick={() => openAppointment('General Consultation')} data-testid="button-general-consultation">Book General Consultation <ArrowRight size={15} /></button>
+            <button className="button-primary" onClick={() => openAppointment('General Consultation')}>Book General Consultation <ArrowRight size={15} /></button>
           </Reveal>
         </div>
       </section>
@@ -251,7 +259,7 @@ function Home() {
             <div className="eyebrow">Your care, your pace</div>
             <h2 id="process-heading">A visit that makes sense from the first conversation.</h2>
             <p>Whether you need a routine checkup or focused treatment, we’ll meet you where you are with practical guidance and a plan you can feel good about.</p>
-            <button className="button-light" onClick={() => openAppointment()} data-testid="button-process-appointment">Book Appointment <ArrowRight size={15} /></button>
+            <button className="button-light" onClick={() => openAppointment()}>Book Appointment <ArrowRight size={15} /></button>
           </div>
           <div className="care-steps" aria-label="What to expect">
             <div className="care-step"><span className="care-step-number">01</span><h3>Share what’s on your mind</h3><p>We begin with your experience and concerns.</p></div>
@@ -276,7 +284,7 @@ function Home() {
               <div className="qualification">BDS (JJ College)</div>
               <p>Dr. Somil is a highly skilled endodontist dedicated to providing pain-free root canal treatments and comprehensive dental care. He believes in a patient-first approach, ensuring comfort and excellent results.</p>
               <div className="expertise"><span>Expertise</span><div><b>Root Canal Treatment</b><b>Cosmetic Dentistry</b><b>Pain Management</b></div></div>
-              <button className="button-primary" onClick={() => openAppointment()} data-testid="button-doctor-appointment">Book Consultation <ArrowRight size={15} /></button>
+              <button className="button-primary" onClick={() => openAppointment()}>Book Consultation <ArrowRight size={15} /></button>
             </div>
           </Reveal>
         </div>
@@ -303,24 +311,7 @@ function Home() {
         <Reveal className="container-sdc charity-card">
           <div className="charity-mark"><HeartHandshake size={24} /></div>
              <div className="charity-copy"><div className="eyebrow">Care that reaches further</div><h2 id="charity-heading">Help Poor Patients</h2><p>100% of your donation is used to provide free or heavily subsidized dental treatments to those who cannot afford them.</p></div>
-          <div className="charity-side"><div><strong>50+</strong><span>Patients Treated</span></div><div><strong>100%</strong><span>Transparent</span></div><button className="button-light" onClick={() => openAppointment('Dental Checkup')} data-testid="button-charity-donate">Donate for Free Checkup <ArrowRight size={15} /></button></div>
-        </Reveal>
-      </section>
-
-      <section className="section testimonial-section" id="testimonials" aria-labelledby="testimonial-heading">
-        <Reveal className="container-sdc testimonial-layout">
-          <div className="testimonial-copy">
-            <div className="quote-mark" aria-hidden="true">“</div>
-            <div className="eyebrow">Testimonials</div>
-            <h2 id="testimonial-heading">A space for patient voices.</h2>
-            <p>These are demo placeholders until verified patient feedback is added. We believe every real story should be shared with permission.</p>
-            <span className="placeholder-note"><BadgeCheck size={14} /> Demo content — not a verified review</span>
-          </div>
-          <div className="testimonial-card" data-testid="testimonial-current">
-            <div className="stars" aria-label="Sample five star rating">{Array.from({ length: 5 }, (_, starIndex) => <Star key={starIndex} size={14} fill="currentColor" />)}</div>
-            <blockquote>“{testimonial.quote}”</blockquote>
-            <div className="patient"><div className="patient-name"><strong>{testimonial.name}</strong><span>{testimonial.detail}</span></div><div className="testimonial-controls"><button className="circle-button" onClick={previousTestimonial} aria-label="Previous testimonial" data-testid="button-testimonial-previous"><ChevronLeft size={17} /></button><button className="circle-button" onClick={nextTestimonial} aria-label="Next testimonial" data-testid="button-testimonial-next"><ChevronRight size={17} /></button></div></div>
-          </div>
+           <div className="charity-side"><div><strong>50+</strong><span>Patients Treated</span></div><div><strong>100%</strong><span>Transparent</span></div><button className="button-light" onClick={() => openAppointment('Dental Checkup')}>Donate for Free Checkup <ArrowRight size={15} /></button></div>
         </Reveal>
       </section>
 
@@ -332,16 +323,16 @@ function Home() {
               <h2 id="contact-heading">Your next visit starts here.</h2>
               <p>Call, email, or send an appointment request. We’ll help you take the next step with confidence.</p>
               <div className="contact-details">
-                <a className="contact-detail" href={`tel:${clinicPhone.replace(/\s/g, '')}`} data-testid="link-contact-phone"><Phone size={17} /> {clinicPhone}</a>
-                <a className="contact-detail" href={`mailto:${clinicEmail}`} data-testid="link-contact-email"><Mail size={17} /> {clinicEmail}</a>
+                <a className="contact-detail" href={`tel:${clinicPhone.replace(/\s/g, '')}`}><Phone size={17} /> {clinicPhone}</a>
+                <a className="contact-detail" href={`mailto:${clinicEmail}`}><Mail size={17} /> {clinicEmail}</a>
                 <span className="contact-detail"><MapPin size={17} /> {clinicAddress}</span>
-                <span className="contact-detail"><Clock3 size={17} /> Monday - Saturday: 6:30 PM - 10:00 PM<br /><span className="hours-subline">Sunday: Closed for Maintenance</span></span>
+                <span className="contact-detail"><Clock3 size={17} /> {settings?.hours}<br /><span className="hours-subline">{settings?.sundayHours}</span></span>
               </div>
-              <button className="button-primary" onClick={() => openAppointment()} data-testid="button-contact-appointment">Book Appointment <ArrowRight size={15} /></button>
+              <button className="button-primary" onClick={() => openAppointment()}>Book Appointment <ArrowRight size={15} /></button>
               <InquiryForm />
             </div>
             <div className="contact-map" aria-label={`Location: ${clinicAddress}`}>
-              <div className="map-grid" aria-hidden="true" /><div className="map-pin"><MapPin size={19} /></div><div className="map-label"><strong>Somil Dental Clinic</strong><span>Mumbai 400070</span></div>
+              <div className="map-grid" aria-hidden="true" /><div className="map-pin"><MapPin size={19} /></div><div className="map-label"><strong>Somil Dental Clinic</strong><span>{clinicAddress}</span>{settings?.mapUrl ? <a href={settings.mapUrl} target="_blank" rel="noreferrer">Open map</a> : null}</div>
             </div>
           </Reveal>
         </div>
@@ -350,10 +341,10 @@ function Home() {
       <footer className="footer">
         <div className="container-sdc">
           <div className="footer-grid">
-            <div><a className="brand" href="#top" data-testid="link-footer-brand"><span className="brand-mark">SDC</span><span className="brand-copy"><strong>SOMIL</strong><span>Dental clinic</span></span></a><p className="footer-intro">Providing world-class dental care with a gentle touch. Your smile is our top priority.</p></div>
-            <div><h3>Quick Links</h3><div className="footer-links"><a href="#top" data-testid="link-footer-home">Home</a><a href="#treatments" data-testid="link-footer-treatments">Treatments &amp; Pricing</a><button onClick={() => openAppointment()} data-testid="button-footer-appointment">Book Appointment</button><a href="#contact" data-testid="link-footer-contact">Contact Us</a><a href="#testimonials" data-testid="link-footer-feedback">Leave Feedback</a></div></div>
-            <div><h3>Clinic Hours</h3><div className="footer-hours"><span>Monday - Saturday <b>6:30 PM - 10:00 PM</b></span><span>Sunday <b>Closed for Maintenance</b></span></div></div>
-            <div><h3>Contact</h3><div className="footer-links contact-footer"><span>{clinicAddress}</span><a href={`tel:${clinicPhone.replace(/\s/g, '')}`} data-testid="link-footer-phone">{clinicPhone}</a><a href={`mailto:${clinicEmail}`} data-testid="link-footer-email">{clinicEmail}</a></div></div>
+            <div><a className="brand" href="#top"><span className="brand-mark">SDC</span><span className="brand-copy"><strong>SOMIL</strong><span>Dental clinic</span></span></a><p className="footer-intro">Providing world-class dental care with a gentle touch. Your smile is our top priority.</p></div>
+            <div><h3>Quick Links</h3><div className="footer-links"><a href="#top">Home</a><a href="#treatments">Treatments &amp; Pricing</a><button onClick={() => openAppointment()}>Book Appointment</button><a href="#contact">Contact Us</a></div></div>
+            <div><h3>Clinic Hours</h3><div className="footer-hours"><span>{settings?.hours}</span><span>{settings?.sundayHours}</span></div></div>
+            <div><h3>Contact</h3><div className="footer-links contact-footer"><span>{clinicAddress}</span><a href={`tel:${clinicPhone.replace(/\s/g, '')}`}>{clinicPhone}</a><a href={`mailto:${clinicEmail}`}>{clinicEmail}</a></div></div>
           </div>
           <div className="footer-bottom"><span>© 2026 Somil Dental Clinic. All rights reserved.</span><span>SDC · Mumbai, Maharashtra</span></div>
         </div>
@@ -364,12 +355,11 @@ function Home() {
         target="_blank"
         rel="noreferrer"
         aria-label="Chat with Somil Dental Clinic on WhatsApp"
-        data-testid="link-floating-whatsapp"
       >
         <FaWhatsapp aria-hidden="true" />
         <span>WhatsApp</span>
       </a>
-      <DentalAssistant onBookAppointment={() => openAppointment()} />
+      <DentalAssistant onBookAppointment={() => openAppointment()} settings={settings} treatments={treatments} />
 
     </main>
   );
@@ -462,14 +452,9 @@ function App() {
       routerPush={(to) => window.history.pushState({}, '', to)}
       routerReplace={(to) => window.history.replaceState({}, '', to)}
     >
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <WouterRouter base={basePath}>
-            <Router />
-          </WouterRouter>
-          <Toaster />
-        </TooltipProvider>
-      </QueryClientProvider>
+      <WouterRouter base={basePath}>
+        <Router />
+      </WouterRouter>
     </ClerkProvider>
   );
 }
