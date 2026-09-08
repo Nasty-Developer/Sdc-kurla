@@ -32,12 +32,13 @@ import InquiryForm from '@/components/inquiry-form';
 import AdminPage from '@/pages/admin';
 import { Redirect, Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
 
-const clerkPubKey = publishableKeyFromHost(
-  window.location.hostname,
-  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
-);
+const configuredClerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const clerkPubKey = configuredClerkKey
+  ? publishableKeyFromHost(window.location.hostname, configuredClerkKey)
+  : undefined;
 const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const hasClerk = Boolean(clerkPubKey);
 
 type ClinicSettings = {
   clinicName: string;
@@ -397,6 +398,29 @@ function Router() {
   );
 }
 
+function PublicRouter() {
+  return (
+    <RoutedErrorBoundary>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/book" component={BookingPage} />
+        <Route path="/admin" component={AuthSetupRequired} />
+        <Route component={NotFound} />
+      </Switch>
+    </RoutedErrorBoundary>
+  );
+}
+
+function AuthSetupRequired() {
+  return (
+    <main className="auth-loading" style={{ padding: "2rem", textAlign: "center" }}>
+      <h1>Admin sign-in is not configured</h1>
+      <p>The public clinic website is available, but admin access needs Clerk authentication configured for this deployment.</p>
+      <a href={basePath || "/"}>Return to the clinic website</a>
+    </main>
+  );
+}
+
 function HomeRedirect() {
   const { isLoaded, isSignedIn } = useAuth();
   if (!isLoaded) return <div className="auth-loading"><div className="admin-spinner" /></div>;
@@ -423,6 +447,14 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
 }
 
 function App() {
+  if (!hasClerk) {
+    return (
+      <WouterRouter base={basePath}>
+        <PublicRouter />
+      </WouterRouter>
+    );
+  }
+
   return (
     <ClerkProvider
       publishableKey={clerkPubKey}

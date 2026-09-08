@@ -10,3 +10,5 @@ Copied repository artifact metadata is not enough to register that artifact with
 **Why:** The imported clinic project briefly lost its web artifact and workflow while conflicted source and metadata files were present.
 
 **How to apply:** Before starting or re-registering an imported artifact, scan the relevant source, metadata, and public files for conflict markers. If nested markers contain alternate themes, resolve toward the approved branch before debugging the app itself. If the copied artifact is not in the project registry, register it while preserving the imported app files before relying on preview or deployment routes.
+
+Automatic workflow/artifact synchronization can overwrite edits in an imported artifact after registration or workflow changes. Re-check the working tree and the live preview after those events before trusting a fix.

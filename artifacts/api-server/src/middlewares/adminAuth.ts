@@ -11,6 +11,13 @@ const configuredValues = (value: string | undefined) =>
 
 export const requireAdmin: RequestHandler = async (req, res, next) => {
   try {
+    if (!process.env.CLERK_SECRET_KEY || !process.env.CLERK_PUBLISHABLE_KEY) {
+      res.status(503).json({
+        error: "Admin authentication is not configured for this deployment.",
+      });
+      return;
+    }
+
     const { userId } = getAuth(req);
     if (!userId) {
       res.status(401).json({ error: "Sign in is required to access the admin panel." });
