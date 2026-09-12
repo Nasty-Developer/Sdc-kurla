@@ -33,7 +33,7 @@ const appointmentTimes = [
 
 const bookingSchema = z.object({
   fullName: z.string().trim().min(2, 'Please enter your full name.').max(80, 'Please keep your name under 80 characters.'),
-  phone: z.string().trim().regex(/^\+?[0-9\s()-]{10,18}$/, 'Enter a valid phone number.'),
+  phone: z.string().trim().regex(/^\+?[0-9\s()-]{10,30}$/, 'Enter a valid phone number.'),
   email: z.string().trim().email('Enter a valid email address.'),
   age: z.string().trim().regex(/^\d{1,3}$/, 'Enter your age in years.').refine((value) => Number(value) >= 1 && Number(value) <= 120, 'Age must be between 1 and 120.'),
   treatment: z.string().min(2, 'Please choose a treatment.'),
@@ -69,18 +69,29 @@ export default function BookingPage() {
   const [treatmentOptions, setTreatmentOptions] = useState<string[]>(['General Consultation']);
   const [settings, setSettings] = useState<BookingSettings | null>(null);
   const [branches, setBranches] = useState<BookingBranch[]>([]);
+  const [dataError, setDataError] = useState('');
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
   const today = useMemo(getToday, []);
   useEffect(() => {
-    void Promise.all([
+    setIsLoadingData(true);
+    setDataError('');
+    void Promise.allSettled([
       fetch(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/api/treatments`).then((response) => response.ok ? response.json() : Promise.reject(new Error())),
       fetch(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/api/settings`).then((response) => response.ok ? response.json() : Promise.reject(new Error())),
       fetch(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/api/branches`).then((response) => response.ok ? response.json() : Promise.reject(new Error())),
     ]).then(([treatmentResult, settingsResult, branchResult]) => {
-      setTreatmentOptions(['General Consultation', ...treatmentResult.treatments.map((treatment: { title: string }) => treatment.title)]);
-      setSettings(settingsResult.settings);
-      setBranches(branchResult.branches);
-    }).catch(() => undefined);
-  }, []);
+      let hasFailure = false;
+      if (treatmentResult.status === 'fulfilled') setTreatmentOptions(['General Consultation', ...treatmentResult.value.treatments.map((treatment: { title: string }) => treatment.title)]);
+      else hasFailure = true;
+      if (settingsResult.status === 'fulfilled') setSettings(settingsResult.value.settings);
+      else hasFailure = true;
+      if (branchResult.status === 'fulfilled') setBranches(branchResult.value.branches);
+      else hasFailure = true;
+      if (hasFailure) setDataError('We could not load all clinic details. Please retry before sending a booking request.');
+      setIsLoadingData(false);
+    });
+  }, [reloadKey]);
   const treatmentFromQuery = useMemo(() => {
     const query = location.split('?')[1] ?? '';
     const value = new URLSearchParams(query).get('treatment');
@@ -197,6 +208,12 @@ export default function BookingPage() {
             </section>
           ) : (
             <section className="booking-form-card" aria-labelledby="booking-form-title">
+             {dataError ? (
+               <div className="booking-form-error" role="alert">
+                 <span>{dataError}</span>
+                 <button type="button" onClick={() => setReloadKey((key) => key + 1)}>Retry</button>
+               </div>
+             ) : null}
               <div className="form-card-heading">
                 <div>
                   <div className="eyebrow">Patient information</div>
@@ -242,12 +259,13 @@ export default function BookingPage() {
                     <FormItem className="booking-field">
                       <FormLabel>Select Branch <span>*</span></FormLabel>
                       <FormControl>
-                        <select {...field}>
+                         <select {...field} disabled={isLoadingData || branches.length === 0}>
                           <option value="">Choose a branch</option>
                           {branches.map((branch) => <option value={branch.id} key={branch.id}>{branch.name} — {branch.address}</option>)}
                         </select>
                       </FormControl>
                       <FormDescription>Choose where you would like the clinic team to see you.</FormDescription>
+                       {dataError && branches.length === 0 ? <FormDescription>Branches are unavailable right now. Retry above before submitting.</FormDescription> : null}
                       <FormMessage />
                     </FormItem>
                   )} />
@@ -293,7 +311,7 @@ export default function BookingPage() {
                       <FormMessage />
                     </FormItem>
                   )} />
-                  <button className="button-primary booking-submit" type="submit" disabled={isSubmitting}>
+                   <button className="button-primary booking-submit" type="submit" disabled={isSubmitting || isLoadingData || branches.length === 0}>
                     {isSubmitting ? <><span className="button-loading" aria-hidden="true" /> Preparing your request…</> : <>Review request <ArrowRight size={16} /></>}
                   </button>
                   {form.formState.errors.root?.message ? <p className="booking-form-error" role="alert">{form.formState.errors.root.message}</p> : null}

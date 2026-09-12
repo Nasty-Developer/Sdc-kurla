@@ -189,8 +189,7 @@ export default function AdminPage() {
   const loadData = useCallback(async () => {
     setIsLoading(true);
     setError("");
-    try {
-      const [dashboardResult, appointmentResult, inquiryResult, treatmentResult, branchResult, mediaResult, settingsResult] = await Promise.all([
+    const results = await Promise.allSettled([
         apiRequest<Dashboard>("/admin/dashboard"),
         apiRequest<{ appointments: Appointment[] }>("/admin/appointments"),
         apiRequest<{ inquiries: Inquiry[] }>("/admin/inquiries"),
@@ -199,18 +198,19 @@ export default function AdminPage() {
         apiRequest<{ media: MediaItem[] }>("/admin/media"),
         apiRequest<{ settings: ClinicSettings }>("/admin/settings"),
       ]);
-      setDashboard(dashboardResult);
-      setAppointments(appointmentResult.appointments);
-      setInquiries(inquiryResult.inquiries);
-      setTreatments(treatmentResult.treatments);
-      setBranches(branchResult.branches);
-      setMedia(mediaResult.media);
-      setSettings(settingsResult.settings);
-    } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Unable to load the admin panel.");
-    } finally {
-      setIsLoading(false);
+    const [dashboardResult, appointmentResult, inquiryResult, treatmentResult, branchResult, mediaResult, settingsResult] = results;
+    if (dashboardResult.status === "fulfilled") setDashboard(dashboardResult.value);
+    if (appointmentResult.status === "fulfilled") setAppointments(appointmentResult.value.appointments);
+    if (inquiryResult.status === "fulfilled") setInquiries(inquiryResult.value.inquiries);
+    if (treatmentResult.status === "fulfilled") setTreatments(treatmentResult.value.treatments);
+    if (branchResult.status === "fulfilled") setBranches(branchResult.value.branches);
+    if (mediaResult.status === "fulfilled") setMedia(mediaResult.value.media);
+    if (settingsResult.status === "fulfilled") setSettings(settingsResult.value.settings);
+    const failedResult = results.find((result) => result.status === "rejected");
+    if (failedResult?.status === "rejected") {
+      setError(failedResult.reason instanceof Error ? failedResult.reason.message : "Some admin data could not be loaded.");
     }
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -465,7 +465,7 @@ export default function AdminPage() {
   return (
     <main className="admin-shell">
       <aside className="admin-sidebar">
-        <a href="/" className="admin-brand">
+        <a href={import.meta.env.BASE_URL} className="admin-brand">
           <span className="admin-brand-mark">SDC</span>
           <span><strong>SOMIL</strong><small>Dental clinic</small></span>
         </a>
@@ -533,7 +533,7 @@ export default function AdminPage() {
 
         {view === "treatments" ? <TreatmentsView treatments={treatments} onSave={saveTreatment} onDelete={deleteTreatment} busyId={busyId} /> : null}
         {view === "branches" ? <BranchesView branches={branches} onSave={saveBranch} onDelete={deleteBranch} busyId={busyId} /> : null}
-        {view === "media" ? <MediaView media={media} onUpload={uploadImage} onDelete={deleteMedia} busyId={busyId} /> : null}
+        {view === "media" ? <MediaView media={media} onUpload={async (file) => { const path = await uploadImage(file); await loadData(); return path; }} onDelete={deleteMedia} busyId={busyId} /> : null}
         {view === "settings" ? <SettingsView user={user} settings={settings} onSave={saveSettings} busyId={busyId} /> : null}
       </section>
 

@@ -12,6 +12,22 @@ import {
 } from "./middlewares/clerkProxyMiddleware";
 
 const app: Express = express();
+const configuredOrigins = new Set(
+  (process.env.CORS_ORIGINS ?? process.env.PUBLIC_APP_URL ?? "")
+    .split(",")
+    .map((origin) => origin.trim().replace(/\/$/, ""))
+    .filter(Boolean),
+);
+const isMutation = (method: string) => ["POST", "PATCH", "PUT", "DELETE"].includes(method);
+const isAllowedOrigin = (origin: string | undefined, host: string | undefined) => {
+  if (!origin) return true;
+  if (configuredOrigins.has(origin.replace(/\/$/, ""))) return true;
+  try {
+    return Boolean(host && new URL(origin).host === host);
+  } catch {
+    return false;
+  }
+};
 
 app.use(
   pinoHttp({
@@ -33,7 +49,18 @@ app.use(
   }),
 );
 app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
-app.use(cors({ credentials: true, origin: true }));
+app.use((req, res, next) => {
+  const origin = req.get("origin");
+  if (isMutation(req.method) && !isAllowedOrigin(origin, req.get("host"))) {
+    res.status(403).json({ error: "Cross-origin requests are not allowed." });
+    return;
+  }
+  next();
+});
+app.use(cors({
+  credentials: true,
+  origin: (origin, callback) => callback(null, isAllowedOrigin(origin, undefined)),
+}));
 
 const clerkConfigured = Boolean(
   process.env.CLERK_SECRET_KEY && process.env.CLERK_PUBLISHABLE_KEY,

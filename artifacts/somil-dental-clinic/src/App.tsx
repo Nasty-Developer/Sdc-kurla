@@ -39,6 +39,7 @@ const clerkPubKey = configuredClerkKey
 const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const hasClerk = Boolean(clerkPubKey);
+const assetPath = (name: string) => `${import.meta.env.BASE_URL}${name}`;
 
 type ClinicSettings = {
   clinicName: string;
@@ -77,6 +78,7 @@ const iconMap = { Baby, CheckCircle2, CircleDollarSign, ShieldCheck, Smile, Spar
 const baseApiPath = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/api`;
 
 const treatmentIcon = (name: string) => iconMap[name as keyof typeof iconMap] ?? Stethoscope;
+const treatmentPrice = (price: string) => /^from\b/i.test(price.trim()) ? price : `From ${price}`;
 
 const stats = [
   ['500+', 'Happy Patients'],
@@ -114,22 +116,30 @@ function Home() {
   const [settings, setSettings] = useState<ClinicSettings | null>(null);
   const [treatments, setTreatments] = useState<PublicTreatment[]>([]);
   const [branches, setBranches] = useState<PublicBranch[]>([]);
+  const [dataError, setDataError] = useState('');
+  const [reloadKey, setReloadKey] = useState(0);
   const [, setLocation] = useLocation();
 
   useEffect(() => {
     let cancelled = false;
-    void Promise.all([
+    setDataError('');
+    void Promise.allSettled([
       fetch(`${baseApiPath}/settings`).then((response) => response.ok ? response.json() : Promise.reject(new Error('Unable to load clinic settings.'))),
       fetch(`${baseApiPath}/treatments`).then((response) => response.ok ? response.json() : Promise.reject(new Error('Unable to load treatments.'))),
       fetch(`${baseApiPath}/branches`).then((response) => response.ok ? response.json() : Promise.reject(new Error('Unable to load clinic branches.'))),
     ]).then(([settingsResult, treatmentsResult, branchesResult]) => {
       if (cancelled) return;
-      setSettings(settingsResult.settings);
-      setTreatments(treatmentsResult.treatments);
-      setBranches(branchesResult.branches);
-    }).catch(() => undefined);
+      let hasFailure = false;
+      if (settingsResult.status === 'fulfilled') setSettings(settingsResult.value.settings);
+      else hasFailure = true;
+      if (treatmentsResult.status === 'fulfilled') setTreatments(treatmentsResult.value.treatments);
+      else hasFailure = true;
+      if (branchesResult.status === 'fulfilled') setBranches(branchesResult.value.branches);
+      else hasFailure = true;
+      if (hasFailure) setDataError('Some clinic information is temporarily unavailable.');
+    });
     return () => { cancelled = true; };
-  }, []);
+  }, [reloadKey]);
 
   const clinicPhone = settings?.phone || '';
   const clinicWhatsApp = (settings?.whatsapp || settings?.phone || '').replace(/\D/g, '');
@@ -149,7 +159,7 @@ function Home() {
       <header className="sdc-header">
         <div className="container-sdc sdc-header-inner">
           <a className="brand" href="#top" aria-label="Somil Dental Clinic home">
-            <img className="brand-logo" src="/sdc-logo.png" alt="Somil Dental Clinic" />
+            <img className="brand-logo" src={assetPath('sdc-logo.png')} alt="Somil Dental Clinic" />
             <span className="brand-copy"><strong>SOMIL</strong><span>DENTAL CLINIC</span></span>
           </a>
           <nav className="desktop-nav" aria-label="Main navigation">
@@ -198,7 +208,7 @@ function Home() {
               <div className="hero-visual-ring hero-visual-ring-one" aria-hidden="true" />
               <div className="hero-visual-ring hero-visual-ring-two" aria-hidden="true" />
               <div className="hero-visual-media">
-                <img src="/doctor-real.jpeg" alt="Dr. Somil V Gupta, dentist at Somil Dental Clinic" loading="eager" fetchPriority="high" decoding="sync" />
+                <img src={assetPath('doctor-real.jpeg')} alt="Dr. Somil V Gupta, dentist at Somil Dental Clinic" loading="eager" fetchPriority="high" decoding="sync" />
                 <div className="hero-visual-wash" aria-hidden="true" />
                 <div className="hero-visual-caption">
                   <span>SDC / CARE 01</span>
@@ -227,6 +237,12 @@ function Home() {
           </div>
         </div>
       </section>
+      {dataError ? (
+        <div className="container-sdc public-data-alert" role="alert">
+          <span>{dataError}</span>
+          <button type="button" onClick={() => setReloadKey((key) => key + 1)}>Retry</button>
+        </div>
+      ) : null}
 
       <section className="section" id="about" aria-labelledby="about-heading">
         <Reveal className="container-sdc story-grid">
@@ -258,7 +274,7 @@ function Home() {
                 <div className="treatment-top"><span className="service-icon">{imagePath ? <img src={`${baseApiPath}/storage${imagePath}`} alt="" /> : <Icon size={19} />}</span><span className="treatment-number">{String(index + 1).padStart(2, '0')}</span></div>
                 <h3>{title}</h3>
                 <p>{description}</p>
-                <div className="treatment-bottom"><strong>From {price}</strong><button className="treatment-book" onClick={() => openAppointment(title)} aria-label={`Book ${title}`}>Book now <ArrowRight size={14} /></button></div>
+                <div className="treatment-bottom"><strong>{treatmentPrice(price)}</strong><button className="treatment-book" onClick={() => openAppointment(title)} aria-label={`Book ${title}`}>Book now <ArrowRight size={14} /></button></div>
               </article>
             );})}
           </Reveal>
@@ -294,7 +310,7 @@ function Home() {
             <p>Meet the clinician behind Somil Dental Clinic and the patient-first approach that shapes every visit.</p>
           </div>
           <Reveal className="doctor-profile">
-            <div className="doctor-visual"><img src="/doctor-real.jpeg" alt="Dr. Somil V Gupta, lead dentist and endodontist" /><span className="doctor-visual-label">SDC / 01</span></div>
+            <div className="doctor-visual"><img src={assetPath('doctor-real.jpeg')} alt="Dr. Somil V Gupta, lead dentist and endodontist" /><span className="doctor-visual-label">SDC / 01</span></div>
             <div className="doctor-copy">
               <div className="eyebrow">Lead Dentist / Endodontist</div>
               <h3>Dr. Somil V Gupta</h3>

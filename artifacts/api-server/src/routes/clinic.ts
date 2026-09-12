@@ -16,6 +16,23 @@ import { objectStorageService } from "../lib/objectStorage";
 
 const router: IRouter = Router();
 
+const validCalendarDate = (value: string) => {
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+};
+
+const todayString = () => {
+  const now = new Date();
+  const offset = now.getTimezoneOffset() * 60_000;
+  return new Date(now.getTime() - offset).toISOString().slice(0, 10);
+};
+
+const appointmentDateSchema = z.string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/)
+  .refine(validCalendarDate, "Choose a real calendar date.")
+  .refine((value) => value >= todayString(), "Choose today or a future date.");
+
 const appointmentSchema = z.object({
   fullName: z.string().trim().min(2).max(80),
   phone: z.string().trim().min(10).max(30),
@@ -23,7 +40,7 @@ const appointmentSchema = z.object({
   age: z.coerce.number().int().min(1).max(120),
   treatment: z.string().trim().min(2).max(120),
   branchId: z.coerce.number().int().positive(),
-  preferredDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  preferredDate: appointmentDateSchema,
   preferredTime: z.string().trim().min(2).max(40),
   message: z.string().trim().max(500).default(""),
 });
@@ -38,7 +55,7 @@ const inquirySchema = z.object({
 const idSchema = z.coerce.number().int().positive();
 const statusSchema = z.enum(appointmentStatusValues);
 const appointmentScheduleSchema = z.object({
-  appointmentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  appointmentDate: appointmentDateSchema,
   appointmentTime: z.enum(["6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM"]),
 });
 const treatmentSchema = z.object({
@@ -274,13 +291,6 @@ router.patch("/admin/appointments/:id/schedule", requireAdmin, async (req, res) 
   const schedule = appointmentScheduleSchema.safeParse(req.body);
   if (!id.success || !schedule.success) {
     res.status(400).json({ error: "Choose a valid future date and clinic appointment time." });
-    return;
-  }
-  const selectedDate = new Date(`${schedule.data.appointmentDate}T00:00:00`);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  if (Number.isNaN(selectedDate.getTime()) || selectedDate < today) {
-    res.status(400).json({ error: "Appointments must be scheduled for today or a future date." });
     return;
   }
   try {
@@ -607,12 +617,17 @@ router.delete("/admin/branches/:id", requireAdmin, async (req, res) => {
 });
 
 router.get("/admin/settings", requireAdmin, async (_req, res) => {
-  const [settings] = await db.select().from(clinicSettingsTable).limit(1);
-  if (!settings) {
-    res.status(404).json({ error: "Clinic settings are not configured." });
-    return;
+  try {
+    const [settings] = await db.select().from(clinicSettingsTable).limit(1);
+    if (!settings) {
+      res.status(404).json({ error: "Clinic settings are not configured." });
+      return;
+    }
+    res.json({ settings });
+  } catch (error) {
+    _req.log?.error({ err: error }, "Unable to load admin clinic settings");
+    res.status(500).json({ error: "Unable to load clinic settings." });
   }
-  res.json({ settings });
 });
 
 router.patch("/admin/settings", requireAdmin, async (req, res) => {

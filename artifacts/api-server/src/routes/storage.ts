@@ -20,7 +20,10 @@ router.post("/storage/uploads/request-url", requireAdmin, async (req, res) => {
   }
 
   try {
-    const { uploadURL, objectPath } = await objectStorageService.createUploadUrl();
+    const { uploadURL, objectPath } = await objectStorageService.createUploadUrl({
+      contentType: parsed.data.contentType,
+      size: parsed.data.size,
+    });
     res.json({ uploadURL, objectPath, metadata: parsed.data });
   } catch (error) {
     req.log?.error({ err: error }, "Unable to create media upload URL");
