@@ -70,6 +70,7 @@ const treatmentSchema = z.object({
 const settingsSchema = z.object({
   clinicName: z.string().trim().min(2).max(120),
   phone: z.string().trim().min(7).max(30),
+  alternatePhone: z.string().trim().min(7).max(30),
   whatsapp: z.string().trim().min(7).max(30),
   email: z.string().trim().email().max(160),
   address: z.string().trim().min(5).max(300),

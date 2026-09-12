@@ -1,0 +1,78 @@
+Please update the **“Our Treatments & Prices”** section of the dental clinic website.
+
+I want the treatment names, prices, and descriptions to be professionally edited and presented cleanly. Keep the pricing transparent, realistic, and easy for patients to understand.
+
+### Treatments & Pricing
+
+1. **Dental Checkup & Consultation**
+
+   * Starting from: **₹100**
+   * Description: Complete oral examination, dental consultation, and basic treatment planning.
+
+2. **Teeth Cleaning & Polishing**
+
+   * Starting from: **₹500**
+   * Description: Professional scaling and polishing to remove plaque, tartar, and surface stains.
+
+3. **Tooth Extraction**
+
+   * Starting from: **₹500**
+   * Description: Safe and carefully performed tooth extraction with appropriate pain management.
+
+4. **Root Canal Treatment (RCT)**
+
+   * Starting from: **₹3,000**
+   * Description: Advanced root canal treatment to remove infection and help preserve the natural tooth.
+
+5. **Dental Filling**
+
+   * Starting from: **₹500**
+   * Description: Tooth-colored composite fillings to restore teeth affected by cavities and minor damage.
+
+6. **Professional Teeth Whitening**
+
+   * Starting from: **₹3,000**
+   * Description: Professional whitening treatment designed to brighten the smile and reduce tooth discoloration.
+
+7. **Braces & Orthodontic Treatment**
+
+   * Starting from: **₹20,000**
+   * Description: Orthodontic treatment to straighten teeth and improve dental alignment and bite.
+
+8. **Dental Crown**
+
+   * Starting from: **₹1,500**
+   * Description: Custom dental crowns to restore the shape, function, and strength of damaged teeth.
+
+9. **Dental Implant**
+
+   * Starting from: **₹10,000**
+   * Description: Dental implant solutions for replacing missing teeth and restoring oral function.
+
+10. **Pediatric Dentistry**
+
+    * Starting from: **₹300**
+    * Description: Gentle and child-friendly dental care designed specifically for children's oral health needs.
+
+11. **Dentures & RPD**
+
+    * Starting from: **₹1,500**
+    * Description: Removable dentures and partial dentures (RPD) for replacing missing teeth and restoring comfortable function.
+
+### Website/UI requirements
+
+* Make all treatment names consistent in capitalization and terminology.
+* Display prices clearly as **“Starting from ₹X”** rather than only “From ₹X”.
+* Keep descriptions short, professional, and patient-friendly.
+* Make the treatment cards visually consistent with equal spacing and alignment.
+* Keep the **Book Now** button on every treatment.
+* Make sure each button opens the correct booking page and passes the correct treatment parameter.
+* Do not break the existing booking flow.
+* Use proper treatment names in the booking form as well.
+* Remove any unnecessary “svg” text or broken SVG placeholders currently appearing in the section.
+* Make sure the section is fully responsive on desktop, tablet, and mobile.
+* Check spelling, capitalization, spacing, and punctuation throughout the entire treatment/pricing section.
+* Do not hard-code duplicate treatment information in multiple places if the project architecture allows using a single treatment data source.
+* After making the changes, test every **Book Now** button and verify that the selected treatment appears correctly on the booking page.
+
+Please implement these changes directly in the existing website without changing unrelated sections or the overall design unnecessarily.

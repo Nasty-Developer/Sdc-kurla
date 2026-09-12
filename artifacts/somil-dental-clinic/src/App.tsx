@@ -44,6 +44,7 @@ const assetPath = (name: string) => `${import.meta.env.BASE_URL}${name}`;
 type ClinicSettings = {
   clinicName: string;
   phone: string;
+  alternatePhone: string;
   whatsapp: string;
   email: string;
   address: string;
@@ -79,6 +80,7 @@ const baseApiPath = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/api`;
 
 const treatmentIcon = (name: string) => iconMap[name as keyof typeof iconMap] ?? Stethoscope;
 const treatmentPrice = (price: string) => /^from\b/i.test(price.trim()) ? price : `From ${price}`;
+const phoneHref = (value: string) => `tel:${value.replace(/[^\d+]/g, '')}`;
 
 const stats = [
   ['500+', 'Happy Patients'],
@@ -142,6 +144,7 @@ function Home() {
   }, [reloadKey]);
 
   const clinicPhone = settings?.phone || '';
+  const alternatePhone = settings?.alternatePhone || '';
   const clinicWhatsApp = (settings?.whatsapp || settings?.phone || '').replace(/\D/g, '');
   const clinicEmail = settings?.email || '';
   const clinicAddress = settings?.address || '';
@@ -169,7 +172,7 @@ function Home() {
             <a href="#team">Team</a>
             <a href="#contact">Contact</a>
           </nav>
-          <a className="header-call-button" href={`tel:${clinicPhone.replace(/\s/g, '')}`}>
+          <a className="header-call-button" href={phoneHref(clinicPhone)}>
             <Phone size={14} />
             <span>Call</span>
           </a>
@@ -356,7 +359,8 @@ function Home() {
               <h2 id="contact-heading">Your next visit starts here.</h2>
               <p>Call, email, or send an appointment request. We’ll help you take the next step with confidence.</p>
               <div className="contact-details">
-                <a className="contact-detail" href={`tel:${clinicPhone.replace(/\s/g, '')}`}><Phone size={17} /> {clinicPhone}</a>
+                 <a className="contact-detail" href={phoneHref(clinicPhone)}><Phone size={17} /> <span>Primary: {clinicPhone}</span></a>
+                 <a className="contact-detail" href={phoneHref(alternatePhone)}><Phone size={17} /> <span>Alternate: {alternatePhone}</span></a>
                 <a className="contact-detail" href={`mailto:${clinicEmail}`}><Mail size={17} /> {clinicEmail}</a>
                 <span className="contact-detail"><MapPin size={17} /> {clinicAddress}</span>
                 <span className="contact-detail"><Clock3 size={17} /> {settings?.hours}<br /><span className="hours-subline">{settings?.sundayHours}</span></span>
@@ -365,7 +369,7 @@ function Home() {
               <button className="button-primary" onClick={() => openAppointment()}>Book Appointment <ArrowRight size={15} /></button>
               <InquiryForm />
             </div>
-            <div className="contact-map" aria-label={`Location: ${clinicAddress}`}>
+             <div className="contact-map" aria-label={`Location: ${clinicAddress}`}>
               <div className="map-grid" aria-hidden="true" /><div className="map-pin"><MapPin size={19} /></div><div className="map-label"><strong>Somil Dental Clinic</strong><span>{clinicAddress}</span>{settings?.mapUrl ? <a href={settings.mapUrl} target="_blank" rel="noreferrer">Open map</a> : null}</div>
             </div>
           </Reveal>
@@ -378,7 +382,7 @@ function Home() {
             <div><a className="brand" href="#top"><span className="brand-mark">SDC</span><span className="brand-copy"><strong>SOMIL</strong><span>Dental clinic</span></span></a><p className="footer-intro">Providing world-class dental care with a gentle touch. Your smile is our top priority.</p></div>
             <div><h3>Quick Links</h3><div className="footer-links"><a href="#top">Home</a><a href="#treatments">Treatments &amp; Pricing</a><button onClick={() => openAppointment()}>Book Appointment</button><a href="#contact">Contact Us</a></div></div>
             <div><h3>Clinic Hours</h3><div className="footer-hours"><span>{settings?.hours}</span><span>{settings?.sundayHours}</span></div></div>
-            <div><h3>Contact</h3><div className="footer-links contact-footer"><span>{clinicAddress}</span><a href={`tel:${clinicPhone.replace(/\s/g, '')}`}>{clinicPhone}</a><a href={`mailto:${clinicEmail}`}>{clinicEmail}</a></div></div>
+             <div><h3>Contact</h3><div className="footer-links contact-footer"><span>{clinicAddress}</span><a href={phoneHref(clinicPhone)}>Primary: {clinicPhone}</a><a href={phoneHref(alternatePhone)}>Alternate: {alternatePhone}</a><a href={`mailto:${clinicEmail}`}>{clinicEmail}</a></div></div>
           </div>
           <div className="footer-bottom"><span>© 2026 Somil Dental Clinic. All rights reserved.</span><span>SDC · Mumbai, Maharashtra</span></div>
         </div>

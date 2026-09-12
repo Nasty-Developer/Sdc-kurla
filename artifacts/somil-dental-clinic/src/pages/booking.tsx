@@ -8,6 +8,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 
 type BookingSettings = {
   phone: string;
+  alternatePhone: string;
   email: string;
   address: string;
   hours: string;
@@ -61,6 +62,7 @@ const formatDate = (value: string) => new Intl.DateTimeFormat('en-IN', {
   month: 'long',
   year: 'numeric',
 }).format(new Date(`${value}T00:00:00`));
+const phoneHref = (value: string) => `tel:${value.replace(/[^\d+]/g, '')}`;
 
 export default function BookingPage() {
   const [location, setLocation] = useLocation();
@@ -95,7 +97,8 @@ export default function BookingPage() {
   const treatmentFromQuery = useMemo(() => {
     const query = location.split('?')[1] ?? '';
     const value = new URLSearchParams(query).get('treatment');
-    return value && treatmentOptions.includes(value) ? value : 'General Consultation';
+    const normalizedValue = value === 'Dental Checkup' ? 'Dental Checkup & Consultation' : value;
+    return normalizedValue && treatmentOptions.includes(normalizedValue) ? normalizedValue : 'General Consultation';
   }, [location, treatmentOptions]);
 
   const form = useForm<BookingValues>({
@@ -117,6 +120,8 @@ export default function BookingPage() {
   useEffect(() => {
     form.setValue('treatment', treatmentFromQuery, { shouldValidate: true });
   }, [form, treatmentFromQuery]);
+
+  const selectedFormBranch = branches.find((branch) => String(branch.id) === form.watch('branchId'));
 
   const handleSubmit = async (values: BookingValues) => {
     setIsSubmitting(true);
@@ -192,14 +197,15 @@ export default function BookingPage() {
               <p className="confirmation-lede">Your appointment request has been securely sent to the clinic team. They will contact you to confirm availability.</p>
               <div className="confirmation-summary">
                 <div><span>Treatment</span><strong>{submittedValues.treatment}</strong></div>
-                <div><span>Branch</span><strong>{branches.find((branch) => String(branch.id) === submittedValues.branchId)?.name || 'Selected branch'}</strong></div>
+                 <div><span>Selected clinic</span><strong>{branches.find((branch) => String(branch.id) === submittedValues.branchId)?.name || 'Selected branch'}</strong></div>
+                 <div className="confirmation-summary-wide"><span>Address</span><strong>{branches.find((branch) => String(branch.id) === submittedValues.branchId)?.address || 'Clinic address will be confirmed by the team.'}</strong></div>
                 <div><span>Preferred date</span><strong>{formatDate(submittedValues.preferredDate)}</strong></div>
                 <div><span>Preferred time</span><strong>{submittedValues.preferredTime}</strong></div>
                 <div><span>Patient</span><strong>{submittedValues.fullName}</strong></div>
               </div>
               <div className="confirmation-note">
                 <strong>To confirm your visit</strong>
-                <p>Please call Somil Dental Clinic on <a href={`tel:${settings?.phone.replace(/\s/g, '')}`}>{settings?.phone}</a>. The team can confirm availability and the next step.</p>
+               <p>Please call Somil Dental Clinic on <a href={phoneHref(settings?.phone || '')}>{settings?.phone}</a> or <a href={phoneHref(settings?.alternatePhone || '')}>{settings?.alternatePhone}</a>. The team can confirm availability and the next step.</p>
               </div>
               <div className="confirmation-actions">
                 <button className="button-primary" onClick={resetBooking}>Make another request <ArrowRight size={15} /></button>
@@ -265,6 +271,13 @@ export default function BookingPage() {
                         </select>
                       </FormControl>
                       <FormDescription>Choose where you would like the clinic team to see you.</FormDescription>
+                       {selectedFormBranch ? (
+                         <div className="booking-branch-preview">
+                           <strong>Selected clinic</strong>
+                           <span>{selectedFormBranch.name}</span>
+                           <small>{selectedFormBranch.address}</small>
+                         </div>
+                       ) : null}
                        {dataError && branches.length === 0 ? <FormDescription>Branches are unavailable right now. Retry above before submitting.</FormDescription> : null}
                       <FormMessage />
                     </FormItem>
@@ -326,7 +339,8 @@ export default function BookingPage() {
               <div className="eyebrow">Need a hand?</div>
               <h2>Prefer to speak directly?</h2>
               <p>Call or email the clinic if you have a question about your care.</p>
-              <a href={`tel:${settings?.phone.replace(/\s/g, '')}`} className="aside-contact-link"><Phone size={16} /> {settings?.phone}</a>
+               <a href={phoneHref(settings?.phone || '')} className="aside-contact-link"><Phone size={16} /> {settings?.phone}</a>
+               <a href={phoneHref(settings?.alternatePhone || '')} className="aside-contact-link"><Phone size={16} /> {settings?.alternatePhone}</a>
               <a href={`mailto:${settings?.email}`} className="aside-contact-link"><Mail size={16} /> {settings?.email}</a>
             </div>
             <div className="aside-card aside-hours">

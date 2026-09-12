@@ -100,6 +100,8 @@
   * { @apply border-border; }
   html { scroll-behavior: smooth; }
   body { @apply font-sans antialiased bg-background text-foreground; margin: 0; }
+  img, svg, video { max-width: 100%; }
+  button, input, select, textarea { max-width: 100%; }
   button, a, input, select { -webkit-tap-highlight-color: transparent; }
   ::selection { background: hsl(var(--accent) / .2); color: hsl(var(--primary)); }
 }
@@ -295,13 +297,16 @@
 .contact-copy h2 { color: hsl(var(--primary)); font: 800 clamp(2rem, 3.4vw, 3rem)/1.1 'Manrope', sans-serif; letter-spacing: -.06em; margin: 12px 0 16px; }
 .contact-copy p { max-width: 420px; color: hsl(var(--muted-foreground)); line-height: 1.65; font-size: .93rem; }
 .contact-details { display: grid; gap: 15px; margin: 29px 0; }
-.contact-detail { display: flex; gap: 12px; align-items: flex-start; color: hsl(var(--primary)); font-size: 12px; line-height: 1.45; text-decoration: none; }
+.contact-detail { display: flex; gap: 12px; align-items: flex-start; min-width: 0; color: hsl(var(--primary)); font-size: 12px; line-height: 1.45; text-decoration: none; }
 .contact-detail svg { flex: 0 0 auto; color: hsl(var(--accent)); margin-top: 1px; }
+.contact-detail > span { min-width: 0; overflow-wrap: anywhere; }
 .hours-subline { color: hsl(var(--muted-foreground)); }
-.contact-branches { display: grid; gap: 6px; margin-top: 2px; padding-top: 13px; border-top: 1px solid hsl(191 38% 86%); }
+.contact-branches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 2px; padding-top: 13px; border-top: 1px solid hsl(191 38% 86%); }
 .contact-branches-label { color: hsl(var(--muted-foreground)); font-size: 9px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
-.contact-branch { display: grid; gap: 2px; padding-left: 29px; color: hsl(var(--primary)); font-size: 11px; }
-.contact-branch small { color: hsl(var(--muted-foreground)); font-size: 10px; }
+.contact-branches-label { grid-column: 1 / -1; }
+.contact-branch { display: grid; gap: 5px; min-width: 0; padding: 11px 12px; color: hsl(var(--primary)); border: 1px solid hsl(191 38% 86%); border-radius: 10px; background: rgba(255,255,255,.34); font-size: 11px; }
+.contact-branch strong, .contact-branch small { overflow-wrap: anywhere; }
+.contact-branch small { color: hsl(var(--muted-foreground)); font-size: 10px; line-height: 1.5; }
 .contact-map { min-height: 360px; position: relative; background: hsl(190 42% 84%); overflow: hidden; }
 .map-grid { position: absolute; inset: -20%; opacity: .55; background: repeating-linear-gradient(34deg, transparent 0 33px, rgba(203,239,242,.85) 34px 37px, transparent 38px 80px), repeating-linear-gradient(120deg, transparent 0 72px, rgba(93,166,181,.28) 73px 77px); transform: rotate(-9deg); }
 .contact-map::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 54% 48%, transparent 0 53px, rgba(14,78,98,.08) 54px 55px, transparent 56px); }
@@ -399,6 +404,10 @@
 .booking-field p { margin: 0; }
 .booking-field .text-destructive { color: hsl(var(--destructive)); font-size: 11px; }
 .booking-field .text-muted-foreground { color: hsl(var(--muted-foreground)); font-size: 11px; line-height: 1.4; }
+.booking-branch-preview { display: grid; gap: 4px; margin-top: 4px; padding: 12px 13px; border-left: 3px solid hsl(var(--accent)); border-radius: 0 8px 8px 0; background: hsl(var(--secondary) / .52); }
+.booking-branch-preview strong { color: hsl(var(--primary)); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.booking-branch-preview span { color: hsl(var(--primary)); font-size: 13px; font-weight: 800; }
+.booking-branch-preview small { color: hsl(var(--muted-foreground)); font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
 .form-section-label { display: flex; align-items: center; gap: 14px; margin-top: 5px; color: hsl(var(--primary)); font-size: 11px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
 .form-section-label i { height: 1px; flex: 1; background: hsl(var(--border)); }
 .booking-submit { width: 100%; min-height: 56px; margin-top: 2px; }
@@ -411,6 +420,7 @@
 .aside-card h2 { margin: 10px 0 9px; color: hsl(var(--primary)); font: 800 1.32rem/1.1 'Manrope', sans-serif; letter-spacing: -.05em; }
 .aside-card p { margin: 0 0 19px; color: hsl(var(--muted-foreground)); font-size: 12px; line-height: 1.6; }
 .aside-contact-link { display: flex; align-items: center; gap: 9px; width: fit-content; margin-top: 12px; color: hsl(var(--primary)); font-size: 12px; font-weight: 700; text-decoration: none; }
+.aside-contact-link { max-width: 100%; overflow-wrap: anywhere; }
 .aside-contact-link:hover { color: hsl(var(--accent)); }
 .aside-contact-link svg { color: hsl(var(--accent)); }
 .aside-hours { display: flex; gap: 14px; }
@@ -428,6 +438,7 @@
 .confirmation-lede strong { color: hsl(var(--primary)); }
 .confirmation-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin: 30px 0; overflow: hidden; border: 1px solid hsl(var(--border)); border-radius: 10px; background: hsl(var(--border)); }
 .confirmation-summary div { min-height: 78px; display: grid; align-content: center; gap: 6px; padding: 13px 15px; background: hsl(199 35% 97%); }
+.confirmation-summary-wide { grid-column: 1 / -1; }
 .confirmation-summary span { color: hsl(var(--muted-foreground)); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
 .confirmation-summary strong { color: hsl(var(--primary)); font-size: 13px; line-height: 1.35; }
 .confirmation-note { padding: 17px 18px; border-left: 3px solid hsl(var(--accent)); background: hsl(var(--secondary) / .5); }
@@ -611,6 +622,7 @@ button:disabled { cursor: not-allowed; }
   .charity-side .button-light { width: 100%; margin: 3px 0 0; }
   .contact-section { padding-bottom: 76px; }
   .contact-copy { padding: 36px 26px; }
+   .contact-branches { grid-template-columns: 1fr; }
   .contact-map { min-height: 270px; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 34px 25px; }
   .footer-grid > :first-child { grid-column: 1 / -1; }
@@ -637,6 +649,10 @@ button:disabled { cursor: not-allowed; }
   .confirmation-actions .button-primary, .confirmation-actions .button-ghost { width: 100%; box-sizing: border-box; }
 }
 @media (max-width: 410px) {
+  .container-sdc { width: min(100% - 28px, 540px); }
+  .sdc-header .brand-logo { width: 46px; height: 46px; }
+  .sdc-header .brand-copy strong { font-size: 14px; }
+  .sdc-header .brand-copy span { font-size: 8px; }
   .treatments-grid { grid-template-columns: 1fr; }
   .treatment-card { min-height: 196px; }
   .treatment-bottom { align-items: flex-start; flex-direction: column; gap: 8px; }

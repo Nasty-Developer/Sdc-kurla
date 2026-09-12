@@ -141,6 +141,7 @@ export const clinicSettingsTable = pgTable("clinic_settings", {
   id: integer("id").primaryKey().default(1),
   clinicName: text("clinic_name").notNull(),
   phone: text("phone").notNull(),
+  alternatePhone: text("alternate_phone").notNull().default(""),
   whatsapp: text("whatsapp").notNull(),
   email: text("email").notNull(),
   address: text("address").notNull(),
