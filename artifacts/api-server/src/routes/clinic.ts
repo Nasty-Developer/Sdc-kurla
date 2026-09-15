@@ -13,6 +13,7 @@ import {
 } from "@workspace/db";
 import { requireAdmin } from "../middlewares/adminAuth";
 import { objectStorageService } from "../lib/objectStorage";
+import { appointmentRateLimit, inquiryRateLimit } from "../middlewares/publicAbuse";
 
 const router: IRouter = Router();
 
@@ -33,16 +34,19 @@ const appointmentDateSchema = z.string()
   .refine(validCalendarDate, "Choose a real calendar date.")
   .refine((value) => value >= todayString(), "Choose today or a future date.");
 
+const appointmentTimeValues = ["6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM"] as const;
+
 const appointmentSchema = z.object({
   fullName: z.string().trim().min(2).max(80),
-  phone: z.string().trim().min(10).max(30),
+  phone: z.string().trim().regex(/^\+?[0-9\s()-]{10,30}$/),
   email: z.string().trim().email().max(160),
   age: z.coerce.number().int().min(1).max(120),
   treatment: z.string().trim().min(2).max(120),
   branchId: z.coerce.number().int().positive(),
   preferredDate: appointmentDateSchema,
-  preferredTime: z.string().trim().min(2).max(40),
+  preferredTime: z.enum(appointmentTimeValues),
   message: z.string().trim().max(500).default(""),
+  website: z.string().max(0).optional(),
 });
 
 const inquirySchema = z.object({
@@ -56,7 +60,7 @@ const idSchema = z.coerce.number().int().positive();
 const statusSchema = z.enum(appointmentStatusValues);
 const appointmentScheduleSchema = z.object({
   appointmentDate: appointmentDateSchema,
-  appointmentTime: z.enum(["6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM"]),
+  appointmentTime: z.enum(appointmentTimeValues),
 });
 const treatmentSchema = z.object({
   title: z.string().trim().min(2).max(120),
@@ -138,10 +142,33 @@ router.get("/settings", async (_req, res) => {
   }
 });
 
-router.post("/appointments", async (req, res) => {
+const recentIdempotencyKeys = new Map<string, number>();
+
+const claimIdempotencyKey = (scope: string, value: string | undefined) => {
+  if (!value) return true;
+  const now = Date.now();
+  for (const [key, timestamp] of recentIdempotencyKeys) {
+    if (timestamp + 10 * 60_000 <= now) recentIdempotencyKeys.delete(key);
+  }
+  const key = `${scope}:${value}`;
+  if (recentIdempotencyKeys.has(key)) return false;
+  recentIdempotencyKeys.set(key, now);
+  return true;
+};
+
+router.post("/appointments", appointmentRateLimit, async (req, res) => {
   const parsed = appointmentSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Please check the appointment details and try again." });
+    return;
+  }
+  if (parsed.data.website) {
+    res.status(400).json({ error: "Please check the appointment details and try again." });
+    return;
+  }
+  const idempotencyKey = req.get("Idempotency-Key")?.trim().slice(0, 120);
+  if (!claimIdempotencyKey("appointment", idempotencyKey)) {
+    res.status(409).json({ error: "This appointment request has already been submitted." });
     return;
   }
 
@@ -152,6 +179,14 @@ router.post("/appointments", async (req, res) => {
       .where(and(eq(clinicBranchesTable.id, parsed.data.branchId), eq(clinicBranchesTable.isActive, true)));
     if (!branch) {
       res.status(400).json({ error: "Please choose an available clinic branch." });
+      return;
+    }
+    const [treatment] = await db
+      .select({ id: clinicTreatmentsTable.id })
+      .from(clinicTreatmentsTable)
+      .where(and(eq(clinicTreatmentsTable.title, parsed.data.treatment), eq(clinicTreatmentsTable.isActive, true)));
+    if (!treatment && parsed.data.treatment !== "General Consultation") {
+      res.status(400).json({ error: "Please choose an available treatment." });
       return;
     }
     const [appointment] = await db
@@ -169,17 +204,26 @@ router.post("/appointments", async (req, res) => {
       })
       .returning();
 
-    res.status(201).json({ appointment });
+    res.status(201).json({ ok: true, requestId: appointment.id });
   } catch (error) {
     req.log?.error({ err: error }, "Unable to save appointment");
     res.status(500).json({ error: "We could not save your appointment. Please try again." });
   }
 });
 
-router.post("/inquiries", async (req, res) => {
+router.post("/inquiries", inquiryRateLimit, async (req, res) => {
   const parsed = inquirySchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Please check your message details and try again." });
+    return;
+  }
+  if (typeof req.body?.website === "string" && req.body.website.trim()) {
+    res.status(400).json({ error: "Please check your message details and try again." });
+    return;
+  }
+  const idempotencyKey = req.get("Idempotency-Key")?.trim().slice(0, 120);
+  if (!claimIdempotencyKey("inquiry", idempotencyKey)) {
+    res.status(409).json({ error: "This message has already been submitted." });
     return;
   }
 
@@ -188,7 +232,7 @@ router.post("/inquiries", async (req, res) => {
       .insert(inquiriesTable)
       .values(parsed.data)
       .returning();
-    res.status(201).json({ inquiry });
+    res.status(201).json({ ok: true, requestId: inquiry.id });
   } catch (error) {
     req.log?.error({ err: error }, "Unable to save inquiry");
     res.status(500).json({ error: "We could not save your message. Please try again." });

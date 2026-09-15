@@ -1,0 +1,16 @@
+{
+  "name": "Somil Dental Clinic",
+  "short_name": "Somil Dental Clinic",
+  "description": "Thoughtful dental care in Mumbai.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7fbfc",
+  "theme_color": "#0d6f76",
+  "icons": [
+    {
+      "src": "/sdc-logo.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

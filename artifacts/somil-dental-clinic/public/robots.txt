@@ -1,2 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /book
+
+Sitemap: https://somildentalclinic.com/sitemap.xml

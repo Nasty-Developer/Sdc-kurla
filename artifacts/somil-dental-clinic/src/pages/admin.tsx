@@ -121,6 +121,7 @@ type ClinicSettings = {
   id: number;
   clinicName: string;
   phone: string;
+  alternatePhone: string;
   whatsapp: string;
   email: string;
   address: string;
@@ -885,6 +886,7 @@ function SettingsView({ user, settings, onSave, busyId }: { user: ReturnType<typ
         <div className="admin-form-grid">
           <label>Clinic name<input required value={draft.clinicName} onChange={(event) => update("clinicName", event.target.value)} /></label>
           <label>Phone<input required value={draft.phone} onChange={(event) => update("phone", event.target.value)} /></label>
+           <label>Alternate phone<input required value={draft.alternatePhone} onChange={(event) => update("alternatePhone", event.target.value)} /></label>
           <label>WhatsApp number<input required value={draft.whatsapp} onChange={(event) => update("whatsapp", event.target.value)} /></label>
           <label>Email<input required type="email" value={draft.email} onChange={(event) => update("email", event.target.value)} /></label>
           <label className="admin-form-wide">Address<textarea required rows={2} value={draft.address} onChange={(event) => update("address", event.target.value)} /></label>

@@ -7,6 +7,7 @@ export default function InquiryForm() {
   const [values, setValues] = useState({ name: "", email: "", phone: "", message: "" });
   const [status, setStatus] = useState<"idle" | "submitting" | "sent" | "error">("idle");
   const [error, setError] = useState("");
+  const [website, setWebsite] = useState("");
 
   const update = (field: keyof typeof values, value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
@@ -20,8 +21,11 @@ export default function InquiryForm() {
     try {
       const response = await fetch(`${baseApiPath}/inquiries`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": crypto.randomUUID(),
+        },
+        body: JSON.stringify({ ...values, website }),
       });
       const body = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(body.error || "We could not send your message.");
@@ -55,7 +59,11 @@ export default function InquiryForm() {
         <label>Email<input required type="email" maxLength={160} value={values.email} onChange={(event) => update("email", event.target.value)} placeholder="you@example.com" /></label>
         <label>Phone<input required type="tel" maxLength={30} value={values.phone} onChange={(event) => update("phone", event.target.value)} placeholder="+91 85914 34914" /></label>
       </div>
-      <label>Message<textarea required minLength={2} maxLength={1000} rows={3} value={values.message} onChange={(event) => update("message", event.target.value)} placeholder="How can we help?" /></label>
+       <label>Message<textarea required minLength={2} maxLength={1000} rows={3} value={values.message} onChange={(event) => update("message", event.target.value)} placeholder="How can we help?" /></label>
+       <div className="sr-only" aria-hidden="true">
+         <label htmlFor="inquiry-website">Website</label>
+         <input id="inquiry-website" tabIndex={-1} autoComplete="off" value={website} onChange={(event) => setWebsite(event.target.value)} />
+       </div>
       {status === "error" ? <p className="inquiry-form-error" role="alert">{error}</p> : null}
       <button className="button-primary inquiry-submit" type="submit" disabled={status === "submitting"}>{status === "submitting" ? "Sending…" : <>Send message <Send size={15} /></>}</button>
     </form>

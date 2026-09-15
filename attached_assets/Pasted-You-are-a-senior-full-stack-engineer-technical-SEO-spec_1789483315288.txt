@@ -1,0 +1,658 @@
+You are a senior full-stack engineer, technical SEO specialist, UI/UX auditor, performance engineer, security reviewer, and local SEO expert.
+
+Your job is to completely audit, repair, optimize, and production-harden this entire Somil Dental Clinic website.
+
+IMPORTANT:
+Do NOT make superficial changes.
+Do NOT only inspect the homepage.
+Do NOT assume that something works because the UI looks correct.
+You must deeply inspect the complete codebase, routes, components, APIs, forms, assets, metadata, SEO implementation, mobile behavior, accessibility, performance, security, deployment configuration, and every user-facing interaction.
+
+The final website domain will be:
+
+https://somildentalclinic.com/
+
+The website must be fully production-ready for this domain.
+
+==================================================
+PHASE 1 — COMPLETE CODEBASE AUDIT
+=================================
+
+First scan the ENTIRE project.
+
+Inspect:
+
+* Every source file
+* Every route
+* Every page
+* Every component
+* Every API/service
+* Every form
+* Every button
+* Every navigation link
+* Every image
+* Every icon
+* Every external dependency
+* Environment variables
+* Firebase/backend configuration if present
+* Database interactions
+* Authentication
+* Admin functionality
+* Deployment configuration
+* Vercel/Render configuration if present
+* robots.txt
+* sitemap
+* manifest
+* favicon
+* metadata
+* structured data
+* canonical URLs
+* redirects
+* error handling
+* loading states
+* 404 pages
+* mobile navigation
+* contact/appointment functionality
+
+Find and classify:
+
+1. Broken functionality
+2. Runtime bugs
+3. Build errors
+4. TypeScript errors
+5. Console errors
+6. Broken links
+7. Missing routes
+8. Incorrect redirects
+9. Form failures
+10. API failures
+11. Mobile bugs
+12. Accessibility problems
+13. SEO problems
+14. Performance problems
+15. Security problems
+16. Duplicate content
+17. Incorrect metadata
+18. Missing structured data
+19. Bad image handling
+20. Unused/dead code
+21. Unnecessary dependencies
+22. Layout shifts
+23. Poor loading behavior
+24. Deployment/domain issues
+
+Do not stop after finding the first problem.
+
+==================================================
+PHASE 2 — FIX EVERYTHING
+========================
+
+After the audit, fix every legitimate issue you find.
+
+The final application must:
+
+* Build successfully
+* Have zero TypeScript errors
+* Have no avoidable console errors
+* Have no broken internal links
+* Have no broken images
+* Have no dead navigation
+* Have working forms
+* Have proper validation
+* Have proper error states
+* Work on desktop
+* Work on tablets
+* Work perfectly on mobile
+* Have accessible buttons and forms
+* Have keyboard-friendly navigation
+* Have proper loading states
+* Have proper 404 handling
+* Have clean production code
+
+Do not rewrite working functionality unnecessarily.
+
+Preserve existing business functionality unless it is broken or clearly harmful to usability/SEO.
+
+==================================================
+PHASE 3 — SOMIL DENTAL CLINIC BRAND
+===================================
+
+The website must clearly establish the business as:
+
+Somil Dental Clinic
+
+Use the exact real business information provided in the project.
+
+Do NOT invent:
+
+* doctors
+* qualifications
+* awards
+* patient numbers
+* reviews
+* addresses
+* phone numbers
+* treatment claims
+* medical claims
+* certifications
+* statistics
+
+If information is missing, create a clearly marked configuration/data location instead of fabricating information.
+
+==================================================
+PHASE 4 — DOMAIN CONFIGURATION
+==============================
+
+Prepare the entire site for:
+
+https://somildentalclinic.com/
+
+Use HTTPS.
+
+Set the canonical domain consistently.
+
+Ensure:
+
+https://somildentalclinic.com/
+
+is treated as the preferred canonical version.
+
+Handle www/non-www consistently.
+
+Ensure there are no accidental duplicate versions such as:
+
+http://
+https://www.
+http://www.
+
+Create correct redirects where supported by the deployment platform.
+
+Make sure canonical URLs match the production domain.
+
+Update:
+
+* metadata
+* canonical URLs
+* sitemap
+* robots.txt
+* Open Graph URLs
+* Twitter/X metadata
+* structured data URLs
+* manifest URLs
+* internal absolute URLs
+* favicon references
+* image URLs where appropriate
+
+Do not leave localhost URLs in production.
+
+Do not leave development URLs in production.
+
+==================================================
+PHASE 5 — TECHNICAL SEO
+=======================
+
+Make the website extremely strong technically for Google Search.
+
+Implement:
+
+* unique title for every indexable page
+* unique meta description for every indexable page
+* canonical URL for every indexable page
+* proper H1
+* logical H2/H3 hierarchy
+* descriptive URLs
+* internal linking
+* breadcrumb structure where appropriate
+* XML sitemap
+* robots.txt
+* proper 404 page
+* Open Graph metadata
+* social sharing metadata
+* image alt text
+* semantic HTML
+* crawlable navigation
+* indexability controls
+* no accidental noindex tags
+* no accidental canonical conflicts
+* no duplicate title tags
+* no duplicate meta descriptions
+* no duplicate H1s unless genuinely appropriate
+
+Make sure important content is available in crawlable HTML and is not unnecessarily hidden behind JavaScript interactions.
+
+==================================================
+PHASE 6 — LOCAL SEO
+===================
+
+This is one of the highest priorities.
+
+The website must strongly communicate the clinic's actual geographic relevance.
+
+Optimize naturally for relevant local searches such as:
+
+* Somil Dental Clinic
+* Somil Dental Clinic Mumbai
+* dentist near me
+* dental clinic in Mumbai
+* dentist in Mumbai
+* dental clinic near me
+* dentist near [ACTUAL CLINIC LOCATION]
+* root canal treatment [ACTUAL LOCATION]
+* dental implants [ACTUAL LOCATION]
+* braces [ACTUAL LOCATION]
+* teeth cleaning [ACTUAL LOCATION]
+* cosmetic dentistry [ACTUAL LOCATION]
+
+IMPORTANT:
+
+Do NOT keyword-stuff.
+
+Do NOT create spammy city/location pages.
+
+Use the actual clinic location and services.
+
+Create useful location-specific content that genuinely helps patients.
+
+==================================================
+PHASE 7 — STRUCTURED DATA
+=========================
+
+Implement valid Schema.org structured data where appropriate.
+
+At minimum evaluate:
+
+* Dentist
+* LocalBusiness
+* MedicalBusiness where appropriate
+* Organization
+* WebSite
+* WebPage
+* BreadcrumbList
+* Service
+* FAQPage only where the FAQ content genuinely exists and is eligible
+
+Include only truthful information.
+
+Use the actual:
+
+* clinic name
+* address
+* telephone
+* URL
+* opening hours
+* geographic information
+* social profiles if actually available
+
+Do not fabricate review ratings.
+
+Do not fabricate aggregateRating.
+
+Do not add fake testimonials.
+
+==================================================
+PHASE 8 — GOOGLE SEARCH VISIBILITY
+==================================
+
+The goal is to make Somil Dental Clinic highly competitive for relevant searches and establish strong local search relevance.
+
+Build a proper SEO architecture around:
+
+BRAND
+Somil Dental Clinic
+
+LOCATION
+Actual clinic locality + Mumbai
+
+SERVICES
+Every genuine dental treatment offered by the clinic.
+
+Create dedicated treatment pages when appropriate.
+
+Each treatment page should contain genuinely useful information, not keyword spam.
+
+Each page should have:
+
+* SEO title
+* meta description
+* H1
+* treatment explanation
+* who it may be suitable for
+* process overview
+* benefits where medically appropriate
+* limitations/considerations where appropriate
+* FAQs
+* appointment CTA
+* internal links
+* relevant structured data
+
+Do not make medical promises or guaranteed outcomes.
+
+==================================================
+PHASE 9 — HOMEPAGE SEO
+======================
+
+The homepage must immediately communicate:
+
+Somil Dental Clinic
+Dental care
+Actual location
+Main services
+Appointment/contact option
+Trust indicators that are actually supported by the business
+
+The first screen should make it obvious:
+
+WHO the clinic is
+WHERE it is
+WHAT it offers
+HOW to contact/book
+
+Make the primary CTA obvious.
+
+Do not sacrifice UX for SEO.
+
+==================================================
+PHASE 10 — GOOGLE BUSINESS PROFILE SUPPORT
+==========================================
+
+Prepare the website so it works correctly with the clinic's Google Business Profile.
+
+Ensure consistency between:
+
+Website
+Business name
+Address
+Phone
+Opening hours
+Services
+
+Do not create fake Google reviews.
+
+Do not manipulate reviews.
+
+Do not use fake locations.
+
+Do not create doorway pages.
+
+The website should support genuine local SEO rather than trying to trick Google.
+
+==================================================
+PHASE 11 — PERFORMANCE
+======================
+
+Optimize aggressively but safely.
+
+Target excellent Core Web Vitals.
+
+Inspect:
+
+* LCP
+* INP
+* CLS
+* JavaScript bundle size
+* CSS size
+* image sizes
+* lazy loading
+* image formats
+* font loading
+* third-party scripts
+* unnecessary animations
+* render blocking resources
+* unused JavaScript
+* unnecessary API requests
+
+Use modern image formats where appropriate.
+
+Do not lazy-load the main above-the-fold hero image if that harms LCP.
+
+Prevent layout shifts.
+
+Keep animations tasteful and lightweight.
+
+Do not sacrifice accessibility for visual effects.
+
+==================================================
+PHASE 12 — MOBILE-FIRST
+=======================
+
+Test every page at:
+
+360px
+375px
+390px
+414px
+768px
+1024px
+1280px+
+desktop
+
+Fix:
+
+* horizontal overflow
+* tiny text
+* oversized headings
+* broken grids
+* overlapping elements
+* broken menus
+* inaccessible buttons
+* incorrect spacing
+* clipped images
+* modal problems
+* sticky header problems
+* CTA positioning
+
+The mobile website must feel like a deliberately designed product, not a desktop website that survived an accident.
+
+==================================================
+PHASE 13 — ACCESSIBILITY
+========================
+
+Audit and fix:
+
+* semantic HTML
+* heading hierarchy
+* image alt text
+* form labels
+* keyboard navigation
+* focus states
+* color contrast
+* button names
+* link names
+* ARIA usage
+* screen-reader compatibility
+
+Do not add unnecessary ARIA when semantic HTML already solves the problem.
+
+==================================================
+PHASE 14 — SECURITY
+===================
+
+Audit the application for:
+
+* exposed secrets
+* API keys
+* insecure environment variables
+* unsafe client-side credentials
+* XSS risks
+* injection risks
+* insecure forms
+* unsafe redirects
+* exposed admin routes
+* weak authentication
+* unnecessary permissions
+* dependency vulnerabilities
+
+Never place private secrets directly in frontend source code.
+
+Do not expose service-account credentials.
+
+Do not expose admin credentials.
+
+==================================================
+PHASE 15 — FORMS & APPOINTMENTS
+===============================
+
+Test every:
+
+* appointment form
+* contact form
+* WhatsApp button
+* phone link
+* email link
+* booking flow
+* enquiry form
+
+Verify:
+
+* validation
+* required fields
+* success state
+* failure state
+* duplicate submission handling
+* mobile usability
+* spam protection where appropriate
+* backend delivery
+* error handling
+
+Never silently discard user submissions.
+
+==================================================
+PHASE 16 — CONTENT QUALITY
+==========================
+
+Review all website content for:
+
+* spelling errors
+* grammar
+* awkward wording
+* duplicated sections
+* placeholder text
+* lorem ipsum
+* fake information
+* outdated information
+* inconsistent terminology
+* inconsistent business name
+
+The final copy should sound professional, trustworthy, human, and medically responsible.
+
+Avoid exaggerated claims such as:
+
+"100% painless"
+"guaranteed results"
+"best dentist in Mumbai"
+
+unless such claims are legitimately substantiated and legally appropriate.
+
+==================================================
+PHASE 17 — CRAWLABILITY
+=======================
+
+Verify:
+
+/robots.txt
+
+/sitemap.xml
+
+All important pages must be discoverable.
+
+Check for:
+
+* accidental noindex
+* blocked resources
+* incorrect sitemap URLs
+* non-canonical URLs
+* redirect chains
+* broken internal links
+* orphan pages
+
+Sitemap should contain only canonical, indexable URLs.
+
+==================================================
+PHASE 18 — ERROR & EDGE CASE TESTING
+====================================
+
+Test:
+
+* invalid URLs
+* missing pages
+* slow network
+* API failure
+* empty form submission
+* invalid phone
+* invalid email
+* repeated clicks
+* refresh during navigation
+* mobile menu state
+* browser back/forward
+* direct URL loading
+* production environment variables
+
+Fix all issues discovered.
+
+==================================================
+PHASE 19 — FINAL SEO QA
+=======================
+
+Before declaring completion, perform a final audit.
+
+Check every indexable page for:
+
+TITLE
+META DESCRIPTION
+CANONICAL
+H1
+H2 STRUCTURE
+ALT TEXT
+INTERNAL LINKS
+OPEN GRAPH
+STRUCTURED DATA
+MOBILE UX
+PAGE SPEED
+INDEXABILITY
+
+Check that the production domain is:
+
+https://somildentalclinic.com/
+
+and that no development domain remains anywhere.
+
+==================================================
+PHASE 20 — FINAL REPORT
+=======================
+
+At the end, provide a concise but complete report containing:
+
+1. Bugs found
+2. Bugs fixed
+3. SEO issues found
+4. SEO improvements made
+5. Performance improvements
+6. Accessibility improvements
+7. Security improvements
+8. Pages created/modified
+9. Structured data implemented
+10. Domain configuration completed
+11. Sitemap/robots status
+12. Remaining issues, if any
+13. Exact commands used to test the project
+14. Build result
+15. Production-readiness status
+
+Do not claim something was tested if you did not actually test it.
+
+MOST IMPORTANT:
+
+Do not stop at analysis.
+
+AUDIT → FIX → TEST → RE-AUDIT → FIX AGAIN → FINAL BUILD.
+
+The final result must be a polished, production-ready, SEO-focused Somil Dental Clinic website designed to compete strongly in Google Search and Google local results for legitimate searches related to the clinic, its actual location, brand name, and genuine dental services.
+
+Do not use black-hat SEO.
+Do not keyword stuff.
+Do not create fake reviews.
+Do not create fake locations.
+Do not fabricate medical credentials.
+Do not fabricate business information.
+
+Quality, accuracy, technical correctness, local relevance, performance, accessibility, and trust come first.

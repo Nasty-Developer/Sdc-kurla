@@ -1,4 +1,4 @@
-import express, { type Express } from "express";
+import express, { type ErrorRequestHandler, type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import { clerkMiddleware } from "@clerk/express";
@@ -76,9 +76,24 @@ if (clerkConfigured) {
     })),
   );
 }
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "64kb" }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 
 app.use("/api", router);
+
+app.use((_req, res) => {
+  res.status(404).json({ error: "API route not found." });
+});
+
+const errorHandler: ErrorRequestHandler = (error, req, res, _next) => {
+  req.log?.error({ err: error }, "Unhandled API error");
+  if (res.headersSent) return;
+  const status = error instanceof SyntaxError ? 400 : 500;
+  res.status(status).json({
+    error: status === 400 ? "Invalid request body." : "An unexpected server error occurred.",
+  });
+};
+
+app.use(errorHandler);
 
 export default app;

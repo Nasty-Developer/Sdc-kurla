@@ -140,6 +140,12 @@ export default function DentalAssistant({ onBookAppointment, settings, treatment
     },
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const nextMessageId = useRef(2);
+  const replyTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => () => {
+    if (replyTimeoutRef.current !== null) window.clearTimeout(replyTimeoutRef.current);
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -150,11 +156,15 @@ export default function DentalAssistant({ onBookAppointment, settings, treatment
     if (!trimmedQuestion || isTyping) return;
 
     setInput('');
-    setMessages((current) => [...current, { id: Date.now(), role: 'user', text: trimmedQuestion }]);
+    const userMessageId = nextMessageId.current;
+    nextMessageId.current += 1;
+    setMessages((current) => [...current, { id: userMessageId, role: 'user', text: trimmedQuestion }]);
     setIsTyping(true);
 
-    window.setTimeout(() => {
-      setMessages((current) => [...current, { id: Date.now() + 1, ...getAssistantReply(trimmedQuestion, settings, treatments) }]);
+    replyTimeoutRef.current = window.setTimeout(() => {
+      const assistantMessageId = nextMessageId.current;
+      nextMessageId.current += 1;
+      setMessages((current) => [...current, { id: assistantMessageId, ...getAssistantReply(trimmedQuestion, settings, treatments) }]);
       setIsTyping(false);
     }, 420);
   };

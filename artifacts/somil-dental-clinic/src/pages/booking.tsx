@@ -74,6 +74,7 @@ export default function BookingPage() {
   const [dataError, setDataError] = useState('');
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
+  const [website, setWebsite] = useState('');
   const today = useMemo(getToday, []);
   useEffect(() => {
     setIsLoadingData(true);
@@ -97,8 +98,7 @@ export default function BookingPage() {
   const treatmentFromQuery = useMemo(() => {
     const query = location.split('?')[1] ?? '';
     const value = new URLSearchParams(query).get('treatment');
-    const normalizedValue = value === 'Dental Checkup' ? 'Dental Checkup & Consultation' : value;
-    return normalizedValue && treatmentOptions.includes(normalizedValue) ? normalizedValue : 'General Consultation';
+    return value && treatmentOptions.includes(value) ? value : 'General Consultation';
   }, [location, treatmentOptions]);
 
   const form = useForm<BookingValues>({
@@ -129,8 +129,11 @@ export default function BookingPage() {
       const apiPath = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/api/appointments`;
       const response = await fetch(apiPath, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotency-Key': crypto.randomUUID(),
+        },
+        body: JSON.stringify({ ...values, website }),
       });
       const body = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -316,7 +319,11 @@ export default function BookingPage() {
                       </FormItem>
                     )} />
                   </div>
-                  <FormField control={form.control} name="message" render={({ field }) => (
+                   <div className="sr-only" aria-hidden="true">
+                     <label htmlFor="booking-website">Website</label>
+                     <input id="booking-website" tabIndex={-1} autoComplete="off" value={website} onChange={(event) => setWebsite(event.target.value)} />
+                   </div>
+                   <FormField control={form.control} name="message" render={({ field }) => (
                     <FormItem className="booking-field">
                       <FormLabel>Additional Message / Problem Description</FormLabel>
                       <FormControl><textarea {...field} rows={4} placeholder="Tell us briefly what you would like help with." /></FormControl>

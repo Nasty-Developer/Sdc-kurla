@@ -32,17 +32,15 @@ export const requireAdmin: RequestHandler = async (req, res, next) => {
       .where(eq(clinicAdminUsersTable.clerkUserId, userId))
       .limit(1);
 
-    if (existingAdmin[0]?.isActive) {
-      next();
-      return;
-    }
-
-    if (existingAdmin[0] && !existingAdmin[0].isActive) {
-      res.status(403).json({ error: "This account is not authorized for the admin panel." });
-      return;
-    }
-
     if (adminUserIds.length === 0 && adminEmails.length === 0) {
+      if (existingAdmin[0]?.isActive) {
+        next();
+        return;
+      }
+      if (existingAdmin[0] && !existingAdmin[0].isActive) {
+        res.status(403).json({ error: "This account is not authorized for the admin panel." });
+        return;
+      }
       res.status(503).json({
         error: "Admin access is not configured. Add ADMIN_EMAILS or ADMIN_USER_IDS to the server environment.",
       });
@@ -77,6 +75,12 @@ export const requireAdmin: RequestHandler = async (req, res, next) => {
       }
     }
 
+    if (existingAdmin[0]?.isActive) {
+      await db
+        .update(clinicAdminUsersTable)
+        .set({ isActive: false, updatedAt: new Date() })
+        .where(eq(clinicAdminUsersTable.clerkUserId, userId));
+    }
     res.status(403).json({ error: "This account is not authorized for the admin panel." });
   } catch (error) {
     req.log?.error({ err: error }, "Unable to verify admin access");
