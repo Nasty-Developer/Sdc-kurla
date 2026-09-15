@@ -1,0 +1,150 @@
+FIX ADMIN PANEL: TREATMENTS, PRICES, MEDIA & BRANCH MANAGEMENT
+
+The Admin Panel needs to be fully functional, not read-only.
+
+1. TREATMENTS & PRICING
+
+The Treatments page must allow the Admin to actually manage treatments.
+
+Add working functionality for:
+
+Add Treatment
+Edit Treatment
+Delete Treatment
+Treatment name
+Short description
+Price
+Treatment image
+Active/inactive status
+Display order
+
+When I add a treatment and price in Admin Panel, it must be saved to the production database and automatically appear on the public Treatments & Pricing section.
+
+When I edit a treatment or price, the public website must update accordingly.
+
+Do NOT use hardcoded treatment data or mock data.
+
+2. MEDIA MANAGEMENT
+
+The Media section must allow the Admin to actually upload and manage images.
+
+Add working:
+
+Upload image
+Preview image
+Replace image
+Delete image
+Image title/description if useful
+
+Images must use persistent production storage compatible with Vercel. Do not rely on temporary local server storage.
+
+3. BRANCH MANAGEMENT
+
+Add a proper Branches section to the Admin Panel.
+
+I need to manage multiple clinic branches.
+
+Create these two initial branches:
+
+Branch 1: SDC Kurla
+Branch 2: SDC Chembur
+
+The Admin must be able to:
+
+Add a new branch
+Edit a branch
+Delete a branch
+Activate/deactivate a branch
+
+Each branch should support:
+
+Branch name
+Full address
+Phone number
+WhatsApp number
+Email
+Opening/appointment hours
+Google Maps/location link
+Branch image
+
+The branch information must be stored in the production database.
+
+4. PUBLIC WEBSITE CONNECTION
+
+The public website should use the branch data from the database.
+
+If there are multiple branches, the website should be able to display:
+
+SDC Kurla
+SDC Chembur
+
+wherever branch/location information is needed.
+
+The appointment system should also store the selected branch with every booking.
+
+Example:
+
+Patient: Rahul
+Treatment: Root Canal
+Branch: SDC Kurla
+Date: 10 September
+Time: 8:30 PM
+
+This branch information must appear in the Admin Panel booking details.
+
+5. ADMIN SIDEBAR
+
+Update the Admin Panel navigation to include:
+
+Dashboard
+Appointments
+Inquiries
+Treatments & Pricing
+Branches
+Media
+Settings
+
+Every section must have working functionality, not placeholder/read-only UI.
+
+6. DATABASE REQUIREMENT
+
+All of this must use the real persistent production database.
+
+Do NOT use:
+
+Mock data
+Hardcoded arrays
+localStorage as the database
+Temporary in-memory storage
+Fake upload functionality
+
+The complete flow must work after Vercel deployment:
+
+Admin → Add Treatment → Database → Public Website
+
+Admin → Add Branch → Database → Public Website
+
+Admin → Upload Media → Persistent Storage → Website
+
+Patient → Select Branch + Treatment + Date + Time → Database → Admin Appointments
+
+7. IMPORTANT: DO NOT REDESIGN
+
+Do not change the existing public website's:
+
+Light blue/teal/navy theme
+SDC logo
+SOMIL DENTAL CLINIC branding
+Doctor photo
+Hero
+Typography
+Navigation
+
+This task is strictly to make the Admin Panel's Treatments, Media, and Branch management actually functional and connected to production data.
+
+After implementation, test adding:
+
+SDC Kurla
+SDC Chembur
+
+and at least one treatment with a price, then refresh the Admin Panel and verify the data persists.

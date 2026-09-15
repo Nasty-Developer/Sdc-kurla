@@ -1,0 +1,235 @@
+Please make a complete professional update to the dental clinic website. Do not change unrelated functionality.
+
+## 1. FIX MOBILE RESPONSIVENESS COMPLETELY 📱
+
+The website currently has responsiveness problems on mobile devices.
+
+Audit and fix the entire website for:
+
+* Mobile phones
+* Small phones
+* Tablets
+* Desktop
+* Different screen widths and orientations
+
+Pay special attention to:
+
+* Header/navbar
+* Hero section
+* Treatment cards
+* Treatment prices
+* Book Now buttons
+* Booking form
+* Contact information
+* Branch selection
+* Branch address sections
+* Images and SVGs
+* Text wrapping
+* Buttons
+* Forms and input fields
+* Spacing and margins
+* Footer
+
+Nothing should overflow horizontally on mobile.
+
+Make sure:
+
+* No text gets cut off.
+* No buttons go outside the screen.
+* No images stretch incorrectly.
+* Phone numbers and email addresses wrap properly when necessary.
+* Cards stack cleanly on mobile.
+* Branches stack vertically on smaller screens.
+* Booking forms are comfortable to use on mobile.
+* All buttons remain easy to tap.
+* Font sizes remain readable without making the page unnecessarily huge.
+* Desktop design should remain professional and should not be damaged while fixing mobile.
+
+Test the site at common widths such as:
+
+* 320px
+* 375px
+* 390px
+* 414px
+* 768px
+* 1024px
+* Desktop widths
+
+## 2. ADD THE CORRECT CONTACT DETAILS
+
+Update the website contact information with:
+
+**Phone:** +91 8591434914
+
+**Alternate/Clinic Number:** +91 9004519055
+
+**Email:** [somilg449@gmail.com](mailto:somilg449@gmail.com)
+
+Make the phone numbers clickable using `tel:` links and the email clickable using `mailto:`.
+
+Display the contact information consistently wherever appropriate, including:
+
+* Header/contact area
+* Contact section
+* Footer
+* Booking/contact confirmation areas where appropriate
+
+Do not accidentally replace one number with the other. Keep both numbers available.
+
+## 3. ADD BOTH CLINIC BRANCHES
+
+Use the branch information from the provided clinic card.
+
+### Main Branch
+
+**Main Branch**
+
+Kunchi Kurway Chawl, Bazar Ward,
+Hallow Pool Corner, N. Rolex Hotel,
+Kurla (W), Mumbai - 400070.
+
+### Chembur Govandi Branch
+
+**Chembur Govandi Branch**
+
+Plot No. 46 A/8, Shivaji Nagar, Govandi,
+Near Geeta Vikas Hall,
+Associated with Taj Optics,
+Mumbai - 400043.
+
+Present both branches in a clean, professional layout.
+
+On desktop:
+
+* Display the two branches side-by-side.
+
+On mobile:
+
+* Stack the branches vertically.
+* Keep the branch name and full address readable.
+* Make sure the address does not overflow the screen.
+
+## 4. BRANCH SELECTION DURING BOOKING ⭐
+
+This is important.
+
+When a patient clicks **Book Now**, the booking form should allow them to select which clinic branch they want to visit.
+
+Add a required field:
+
+**Select Clinic Branch**
+
+Options:
+
+1. **Main Branch - Kurla (W)**
+   Kunchi Kurway Chawl, Bazar Ward, Hallow Pool Corner, N. Rolex Hotel, Kurla (W), Mumbai - 400070.
+
+2. **Chembur Govandi Branch**
+   Plot No. 46 A/8, Shivaji Nagar, Govandi, Near Geeta Vikas Hall, Associated with Taj Optics, Mumbai - 400043.
+
+The selected branch must be included in the appointment/booking data when the patient submits the form.
+
+## 5. SHOW BRANCH DETAILS CLEARLY DURING BOOKING
+
+After selecting a branch, show the corresponding branch name and address clearly so the patient knows exactly where their appointment is booked.
+
+For example:
+
+**Selected Clinic**
+Main Branch - Kurla (W)
+
+**Address**
+Kunchi Kurway Chawl, Bazar Ward, Hallow Pool Corner, N. Rolex Hotel, Kurla (W), Mumbai - 400070.
+
+Do the same for the Chembur Govandi branch.
+
+Make this especially clear on the booking confirmation screen.
+
+## 6. PRESERVE TREATMENT SELECTION
+
+The existing treatment booking flow must continue working.
+
+If a patient clicks:
+
+**Dental Checkup → Book Now**
+
+the booking page should automatically select/show:
+
+**Dental Checkup & Consultation**
+
+Likewise, every treatment should carry the correct treatment selection into the booking form.
+
+Do not break the existing treatment query parameters or booking URLs.
+
+## 7. CLEAN UP THE BOOKING FORM
+
+Make the booking form look professional and easy to use.
+
+Recommended fields:
+
+* Patient Name
+* Phone Number
+* Email
+* Select Treatment
+* Select Clinic Branch
+* Preferred Date
+* Preferred Time
+* Message/Additional Information
+
+Make required fields clearly marked.
+
+Validate:
+
+* Phone number
+* Email
+* Date
+* Required treatment
+* Required branch
+
+The form must work properly on mobile.
+
+## 8. CONTACT INFORMATION IN BOOKING
+
+Make sure patients can easily see the clinic contact information around the booking experience:
+
+**+91 8591434914**
+**+91 9004519055**
+**[somilg449@gmail.com](mailto:somilg449@gmail.com)**
+
+Use proper clickable links.
+
+## 9. USE THE CLINIC CARD DESIGN AS REFERENCE
+
+The uploaded clinic card contains the official clinic branding, doctor information, branch names, addresses, facilities, phone number and email.
+
+Use the card as the visual/content reference for the branch information and clinic identity.
+
+Do not randomly invent additional branch information.
+
+## 10. FINAL QA / TESTING
+
+After implementing everything, perform a complete test.
+
+Check:
+
+* Mobile homepage
+* Desktop homepage
+* Treatment section
+* Every treatment Book Now button
+* Booking form
+* Treatment auto-selection
+* Branch selection
+* Branch address display
+* Form validation
+* Phone links
+* Email link
+* Mobile navigation
+* No horizontal scrolling
+* No broken images/SVGs
+* No console errors
+* No layout overflow
+* No broken routes
+
+Test the booking flow end-to-end on both desktop and mobile.
+
+The final result should feel like a polished professional dental clinic website, not a desktop website that has been reluctantly squeezed into a phone screen. 🦷📱

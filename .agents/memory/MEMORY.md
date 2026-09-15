@@ -1,0 +1,3 @@
+- [Imported Replit apps](imported-replit-apps.md) — prefer artifact-owned workflows over duplicate legacy workflows; initialize documented DB schema/defaults before previewing.
+- [Imported repository sync](imported-repository-sync.md) — validate cloned artifact files for merge markers before relying on preview registration.
+- [Clinic build inputs](clinic-build-inputs.md) — the production Vite build requires PORT and BASE_PATH in its environment.
